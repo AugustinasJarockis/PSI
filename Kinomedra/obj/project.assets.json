@@ -8,19 +8,24 @@
     "net6.0": []
   },
   "packageFolders": {
-    "C:\\Users\\toka8\\.nuget\\packages\\": {}
+    "C:\\Users\\jarau\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\toka8\\Desktop\\naujas\\PSI\\Kinomedra\\Kinomedra.csproj",
+      "projectUniqueName": "C:\\Users\\jarau\\source\\repos\\PSI\\Kinomedra\\Kinomedra.csproj",
       "projectName": "Kinomedra",
-      "projectPath": "C:\\Users\\toka8\\Desktop\\naujas\\PSI\\Kinomedra\\Kinomedra.csproj",
-      "packagesPath": "C:\\Users\\toka8\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\toka8\\Desktop\\naujas\\PSI\\Kinomedra\\obj\\",
+      "projectPath": "C:\\Users\\jarau\\source\\repos\\PSI\\Kinomedra\\Kinomedra.csproj",
+      "packagesPath": "C:\\Users\\jarau\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\jarau\\source\\repos\\PSI\\Kinomedra\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\toka8\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\jarau\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -64,7 +69,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
       }
     }
   }
