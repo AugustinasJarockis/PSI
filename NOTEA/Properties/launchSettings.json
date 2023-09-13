@@ -3,16 +3,16 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:25045",
-      "sslPort": 44369
+      "applicationUrl": "http://localhost:59987",
+      "sslPort": 0
     }
   },
   "profiles": {
-    "Kinomedra": {
+    "NOTEA": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7037;http://localhost:5106",
+      "applicationUrl": "http://localhost:5062",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
