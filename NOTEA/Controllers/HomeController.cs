@@ -23,6 +23,18 @@ namespace NOTEA.Controllers
             return View();
         }
 
+        public IActionResult GetStarted()
+        {
+            return View();
+        }
+
+        public IActionResult HowToUse()
+        {
+            return View();
+        }
+
+
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
