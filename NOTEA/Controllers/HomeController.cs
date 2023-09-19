@@ -7,6 +7,7 @@ namespace NOTEA.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        DataService DataService = new DataService(); 
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -30,10 +31,9 @@ namespace NOTEA.Controllers
 
         public IActionResult HowToUse()
         {
+            DataService.UsingSave();
             return View();
         }
-
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
