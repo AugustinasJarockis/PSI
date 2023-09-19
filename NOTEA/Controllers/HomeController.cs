@@ -24,11 +24,28 @@ namespace NOTEA.Controllers
             return View();
         }
 
-        public IActionResult GetStarted()
+        public IActionResult CreateConspects()
         {
-            return View();
+            Console.WriteLine(model.Name);
+            return View(model);
         }
 
+        [HttpPost]
+        public IActionResult CreateConspects(string date, string name, string conspectText)
+        {
+            Console.WriteLine(model.Name);
+            model.Date = date;
+            model.Name = name;
+            model.ConspectText = conspectText;
+
+            ConspectModel conspectModel = new ConspectModel(date, name, conspectText);
+            return View(model);
+        }
+
+        public string Save()
+        {
+            return "Stringy";
+        }
         public IActionResult HowToUse()
         {
             DataService.UsingSave();
