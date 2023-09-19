@@ -28,14 +28,10 @@ namespace NOTEA.Models
             ConspectListModel conspects = JsonConvert.DeserializeObject<ConspectListModel>(text);
             return conspects;
         }
-        public void UsingSave()
+        public void UsingSave(ConspectModel conspect)
         {
             DataService dataService = new DataService();
             ConspectListModel conspectsList = new ConspectListModel();
-            ConspectModel conspect = new ConspectModel();   
-            conspect.Name = "Test1";
-            conspect.Date = "Test1";
-            conspect.ConspectText = "Test1"; 
             conspectsList.conspects.Add(conspect);
             string fileName = "Test.txt";
             dataService.SaveConspects(fileName, conspectsList);

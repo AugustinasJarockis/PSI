@@ -7,6 +7,7 @@ namespace NOTEA.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        public static ConspectModel model = new ConspectModel();
         DataService DataService = new DataService(); 
 
         public HomeController(ILogger<HomeController> logger)
@@ -39,6 +40,7 @@ namespace NOTEA.Controllers
             model.ConspectText = conspectText;
 
             ConspectModel conspectModel = new ConspectModel(date, name, conspectText);
+            DataService.UsingSave(conspectModel);
             return View(model);
         }
 
@@ -48,7 +50,7 @@ namespace NOTEA.Controllers
         }
         public IActionResult HowToUse()
         {
-            DataService.UsingSave();
+            
             return View();
         }
 
