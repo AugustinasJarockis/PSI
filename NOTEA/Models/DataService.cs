@@ -37,7 +37,7 @@ namespace NOTEA.Models
             conspect.Date = "Test1";
             conspect.ConspectText = "Test1"; 
             conspectsList.conspects.Add(conspect);
-            string fileName = "C:\\Users\\toka8\\Desktop\\psi\\NOTEA\\Conspects\\Test.txt";
+            string fileName = "Test.txt";
             dataService.SaveConspects(fileName, conspectsList);
         }
 
