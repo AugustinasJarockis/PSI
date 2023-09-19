@@ -2,6 +2,6 @@
 {
     public class ConspectListModel
     {
-        List<ConspectModel> conspects = new List<ConspectModel>();
+        public List<ConspectModel> conspects = new List<ConspectModel>();
     }
 }
