@@ -8,5 +8,17 @@ namespace NOTEA.Models
         public string Date { get; set; }
         public string Name { get; set; }
         public string ConspectText { get; set; }
+
+        public ConspectModel(){
+            Date = "";
+            Name = "";
+            ConspectText = "";
+        }
+        public ConspectModel(string date, string name, string conspectText)
+        {
+            Date = date;
+            Name = name;
+            ConspectText = conspectText;
+        }
     }
 }
