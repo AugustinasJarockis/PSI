@@ -7,6 +7,7 @@ namespace NOTEA.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        public static ConspectModel model = new ConspectModel(); 
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -23,11 +24,17 @@ namespace NOTEA.Controllers
             return View();
         }
 
-        public IActionResult GetStarted()
+        public IActionResult CreateConspects()
         {
-            return View();
+            Console.WriteLine(model.Name);
+            model.Name = "Default name";
+            return View(model);
         }
 
+        public string Save()
+        {
+            return "Stringy";
+        }
         public IActionResult HowToUse()
         {
             return View();
