@@ -27,7 +27,18 @@ namespace NOTEA.Controllers
         public IActionResult CreateConspects()
         {
             Console.WriteLine(model.Name);
-            model.Name = "Default name";
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult CreateConspects(string date, string name, string conspectText)
+        {
+            Console.WriteLine(model.Name);
+            model.Date = date;
+            model.Name = name;
+            model.ConspectText = conspectText;
+
+            ConspectModel conspectModel = new ConspectModel(date, name, conspectText);
             return View(model);
         }
 
