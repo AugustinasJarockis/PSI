@@ -41,9 +41,17 @@ namespace NOTEA.Controllers
 
             ConspectModel conspectModel = new ConspectModel(date, name, conspectText);
             DataService.UsingSave(conspectModel);
+
+            CloseWindow();
+
             return View(model);
         }
-
+       
+        public IActionResult CloseWindow()
+        {
+            TempData["SuccessMessage"] = "Your notea has been saved successfully!";
+            return RedirectToAction(nameof(CreateConspects));
+        }
         public string Save()
         {
             return "Stringy";
