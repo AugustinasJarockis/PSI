@@ -7,7 +7,7 @@ namespace NOTEA.Models
 {
     public class DataService
     {
-        public void SaveConspects(string fileName, ConspectListModel conspects)
+        public void WriteConspectToFile(string fileName, ConspectListModel conspects)
         {
             try
             {
@@ -28,13 +28,12 @@ namespace NOTEA.Models
             ConspectListModel conspects = JsonConvert.DeserializeObject<ConspectListModel>(text);
             return conspects;
         }
-        public void UsingSave(ConspectModel conspect)
+        public void SaveConspects(ConspectModel conspect)
         {
-            DataService dataService = new DataService();
             ConspectListModel conspectsList = new ConspectListModel();
             conspectsList.conspects.Add(conspect);
             string fileName = "Test.txt";
-            dataService.SaveConspects(fileName, conspectsList);
+            WriteConspectToFile(fileName, conspectsList);
         }
 
 
