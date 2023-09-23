@@ -8,11 +8,12 @@ namespace NOTEA.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         public static ConspectModel model = new ConspectModel();
-        DataService DataService = new DataService(); 
+        private readonly IDataService DataService; 
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IDataService dataService)
         {
             _logger = logger;
+            DataService = dataService;
         }
 
         public IActionResult Index()
@@ -40,7 +41,7 @@ namespace NOTEA.Controllers
             model.ConspectText = conspectText;
 
             ConspectModel conspectModel = new ConspectModel(date, name, conspectText);
-            DataService.UsingSave(conspectModel);
+            DataService.SaveConspects(conspectModel);
 
             CloseWindow();
 
@@ -52,10 +53,7 @@ namespace NOTEA.Controllers
             TempData["SuccessMessage"] = "Your notea has been saved successfully!";
             return RedirectToAction(nameof(CreateConspects));
         }
-        public string Save()
-        {
-            return "Stringy";
-        }
+
         public IActionResult HowToUse()
         {
             

@@ -5,9 +5,9 @@ using System.Diagnostics.Contracts;
 
 namespace NOTEA.Models
 {
-    public class DataService
+    public class DataService : IDataService
     {
-        public void WriteConspectToFile(string fileName, ConspectListModel conspects)
+        private void WriteConspectToFile(string fileName, ConspectListModel conspects)
         {
             try
             {
