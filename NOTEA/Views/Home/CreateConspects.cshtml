@@ -5,9 +5,7 @@
     ViewData["Title"] = "Create conspects";
 }
 
-<h1>CreateConspects</h1>
-
-<h4>ConspectModel</h4>
+<h1>Create conspects</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -29,7 +27,7 @@
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <label asp-for="ConspectText" class="control-label"></label>
-                <input asp-for="ConspectText" class="form-control" />
+                <textarea  asp-for="ConspectText" cols="150" rows="20"></textarea>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

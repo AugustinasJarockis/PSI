@@ -14,5 +14,8 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    background-image: url('/Content/Images/background-light-leaf.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin-bottom: 60px;
 }
