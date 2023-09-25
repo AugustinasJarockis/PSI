@@ -7,14 +7,19 @@ namespace NOTEA.Models
 {
     public class DataService : IDataService
     {
-        private void WriteConspectToFile(string fileName, ConspectListModel conspects)
+        ConspectListModel conspectsList = new ConspectListModel();
+        private void WriteConspectToFile(ConspectListModel conspects)
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(fileName))
+                foreach (ConspectModel conspect in conspects.conspects)
                 {
-                    string serializedJSON = JsonConvert.SerializeObject(conspects);
-                    writer.Write(serializedJSON);
+                    using (StreamWriter writer = new StreamWriter("Conspects//" + conspect.Name + ".txt"))
+                    {
+
+                        string serializedJSON = JsonConvert.SerializeObject(conspects);
+                        writer.Write(serializedJSON);
+                    }
                 }
             }
             catch (Exception exp)
@@ -30,12 +35,8 @@ namespace NOTEA.Models
         }
         public void SaveConspects(ConspectModel conspect)
         {
-            ConspectListModel conspectsList = new ConspectListModel();
             conspectsList.conspects.Add(conspect);
-            string fileName = "Test.txt";
-            WriteConspectToFile(fileName, conspectsList);
+            WriteConspectToFile(conspectsList);
         }
-
-
     }
 }
