@@ -3,6 +3,7 @@ using NOTEA.Models;
 using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace NOTEA.Controllers
 {
@@ -34,16 +35,13 @@ namespace NOTEA.Controllers
 
         public IActionResult CreateConspects()
         {
-            return View(model);
+            //return View(model);
+            return View();
         }
 
         [HttpPost]
         public IActionResult CreateConspects(string date, string name, string conspectText)
         {
-            model.Date = date;
-            model.Name = name;
-            model.ConspectText = conspectText;
-
             ConspectModel conspectModel = new ConspectModel(date, name, conspectText);
             DataService.SaveConspect(conspectModel);
             DataService.SaveFileName(fileNameModel, name);
@@ -67,24 +65,25 @@ namespace NOTEA.Controllers
         {
             if(file.ContentType == "text/plain")
             {
-                String buffer = "";
+                String text = "";
                 using (Stream stream = file.OpenReadStream())
                 {
                     using (StreamReader sr = new StreamReader(stream))
                     {
-                        while ((buffer = sr.ReadLine()) != null)
+                        while ((text = sr.ReadLine()) != null)
                         {
-                            Console.WriteLine(buffer);
+                            Console.WriteLine(text);
                         }
                     }
                 }
                 DataService.SaveConspect(
                     new ConspectModel(
                         "Remove this later",
-                        System.IO.Path.GetFileNameWithoutExtension(file.FileName),
-                        buffer
+                        Path.GetFileNameWithoutExtension(file.FileName),
+                        text
                         )
                     );
+                DataService.SaveFileName(fileNameModel, Path.GetFileNameWithoutExtension(file.FileName));
             }
             else
             {
@@ -113,7 +112,6 @@ namespace NOTEA.Controllers
             {
                 model = DataService.LoadConspects(fileName.Name);
                 conspectListModel.conspects.Add(model);
-                Console.WriteLine(fileName.Name + " " + model.ConspectText);
             }
             return View(conspectListModel);
 

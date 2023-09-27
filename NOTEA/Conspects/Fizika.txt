@@ -1,1 +1,1 @@
-{"conspects":[{"Date":"Remove this later","Name":"Fizika","ConspectText":null}]}
+{"Date":"Remove this later","Name":"Fizika","ConspectText":null}
