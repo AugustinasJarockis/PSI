@@ -8,8 +8,19 @@ namespace NOTEA.Models
     public class DataService : IDataService
     {
         ConspectListModel conspectsList = new ConspectListModel();
-        private void WriteConspectToFile(ConspectListModel conspects)
+        FileNameListModel fileNameList = new FileNameListModel();
+        ConspectModel conspectModel = new ConspectModel();
+        public ConspectModel LoadConspects(string fileName)
         {
+            string text = File.ReadAllText("Conspects//" + fileName + ".txt");
+            Console.WriteLine(text);
+            ConspectModel conspectModel = JsonConvert.DeserializeObject<ConspectModel>(text);
+            Console.WriteLine("konspio" + conspectModel.Name + " " + conspectModel.ConspectText);
+            return conspectModel;
+        }
+        public void SaveConspects(ConspectModel conspect)
+        {
+            using (StreamWriter writer = new StreamWriter("Conspects//" + conspect.Name + ".txt"))
             try
             {
                 foreach (ConspectModel conspect in conspects.conspects)
@@ -23,19 +34,29 @@ namespace NOTEA.Models
             }
             catch (Exception exp)
             {
-                Console.Write(exp.Message);
+                Console.WriteLine("konspis the original  " + conspect.Name);
+               string serializedJSON = JsonConvert.SerializeObject(conspect);
+               writer.Write(serializedJSON);
             }
         }
-        public ConspectListModel LoadConspects(string fileName)
+        public void SaveFileName (FileNameModel fileNames, string fileName) 
         {
-            string text = File.ReadAllText(fileName);
-            ConspectListModel conspects = JsonConvert.DeserializeObject<ConspectListModel>(text);
-            return conspects;
+            fileNameList = LoadFileNames();
+            if (!(fileNameList.fileNameList.Any(x => x.Name == new FileNameModel(fileName).Name)))
+            {
+                fileNameList.fileNameList.Add(new FileNameModel (fileName));
+                using (StreamWriter nameWriter = new StreamWriter("FileNames.txt"))
+                {
+                    string serializedJSON = JsonConvert.SerializeObject(fileNameList);
+                    nameWriter.Write(serializedJSON);
+                }
+            }
         }
-        public void SaveConspects(ConspectModel conspect)
+        public FileNameListModel LoadFileNames()
         {
-            conspectsList.conspects.Add(conspect);
-            WriteConspectToFile(conspectsList);
+            string text = File.ReadAllText("FileNames.txt");
+            FileNameListModel fileNameList = JsonConvert.DeserializeObject<FileNameListModel>(text);
+            return fileNameList;
         }
     }
 }

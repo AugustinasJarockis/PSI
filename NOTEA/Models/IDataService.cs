@@ -3,6 +3,8 @@
     public interface IDataService
     {
         public void SaveConspects(ConspectModel conspect);
-        public ConspectListModel LoadConspects(string fileName);
+        public void SaveFileName(FileNameModel fileNames, string fileName);
+        public ConspectModel LoadConspects(string fileName);
+        public FileNameListModel LoadFileNames();
     }
 }

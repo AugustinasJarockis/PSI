@@ -2,6 +2,7 @@
 using NOTEA.Models;
 using System.Diagnostics;
 using System.IO;
+using System.Collections.Generic;
 
 namespace NOTEA.Controllers
 {
@@ -9,6 +10,9 @@ namespace NOTEA.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         public static ConspectModel model = new ConspectModel();
+        public ConspectListModel conspectListModel = new ConspectListModel();
+        public FileNameListModel fileNameList = new FileNameListModel();
+        public FileNameModel fileNameModel = new FileNameModel();
         public static FileHandlerModel filemodel = new FileHandlerModel();
         private readonly IDataService DataService; 
 
@@ -42,6 +46,7 @@ namespace NOTEA.Controllers
 
             ConspectModel conspectModel = new ConspectModel(date, name, conspectText);
             DataService.SaveConspects(conspectModel);
+            DataService.SaveFileName(fileNameModel, name);
 
             CloseWindow();
 
@@ -98,5 +103,21 @@ namespace NOTEA.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
+        [HttpGet]
+        public IActionResult ConspectList()
+        {
+            fileNameList = DataService.LoadFileNames();
+            foreach (FileNameModel fileName in fileNameList.fileNameList) 
+            {
+                model = DataService.LoadConspects(fileName.Name);
+                conspectListModel.conspects.Add(model);
+                Console.WriteLine(fileName.Name + " " + model.ConspectText);
+            }
+            return View(conspectListModel);
+
+        }
+
     }
 }
