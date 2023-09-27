@@ -45,7 +45,7 @@ namespace NOTEA.Controllers
             model.ConspectText = conspectText;
 
             ConspectModel conspectModel = new ConspectModel(date, name, conspectText);
-            DataService.SaveConspects(conspectModel);
+            DataService.SaveConspect(conspectModel);
             DataService.SaveFileName(fileNameModel, name);
 
             CloseWindow();
@@ -78,7 +78,7 @@ namespace NOTEA.Controllers
                         }
                     }
                 }
-                DataService.SaveConspects(
+                DataService.SaveConspect(
                     new ConspectModel(
                         "Remove this later",
                         System.IO.Path.GetFileNameWithoutExtension(file.FileName),
