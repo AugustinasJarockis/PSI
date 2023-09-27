@@ -18,19 +18,13 @@ namespace NOTEA.Models
             Console.WriteLine("konspio" + conspectModel.Name + " " + conspectModel.ConspectText);
             return conspectModel;
         }
-        public void SaveConspects(ConspectModel conspect)
+        public void SaveConspect(ConspectModel conspect)
         {
             using (StreamWriter writer = new StreamWriter("Conspects//" + conspect.Name + ".txt"))
             try
             {
-                foreach (ConspectModel conspect in conspects.conspects)
-                {
-                    using (StreamWriter writer = new StreamWriter("Conspects//" + conspect.Name + ".txt"))
-                    {
-                        string serializedJSON = JsonConvert.SerializeObject(conspects);
-                        writer.Write(serializedJSON);
-                    }
-                }
+                string serializedJSON = JsonConvert.SerializeObject(conspect);
+                writer.Write(serializedJSON);
             }
             catch (Exception exp)
             {
