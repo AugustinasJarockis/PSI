@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NOTEA.Models;
 using System.Diagnostics;
+using System.IO;
 
 namespace NOTEA.Controllers
 {
@@ -8,6 +9,7 @@ namespace NOTEA.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         public static ConspectModel model = new ConspectModel();
+        public static FileHandlerModel filemodel = new FileHandlerModel();
         private readonly IDataService DataService; 
 
         public HomeController(ILogger<HomeController> logger, IDataService dataService)
@@ -28,14 +30,12 @@ namespace NOTEA.Controllers
 
         public IActionResult CreateConspects()
         {
-            Console.WriteLine(model.Name);
             return View(model);
         }
 
         [HttpPost]
         public IActionResult CreateConspects(string date, string name, string conspectText)
         {
-            Console.WriteLine(model.Name);
             model.Date = date;
             model.Name = name;
             model.ConspectText = conspectText;
@@ -47,16 +47,49 @@ namespace NOTEA.Controllers
 
             return View(model);
         }
-       
         public IActionResult CloseWindow()
         {
             TempData["SuccessMessage"] = "Your notea has been saved successfully!";
             return RedirectToAction(nameof(CreateConspects));
         }
+        public IActionResult UploadConspect()
+        {
+            return View(filemodel);
+        }
+
+        [HttpPost]
+        public IActionResult UploadConspect(IFormFile file)
+        {
+            if(file.ContentType == "text/plain")
+            {
+                String buffer = "";
+                using (Stream stream = file.OpenReadStream())
+                {
+                    using (StreamReader sr = new StreamReader(stream))
+                    {
+                        while ((buffer = sr.ReadLine()) != null)
+                        {
+                            Console.WriteLine(buffer);
+                        }
+                    }
+                }
+                DataService.SaveConspects(
+                    new ConspectModel(
+                        "Remove this later",
+                        System.IO.Path.GetFileNameWithoutExtension(file.FileName),
+                        buffer
+                        )
+                    );
+            }
+            else
+            {
+                Console.WriteLine("Error: wrong type of file specified");
+            }
+            return View(filemodel);
+        }
 
         public IActionResult HowToUse()
-        {
-            
+        {   
             return View();
         }
 

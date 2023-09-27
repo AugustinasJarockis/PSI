@@ -1,0 +1,24 @@
+﻿@model NOTEA.Models.FileHandlerModel
+
+@{
+    ViewData["Title"] = "Conspect upload";
+}
+<h1>@ViewData["Title"]</h1>
+
+<div class="text-left">
+    <p>1. Press "Choose file"</p>
+    <p>2. Select your conspect</p>
+    <p>3. Press "Upload"</p>
+    <form enctype="multipart/form-data" method="post">
+        <dl>
+            <dt>
+                <label asp-for="File"></label>
+            </dt>
+            <dd>
+                <input asp-for="File" type="file" accept=".txt">
+                <span asp-validation-for="File"></span>
+            </dd>
+        </dl>
+        <input asp-page-handler="Upload" class="btn btn-primary" type="submit" value="Upload" />
+    </form>
+</div>

@@ -16,7 +16,6 @@ namespace NOTEA.Models
                 {
                     using (StreamWriter writer = new StreamWriter("Conspects//" + conspect.Name + ".txt"))
                     {
-
                         string serializedJSON = JsonConvert.SerializeObject(conspects);
                         writer.Write(serializedJSON);
                     }
