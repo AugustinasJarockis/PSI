@@ -1,19 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NOTEA.Models;
 using System.Diagnostics;
-using System.IO;
-using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace NOTEA.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        public static ConspectModel model = new ConspectModel();
         public ConspectListModel conspectListModel = new ConspectListModel();
-        public FileNameListModel fileNameList = new FileNameListModel();
-        public FileNameModel fileNameModel = new FileNameModel();
         public static FileHandlerModel filemodel = new FileHandlerModel();
         private readonly IDataService DataService; 
 
@@ -35,20 +29,22 @@ namespace NOTEA.Controllers
 
         public IActionResult CreateConspects()
         {
-            //return View(model);
             return View();
         }
 
         [HttpPost]
-        public IActionResult CreateConspects(string date, string name, string conspectText)
+        public IActionResult CreateConspects(string name, string conspectText)
         {
-            ConspectModel conspectModel = new ConspectModel(date, name, conspectText);
+            ConspectModel conspectModel = new ConspectModel(
+                DateTime.Now.ToString("yyyy-MM-dd"),
+                name,
+                conspectText
+                );
             DataService.SaveConspect(conspectModel);
-            DataService.SaveFileName(fileNameModel, name);
 
             CloseWindow();
 
-            return View(model);
+            return View();
         }
         public IActionResult CloseWindow()
         {
@@ -83,7 +79,7 @@ namespace NOTEA.Controllers
                         text
                         )
                     );
-                DataService.SaveFileName(fileNameModel, Path.GetFileNameWithoutExtension(file.FileName));
+                //DataService.SaveFileName(fileNameModel, Path.GetFileNameWithoutExtension(file.FileName));
             }
             else
             {
@@ -107,14 +103,8 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult ConspectList()
         {
-            fileNameList = DataService.LoadFileNames();
-            foreach (FileNameModel fileName in fileNameList.fileNameList) 
-            {
-                model = DataService.LoadConspects(fileName.Name);
-                conspectListModel.conspects.Add(model);
-            }
+            conspectListModel = DataService.LoadConspects("Conspects");
             return View(conspectListModel);
-
         }
 
     }

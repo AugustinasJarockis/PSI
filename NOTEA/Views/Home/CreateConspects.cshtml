@@ -1,6 +1,5 @@
 ﻿@model NOTEA.Models.ConspectModel
 
-
 @{
     ViewData["Title"] = "Create conspects";
 }
@@ -11,8 +10,6 @@
     <div class="col-md-4">
         <form asp-controller="Home" asp-action="CreateConspects">
             <div class="form-group">
-                <label asp-for="Date" class="control-label">Date</label>
-                <input asp-for="Date" class="form-control" />
                 <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
                 <label asp-for="ConspectText" class="control-label">Text</label>

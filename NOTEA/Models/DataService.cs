@@ -1,20 +1,28 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using Newtonsoft.Json;
-using System.Diagnostics.Contracts;
+﻿using Newtonsoft.Json;
+using System.Collections;
 
 namespace NOTEA.Models
 {
     public class DataService : IDataService
     {
-        ConspectListModel conspectsList = new ConspectListModel();
-        FileNameListModel fileNameList = new FileNameListModel();
-        ConspectModel conspectModel = new ConspectModel();
-        public ConspectModel LoadConspects(string fileName)
+        private ConspectListModel conspectsList = new ConspectListModel();
+        public ConspectModel LoadConspect(string filePath)
         {
-            string text = File.ReadAllText("Conspects//" + fileName + ".txt");
+            string text = File.ReadAllText(filePath);
             ConspectModel conspectModel = JsonConvert.DeserializeObject<ConspectModel>(text);
             return conspectModel;
+        }
+
+        public ConspectListModel LoadConspects(string directoryPath)
+        {
+            ConspectListModel conspectListModel = new ConspectListModel();
+            string fullDirectoryPath = Directory.GetCurrentDirectory() + "\\" + directoryPath;
+            ArrayList filenameList = new ArrayList(Directory.GetFiles(fullDirectoryPath));
+            foreach (string fileName in filenameList)
+            {
+                conspectListModel.conspects.Add(LoadConspect(fileName));
+            }
+            return conspectListModel;
         }
         public void SaveConspect(ConspectModel conspect)
         {
@@ -28,25 +36,6 @@ namespace NOTEA.Models
             {
                Console.WriteLine("Error: could not save file: " + conspect.Name);
             }
-        }
-        public void SaveFileName (FileNameModel fileNames, string fileName) 
-        {
-            fileNameList = LoadFileNames();
-            if (!(fileNameList.fileNameList.Any(x => x.Name == new FileNameModel(fileName).Name)))
-            {
-                fileNameList.fileNameList.Add(new FileNameModel (fileName));
-                using (StreamWriter nameWriter = new StreamWriter("FileNames.txt"))
-                {
-                    string serializedJSON = JsonConvert.SerializeObject(fileNameList);
-                    nameWriter.Write(serializedJSON);
-                }
-            }
-        }
-        public FileNameListModel LoadFileNames()
-        {
-            string text = File.ReadAllText("FileNames.txt");
-            FileNameListModel fileNameList = JsonConvert.DeserializeObject<FileNameListModel>(text);
-            return fileNameList;
         }
     }
 }
