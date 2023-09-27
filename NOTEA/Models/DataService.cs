@@ -21,6 +21,18 @@ namespace NOTEA.Models
         public void SaveConspects(ConspectModel conspect)
         {
             using (StreamWriter writer = new StreamWriter("Conspects//" + conspect.Name + ".txt"))
+            try
+            {
+                foreach (ConspectModel conspect in conspects.conspects)
+                {
+                    using (StreamWriter writer = new StreamWriter("Conspects//" + conspect.Name + ".txt"))
+                    {
+                        string serializedJSON = JsonConvert.SerializeObject(conspects);
+                        writer.Write(serializedJSON);
+                    }
+                }
+            }
+            catch (Exception exp)
             {
                 Console.WriteLine("konspis the original  " + conspect.Name);
                string serializedJSON = JsonConvert.SerializeObject(conspect);
