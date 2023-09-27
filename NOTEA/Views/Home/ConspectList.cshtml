@@ -1,0 +1,25 @@
+﻿@* @model NOTEA.Models.ConspectModel *@
+@model NOTEA.Models.ConspectListModel
+ 
+@{
+    ViewData["Title"] = "ConspectList";
+}
+
+<h1>ConspectList</h1>
+
+<table class="table">
+    <tbody>
+        @foreach (ConspectModel conspectModel in Model.conspects)
+        {
+            <tr>
+                <td>
+                    @conspectModel.Name
+                </td>
+                <td>
+                    @conspectModel.ConspectText
+                </td>
+            </tr>
+            @* <span>@conspectModel.Name </span> *@
+        }
+    </tbody>
+</table>
