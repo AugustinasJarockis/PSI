@@ -13,9 +13,7 @@ namespace NOTEA.Models
         public ConspectModel LoadConspects(string fileName)
         {
             string text = File.ReadAllText("Conspects//" + fileName + ".txt");
-            Console.WriteLine(text);
             ConspectModel conspectModel = JsonConvert.DeserializeObject<ConspectModel>(text);
-            Console.WriteLine("konspio" + conspectModel.Name + " " + conspectModel.ConspectText);
             return conspectModel;
         }
         public void SaveConspect(ConspectModel conspect)
@@ -28,9 +26,7 @@ namespace NOTEA.Models
             }
             catch (Exception exp)
             {
-                Console.WriteLine("konspis the original  " + conspect.Name);
-               string serializedJSON = JsonConvert.SerializeObject(conspect);
-               writer.Write(serializedJSON);
+               Console.WriteLine("Error: could not save file: " + conspect.Name);
             }
         }
         public void SaveFileName (FileNameModel fileNames, string fileName) 
