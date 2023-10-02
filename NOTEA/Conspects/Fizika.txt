@@ -1,1 +1,1 @@
-{"Date":"Remove this later","Name":"Fizika","ConspectText":null}
+{"Date":"2023-10-02","Name":"Fizika","ConspectText":null}

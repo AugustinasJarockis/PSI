@@ -14,6 +14,12 @@ namespace NOTEA.Models
             Name = "";
             ConspectText = "";
         }
+        public ConspectModel(string name, string conspectText)
+        {
+            Date = DateTime.Now.ToString("yyyy-MM-dd");
+            Name = name;
+            ConspectText = conspectText;
+        }
         public ConspectModel(string date, string name, string conspectText)
         {
             Date = date;
