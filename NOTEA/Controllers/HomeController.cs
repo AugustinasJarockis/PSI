@@ -35,11 +35,7 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult CreateConspects(string name, string conspectText)
         {
-            ConspectModel conspectModel = new ConspectModel(
-                DateTime.Now.ToString("yyyy-MM-dd"),
-                name,
-                conspectText
-                );
+            ConspectModel conspectModel = new ConspectModel(name, conspectText);
             DataService.SaveConspect(conspectModel);
 
             CloseWindow();
@@ -73,11 +69,7 @@ namespace NOTEA.Controllers
                     }
                 }
                 DataService.SaveConspect(
-                    new ConspectModel(
-                        "Remove this later",
-                        Path.GetFileNameWithoutExtension(file.FileName),
-                        text
-                        )
+                    new ConspectModel(Path.GetFileNameWithoutExtension(file.FileName), text)
                     );
                 //DataService.SaveFileName(fileNameModel, Path.GetFileNameWithoutExtension(file.FileName));
             }
