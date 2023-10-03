@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NOTEA.Models;
+using System.Xml.Linq;
 
 namespace NOTEA.Controllers
 {
@@ -71,6 +72,12 @@ namespace NOTEA.Controllers
         {
             conspectListModel = FileService.LoadConspects("Conspects");
             return View(conspectListModel);
+        }
+        [HttpGet]
+        public IActionResult ViewConspect(string name, string text)
+        {
+            ConspectModel conspectModel = new ConspectModel(name, text);
+            return View(conspectModel);
         }
     }
 }

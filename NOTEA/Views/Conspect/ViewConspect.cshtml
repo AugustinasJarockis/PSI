@@ -1,0 +1,15 @@
+﻿@model NOTEA.Models.ConspectModel
+
+@{
+    ViewData["Title"] = "ViewConspect";
+}
+
+<h1>@Model.Name</h1>
+
+<div>
+    <h4>@Model.ConspectText</h4>
+</div>
+<div>
+    <a asp-action="ConspectList">Back to List</a>
+</div>
+

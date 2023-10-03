@@ -12,7 +12,8 @@
         {
             <tr>
                 <td>
-                    @conspectModel.Name
+                    <input type="submit" onclick="location.href='@Url.Action("ViewConspect","Conspect", new { name = conspectModel.Name, text = conspectModel.ConspectText })'" value=@conspectModel.Name />
+                    
                 </td>
                 <td>
                     @conspectModel.Date
