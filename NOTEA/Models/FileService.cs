@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace NOTEA.Models
 {
-    public class DataService : IDataService
+    public class FileService : IFileService
     {
         private ConspectListModel conspectsList = new ConspectListModel();
         public ConspectModel LoadConspect(string filePath)
