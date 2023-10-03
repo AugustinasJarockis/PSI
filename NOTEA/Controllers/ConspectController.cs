@@ -41,23 +41,25 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult UploadConspect(IFormFile file)
         {
+            //TODO: Use stream to save a file, not just text
             if (file.ContentType == "text/plain")
             {
                 String text = "";
+                String lineText = "";
                 using (Stream stream = file.OpenReadStream())
                 {
                     using (StreamReader sr = new StreamReader(stream))
                     {
-                        while ((text = sr.ReadLine()) != null)
+                        while ((lineText = sr.ReadLine()) != null)
                         {
-                            Console.WriteLine(text);
+                            text += lineText;
+                            //Console.WriteLine(text);
                         }
                     }
                 }
                 FileService.SaveConspect(
                     new ConspectModel(Path.GetFileNameWithoutExtension(file.FileName), text)
                     );
-                //DataService.SaveFileName(fileNameModel, Path.GetFileNameWithoutExtension(file.FileName));
             }
             else
             {
