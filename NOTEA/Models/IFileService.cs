@@ -1,6 +1,6 @@
 ﻿namespace NOTEA.Models
 {
-    public interface IDataService
+    public interface IFileService
     {
         public void SaveConspect(ConspectModel conspect);
         public ConspectModel LoadConspect(string filePath);
