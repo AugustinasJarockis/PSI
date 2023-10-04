@@ -1,1 +1,1 @@
-{"Date":"2023-09-27","Name":"Chemija","ConspectText":"Kurmis + folija = boom"}
+{"Date":"2023-10-04","Name":"Chemija","ConspectText":"bus BOOM"}

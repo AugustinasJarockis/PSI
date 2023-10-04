@@ -22,10 +22,9 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult CreateConspects(string name, ConspectType conspectType, string conspectText)
         {
-            ConspectModel conspectModel = new ConspectModel(name, conspectType, conspectText);
+            ConspectModel conspectModel = new ConspectModel(name : name, conspectText : conspectText) ;
             FileService.SaveConspect(conspectModel);
-            Console.WriteLine(conspectType.ToString());
-
+            conspectListModel = null;
             CloseWindow();
 
             return View();
@@ -53,13 +52,15 @@ namespace NOTEA.Controllers
                     text = sr.ReadToEnd();
                 }
                 FileService.SaveConspect(
-                    new ConspectModel(Path.GetFileNameWithoutExtension(file.FileName), ConspectType.semester1, text)
+                    new ConspectModel(name : Path.GetFileNameWithoutExtension(file.FileName),
+                                      conspectText : text)
                     );
             }
             else
             {
                 Console.WriteLine("Error: wrong type of file specified");
             }
+            conspectListModel = null;
             return View(filemodel);
         }
 
@@ -75,8 +76,7 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult SortConspect()
         {
-            Console.WriteLine("fbvjdfvbkud");
-            if(conspectListModel != null)
+            if (conspectListModel != null)
             {
             conspectListModel.conspects.Sort();
             }
@@ -86,7 +86,7 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult ViewConspect(string name, ConspectType conspectType, string text)
         {
-            ConspectModel conspectModel = new ConspectModel(name, conspectType, text);
+            ConspectModel conspectModel = new ConspectModel(name : name, conspectText : text);
             return View(conspectModel);
         }
     }
