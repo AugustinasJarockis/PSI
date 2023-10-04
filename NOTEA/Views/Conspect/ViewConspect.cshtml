@@ -4,12 +4,18 @@
     ViewData["Title"] = "ViewConspect";
 }
 
+<style>
+div .text-wrapping{
+    word-wrap: normal;
+    white-space: pre;
+    white-space: pre-wrap; 
+} 
+</style>
+
 <h1>@Model.Name</h1>
 
-<div>
-    <pre>
-        <h4>@Model.ConspectText</h4>
-    </pre>
+<div class="text-wrapping">
+    <p>@Model.ConspectText</p>
 </div>
 <div>
     <a asp-action="ConspectList">Back to List</a>
