@@ -43,12 +43,11 @@ namespace NOTEA.Models
         }
         public int CompareTo(ConspectModel other)
         {
-            int result = Date.CompareTo(other.Date);
-            if (result == 0)
-            {
-                result = Name.CompareTo(other.Name);
-            }
-            return result;
+            if (Date.IsGreaterValue(other.Date))
+                return 1;
+            if (other.Date.IsGreaterValue(Date))
+                return -1;
+            return Name.CompareTo(other.Name);
         }
 
     }
