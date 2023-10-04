@@ -12,6 +12,11 @@
             <div class="form-group">
                 <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
+                <p></p>
+                @Html.DropDownListFor(model => model.ConspectType,
+                new SelectList(Enum.GetValues(typeof(ConspectType))),
+                "Select semester")
+                <p></p>
                 <label asp-for="ConspectText" class="control-label">Text</label>
                 <textarea  asp-for="ConspectText" cols="150" rows="20"></textarea>
             </div>
