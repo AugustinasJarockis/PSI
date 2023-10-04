@@ -2,7 +2,7 @@
 
 namespace NOTEA.Models
 {
-    public class ConspectModel
+    public class ConspectModel : IComparable<ConspectModel>
     {
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         private string _date;
@@ -52,5 +52,15 @@ namespace NOTEA.Models
             Name = name;
             ConspectText = conspectText;
         }
+        public int CompareTo(ConspectModel other)
+        {
+            int result = Date.CompareTo(other.Date);
+            if (result == 0)
+            {
+                result = Name.CompareTo(other.Name);
+            }
+            return result;
+        }
+
     }
 }

@@ -6,6 +6,8 @@
 
 <h1>The list of conspects</h1>
 
+<input type="submit" onclick="location.href='@Url.Action("SortConspect","Conspect")'" value="Sort" />
+
 <table class="table">
     <tbody>
         @foreach (ConspectModel conspectModel in Model.conspects)
