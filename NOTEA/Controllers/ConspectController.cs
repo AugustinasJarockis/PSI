@@ -22,9 +22,9 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult CreateConspects(string name, string conspectText)
         {
-            ConspectModel conspectModel = new ConspectModel(name, conspectText);
+            ConspectModel conspectModel = new ConspectModel(name : name, conspectText : conspectText) ;
             FileService.SaveConspect(conspectModel);
-
+            conspectListModel = null;
             CloseWindow();
 
             return View();
@@ -59,6 +59,7 @@ namespace NOTEA.Controllers
             {
                 Console.WriteLine("Error: wrong type of file specified");
             }
+            conspectListModel = null;
             return View(filemodel);
         }
 
@@ -74,8 +75,7 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult SortConspect()
         {
-            Console.WriteLine("fbvjdfvbkud");
-            if(conspectListModel != null)
+            if (conspectListModel != null)
             {
             conspectListModel.conspects.Sort();
             }
