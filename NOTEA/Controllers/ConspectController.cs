@@ -6,7 +6,7 @@ namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
-        public ConspectListModel conspectListModel = new ConspectListModel();
+        public static ConspectListModel conspectListModel = null;
         public static FileHandlerModel filemodel = new FileHandlerModel();
         private readonly IFileService FileService;
         public ConspectController(IFileService fileService)
@@ -65,9 +65,23 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult ConspectList()
         {
-            conspectListModel = FileService.LoadConspects("Conspects");
+            if (conspectListModel == null)
+            {
+                conspectListModel = FileService.LoadConspects("Conspects");
+            }
             return View(conspectListModel);
         }
+        [HttpGet]
+        public IActionResult SortConspect()
+        {
+            Console.WriteLine("fbvjdfvbkud");
+            if(conspectListModel != null)
+            {
+            conspectListModel.conspects.Sort();
+            }
+            return RedirectToAction(nameof(ConspectList));
+        }
+
         [HttpGet]
         public IActionResult ViewConspect(string name, string text)
         {
