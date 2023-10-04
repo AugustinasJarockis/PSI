@@ -20,7 +20,7 @@ namespace NOTEA.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateConspects(string name, string conspectText)
+        public IActionResult CreateConspects(string name, ConspectType conspectType, string conspectText)
         {
             ConspectModel conspectModel = new ConspectModel(name : name, conspectText : conspectText) ;
             FileService.SaveConspect(conspectModel);
@@ -84,7 +84,7 @@ namespace NOTEA.Controllers
         }
 
         [HttpGet]
-        public IActionResult ViewConspect(string name, string text)
+        public IActionResult ViewConspect(string name, ConspectType conspectType, string text)
         {
             ConspectModel conspectModel = new ConspectModel(name : name, conspectText : text);
             return View(conspectModel);
