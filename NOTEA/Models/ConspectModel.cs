@@ -13,18 +13,7 @@ namespace NOTEA.Models
             set
             {
                 string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
-                if (value == null || value.Length > currentDate.Length)
-                {
-                    _date = currentDate;
-                    return;
-                }
-                string[] providedDateNumbers = value.Split('-');
-                string[] currentDateNumbers = currentDate.Split('-');
-                if (Int32.Parse(providedDateNumbers[0]) > Int32.Parse(currentDateNumbers[0]) ||
-                    (Int32.Parse(providedDateNumbers[0]) == Int32.Parse(currentDateNumbers[0]) && 
-                     (Int32.Parse(providedDateNumbers[1]) > Int32.Parse(currentDateNumbers[1]) ||
-                      (Int32.Parse(providedDateNumbers[1]) == Int32.Parse(currentDateNumbers[1]) &&
-                       Int32.Parse(providedDateNumbers[2]) > Int32.Parse(currentDateNumbers[2])))))
+                if (value == null || value.IsGreaterValue(currentDate))
                 {
                     _date = currentDate;
                     return;
