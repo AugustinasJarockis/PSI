@@ -46,17 +46,10 @@ namespace NOTEA.Controllers
             if (file.ContentType == "text/plain")
             {
                 String text = "";
-                String lineText = "";
                 using (Stream stream = file.OpenReadStream())
                 {
-                    using (StreamReader sr = new StreamReader(stream))
-                    {
-                        while ((lineText = sr.ReadLine()) != null)
-                        {
-                            text += lineText;
-                            //Console.WriteLine(text);
-                        }
-                    }
+                    using StreamReader sr = new StreamReader(stream);
+                    text = sr.ReadToEnd();
                 }
                 FileService.SaveConspect(
                     new ConspectModel(Path.GetFileNameWithoutExtension(file.FileName), text)
