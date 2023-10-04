@@ -52,7 +52,8 @@ namespace NOTEA.Controllers
                     text = sr.ReadToEnd();
                 }
                 FileService.SaveConspect(
-                    new ConspectModel(Path.GetFileNameWithoutExtension(file.FileName), text)
+                    new ConspectModel(name : Path.GetFileNameWithoutExtension(file.FileName),
+                                      conspectText : text)
                     );
             }
             else
@@ -85,7 +86,7 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult ViewConspect(string name, string text)
         {
-            ConspectModel conspectModel = new ConspectModel(name, text);
+            ConspectModel conspectModel = new ConspectModel(name : name, conspectText : text);
             return View(conspectModel);
         }
     }
