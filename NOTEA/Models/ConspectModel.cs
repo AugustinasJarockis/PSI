@@ -2,7 +2,7 @@
 
 namespace NOTEA.Models
 {
-    public class ConspectModel : IComparable<ConspectModel>
+    public class ConspectModel : IComparable<ConspectModel>, IConspectModel
     {
 
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

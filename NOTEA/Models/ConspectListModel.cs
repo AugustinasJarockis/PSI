@@ -1,7 +1,9 @@
-﻿namespace NOTEA.Models
+﻿using System.Collections;
+
+namespace NOTEA.Models
 {
-    public class ConspectListModel
+    public class ConspectListModel<ConspectType>
     {
-        public List<ConspectModel> conspects = new List<ConspectModel>();
+        public List<ConspectType> conspects = new List<ConspectType>();
     }
 }

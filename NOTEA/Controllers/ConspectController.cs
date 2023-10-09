@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NOTEA.Models;
+using NOTEA.Services;
 using System.Xml.Linq;
 
 namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
-        public static ConspectListModel conspectListModel = null;
-        public static FileHandlerModel filemodel = new FileHandlerModel();
+        private static ConspectListModel<ConspectModel> conspectListModel = null;
+        private static FileHandlerModel filemodel = new FileHandlerModel();
         private readonly IFileService FileService;
         public ConspectController(IFileService fileService)
         {
@@ -70,7 +71,7 @@ namespace NOTEA.Controllers
         {
             if (conspectListModel == null)
             {
-                conspectListModel = FileService.LoadConspects("Conspects");
+                conspectListModel = FileService.LoadConspects<ConspectModel>("Conspects");
             }
             return View(conspectListModel);
         }
@@ -79,7 +80,7 @@ namespace NOTEA.Controllers
         {
             if (conspectListModel != null)
             {
-            conspectListModel.conspects.Sort();
+                conspectListModel.conspects.Sort();
             }
             return RedirectToAction(nameof(ConspectList));
         }

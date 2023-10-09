@@ -1,4 +1,4 @@
-using NOTEA.Models;
+using NOTEA.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
