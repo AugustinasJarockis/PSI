@@ -1,0 +1,1 @@
+{"Date":"2023-10-09","ConspectType":2,"Name":"Linq","ConspectText":"LINQ (language integrated queries) - is a language feature in the .NET that enables you to use common syntax to query data in a:\r\n- collection\r\n- a JSON document\r\n- a database\r\n- any type that supports the IEnumerable<T> or IQuerable<T>"}
