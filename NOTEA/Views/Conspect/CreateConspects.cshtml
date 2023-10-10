@@ -13,8 +13,8 @@
                 <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
                 <p></p>
-                @Html.DropDownListFor(model => model.ConspectType,
-                new SelectList(Enum.GetValues(typeof(ConspectType))),
+                @Html.DropDownListFor(model => model.ConspectSemester,
+                new SelectList(Enum.GetValues(typeof(ConspectSemester))),
                 "Select semester")
                 <p></p>
                 <label asp-for="ConspectText" class="control-label">Text</label>

@@ -21,9 +21,9 @@ namespace NOTEA.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateConspects(string name, ConspectType conspectType, string conspectText)
+        public IActionResult CreateConspects(string name, ConspectSemester conspectSemester, string conspectText)
         {
-            ConspectModel conspectModel = new ConspectModel(name : name, conspectType : conspectType, conspectText : conspectText) ;
+            ConspectModel conspectModel = new ConspectModel(name : name, conspectSemester : conspectSemester, conspectText : conspectText) ;
             FileService.SaveConspect(conspectModel);
             conspectListModel = null;
             CloseWindow();
@@ -54,7 +54,6 @@ namespace NOTEA.Controllers
                 }
                 FileService.SaveConspect(
                     new ConspectModel(name : Path.GetFileNameWithoutExtension(file.FileName),
-                                      conspectType : ConspectType.semester1,
                                       conspectText : text)
                     );
             }
@@ -86,9 +85,9 @@ namespace NOTEA.Controllers
         }
 
         [HttpGet]
-        public IActionResult ViewConspect(string name, ConspectType conspectType, string text)
+        public IActionResult ViewConspect(string name, ConspectSemester conspectSemester, string text)
         {
-            ConspectModel conspectModel = new ConspectModel(name : name, conspectType: conspectType, conspectText : text);
+            ConspectModel conspectModel = new ConspectModel(name : name, conspectSemester: conspectSemester, conspectText : text);
             return View(conspectModel);
         }
     }
