@@ -1,0 +1,1 @@
+{"Date":"2023-10-11","ConspectSemester":2,"Name":"batai","ConspectText":"pameciau batus","ConspectRecords":[]}
