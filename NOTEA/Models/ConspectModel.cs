@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace NOTEA.Models
 {
@@ -26,6 +28,8 @@ namespace NOTEA.Models
         public string Name { get; set; }
         public string ConspectText { get; set; }
 
+        public LinkedList<RecordModel> ConspectRecords { get; set; } = new LinkedList<RecordModel>();
+
         public ConspectModel(){
             _date = "";
             Name = "";
@@ -34,13 +38,6 @@ namespace NOTEA.Models
         public ConspectModel(string name, string conspectText, ConspectSemester conspectSemester = ConspectSemester.Unknown)
         {
             Date = DateTime.Now.ToString("yyyy-MM-dd");
-            Name = name;
-            ConspectSemester = conspectSemester;
-            ConspectText = conspectText;
-        }
-        public ConspectModel(string date, string name, string conspectText, ConspectSemester conspectSemester = ConspectSemester.Unknown)
-        {
-            Date = date;
             Name = name;
             ConspectSemester = conspectSemester;
             ConspectText = conspectText;
@@ -57,14 +54,14 @@ namespace NOTEA.Models
     }
     public enum ConspectSemester
     {
-        Unknown,
-        semester1,
-        semester2,
-        semester3,
-        semester4,
-        semester5,
-        semester6,
-        semester7,
-        semester8
+        [Display(Name = "Unknown")] Unknown = 0,
+        [Display(Name = "2022 autumn")] Autumn_2022 = 1,
+        [Display(Name = "2023 spring")] Spring_2023 = 2,
+        [Display(Name = "2023 autumn")] Autumn_2023 = 3,
+        [Display(Name = "2024 spring")] Spring_2024 = 4,
+        [Display(Name = "2024 autumn")] Autumn_2024 = 5,
+
+
     }
+
 }
