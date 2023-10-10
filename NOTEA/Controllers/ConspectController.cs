@@ -54,7 +54,6 @@ namespace NOTEA.Controllers
                 }
                 FileService.SaveConspect(
                     new ConspectModel(name : Path.GetFileNameWithoutExtension(file.FileName),
-                                      conspectSemester : ConspectSemester.semester1,
                                       conspectText : text)
                     );
             }
