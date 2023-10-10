@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Differencing;
 using NOTEA.Models;
 using NOTEA.Services;
-using System.Xml.Linq;
+using NuGet.Protocol.Plugins;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NOTEA.Controllers
 {
@@ -66,11 +69,27 @@ namespace NOTEA.Controllers
         }
 
         [HttpGet]
-        public IActionResult ConspectList()
+        public IActionResult ConspectList(string searchBy, string searchValue)
         {
             if (conspectListModel == null)
             {
                 conspectListModel = FileService.LoadConspects<ConspectModel>("Conspects");
+            }
+            if (string.IsNullOrEmpty(searchValue))
+            {
+                TempData["InfoMessage"] = "Please provide search value.";
+                return View(conspectListModel);
+            }
+            else
+            {
+
+                if (searchBy.ToLower() == "name")
+                {
+             
+                    var searchByName = conspectListModel.conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
+                    ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
+                    return View(tempConspectListModel);
+                }
             }
             return View(conspectListModel);
         }

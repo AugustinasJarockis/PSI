@@ -6,7 +6,37 @@
 
 <h1>The list of conspects</h1>
 
+<br />
+
+<div>
+    @using (Html.BeginForm("ConspectList", "Conspect", FormMethod.Get))
+    {
+        <table>
+            <tr>
+                <td>
+                    <span><b>Search by:</b></span>
+                    @Html.RadioButton("searchBy", "name", true)
+                    <text> Conspect name </text>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.TextBox("searchValue", null, new {Class = "form-control", placeholder = " Enter conspect name"})
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    <input type="submit" value="Search" class="btn btn-success" />
+                </td>
+            </tr>
+        </table>
+    }
+</div>
+<br />
+
 <input type="submit" onclick="location.href='@Url.Action("SortConspect","Conspect")'" value="Sort" />
+<br />
 
 <table class="table">
     <tbody>
