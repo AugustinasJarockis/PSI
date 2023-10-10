@@ -22,7 +22,7 @@ namespace NOTEA.Models
                 _date = value;
             }
         }
-        public ConspectType ConspectType { get; set; }
+        public ConspectSemester ConspectSemester { get; set; }
         public string Name { get; set; }
         public string ConspectText { get; set; }
 
@@ -31,11 +31,11 @@ namespace NOTEA.Models
             Name = "";
             ConspectText = "";
         }
-        public ConspectModel(string name, ConspectType conspectType, string conspectText)
+        public ConspectModel(string name, ConspectSemester conspectSemester, string conspectText)
         {
             Date = DateTime.Now.ToString("yyyy-MM-dd");
             Name = name;
-            ConspectType = conspectType;
+            ConspectSemester = conspectSemester;
             ConspectText = conspectText;
         }
         /*public ConspectModel(string date, string name, string conspectText)
@@ -54,7 +54,7 @@ namespace NOTEA.Models
         }
 
     }
-    public enum ConspectType
+    public enum ConspectSemester
     {
         semester1,
         semester2,
