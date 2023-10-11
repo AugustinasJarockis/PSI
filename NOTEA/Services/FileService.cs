@@ -6,6 +6,11 @@ namespace NOTEA.Services
 {
     public class FileService : IFileService
     {
+        private readonly ILogsService _logsService;
+        public FileService(ILogsService logsService) 
+        {
+            _logsService = logsService;
+        }
         public ConspectType LoadConspect<ConspectType>(string filePath)
         {
             string text = File.ReadAllText(filePath);
@@ -33,9 +38,10 @@ namespace NOTEA.Services
                     string serializedJSON = JsonConvert.SerializeObject(conspect);
                     writer.Write(serializedJSON);
                 }
-                catch (Exception exp)
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Error: could not save file: " + conspect.Name);
+                    ExceptionModel info = new ExceptionModel(ex);
+                    _logsService.SaveExceptionInfo(info);
                 }
         }
     }

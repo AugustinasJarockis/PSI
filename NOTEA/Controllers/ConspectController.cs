@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Differencing;
 using NOTEA.Models;
 using NOTEA.Services;
 using NuGet.Protocol.Plugins;
@@ -13,10 +12,12 @@ namespace NOTEA.Controllers
     {
         private static ConspectListModel<ConspectModel> conspectListModel = null;
         private static FileHandlerModel filemodel = new FileHandlerModel();
-        private readonly IFileService FileService;
-        public ConspectController(IFileService fileService)
+        private readonly IFileService _fileService;
+        private readonly ILogsService _logsService;
+        public ConspectController(IFileService fileService, ILogsService logsService)
         {
-            FileService = fileService;
+            _fileService = fileService;
+            _logsService = logsService;
         }
 
         public IActionResult CreateConspects()
@@ -27,16 +28,37 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult CreateConspects(string name, ConspectSemester conspectSemester, string conspectText)
         {
-            if(name.IsValidFilename())
+            try
             {
+                if (name.IsValidFilename())
+                {
+                    ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
+                    _fileService.SaveConspect(conspectModel);
+                    conspectListModel = null;
+                    CloseWindow();
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty or contain any of the following characters: \\\\ / : * . ? \" < > | ";
+                    throw new ArgumentNullException("file name", "File name is null");
+                }
+
                 ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
                 FileService.SaveConspect(conspectModel);
                 conspectListModel = null;
                 TempData["SuccessMessage"] = "Your notea has been saved successfully!";
             }
-            else
+            catch (ArgumentNullException ex)
             {
-                TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty or contain any of the following characters: \\\\ / : * . ? \" < > | ";
+                ExceptionModel info = new ExceptionModel(ex);
+                _logsService.SaveExceptionInfo(info);
+            }
+            catch (Exception ex)
+            {
+                ExceptionModel info = new ExceptionModel(ex);
+                _logsService.SaveExceptionInfo(info);
+                
+
             }
             return View();
         }
@@ -48,26 +70,53 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult UploadConspect(IFormFile file)
         {
-            //TODO: Use stream to save a file, not just text
-            if (file.ContentType == "text/plain")
+            try
             {
-                String text = "";
-                using (Stream stream = file.OpenReadStream())
+                if (file == null)
                 {
-                    using StreamReader sr = new StreamReader(stream);
-                    text = sr.ReadToEnd();
+                    throw new ArgumentNullException("file", "File is null");
                 }
-                FileService.SaveConspect(
-                    new ConspectModel(name : Path.GetFileNameWithoutExtension(file.FileName),
-                                      conspectText : text, ConspectSemester.Unknown)
+
+                if (file.ContentType == "text/plain")
+                {
+                    string text = "";
+                    using (Stream stream = file.OpenReadStream())
+                    using (StreamReader sr = new StreamReader(stream))
+                    {
+                        text = sr.ReadToEnd();
+                    }
+
+                    _fileService.SaveConspect(
+                        new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName),
+                                          conspectText: text, ConspectSemester.Unknown)
                     );
-                TempData["SuccessMessage"] = "Your notea has been saved successfully!";
+                    TempData["SuccessMessage"] = "Your notea has been saved successfully!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Wrong type of file specified.";
+                    throw new InvalidOperationException("Wrong type of file specified");
+                }
+
+                conspectListModel = null;
             }
-            else
+            catch (ArgumentNullException ex)
             {
-                TempData["ErrorMessage"] = "Wrong type of file specified.";
+                ExceptionModel info = new ExceptionModel(ex);
+                _logsService.SaveExceptionInfo(info);
+                
             }
-            conspectListModel = null;
+            catch (InvalidOperationException ex)
+            {
+                ExceptionModel info = new ExceptionModel(ex);
+                _logsService.SaveExceptionInfo(info);
+            }
+            catch (Exception ex)
+            {
+                ExceptionModel info = new ExceptionModel(ex);
+                _logsService.SaveExceptionInfo(info);
+            }
+
             return View(filemodel);
         }
 
@@ -76,7 +125,7 @@ namespace NOTEA.Controllers
         {
             if (conspectListModel == null)
             {
-                conspectListModel = FileService.LoadConspects<ConspectModel>("Conspects");
+                conspectListModel = _fileService.LoadConspects<ConspectModel>("Conspects");
             }
             if (string.IsNullOrEmpty(searchValue))
             {
@@ -87,7 +136,7 @@ namespace NOTEA.Controllers
             {
                 if (searchBy.ToLower() == "name")
                 {
-             
+
                     var searchByName = conspectListModel.conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
                     ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
                     return View(tempConspectListModel);
@@ -108,7 +157,7 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult ViewConspect(string name, ConspectSemester conspectSemester, string text)
         {
-            ConspectModel conspectModel = new ConspectModel(name : name, conspectSemester: conspectSemester, conspectText : text);
+            ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: text);
             return View(conspectModel);
         }
     }
