@@ -1,1 +1,1 @@
-{"Date":"2023-10-04","ConspectType":0,"Name":"Naujas","ConspectText":"Nu du"}
+{"Date":"2023-10-04T00:00:00+03:00","ConspectType":0,"Name":"Naujas","ConspectText":"Nu du"}

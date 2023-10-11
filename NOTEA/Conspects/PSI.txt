@@ -1,1 +1,1 @@
-{"Date":"2023-10-04","ConspectType":0,"Name":"PSI","ConspectText":"Enum'as semestrams suzymeti, veliau juos filtruoti su linq.\r\nsemestrus leisti pasirinkti prie createConspects ir uploadConspects\r\n"}
+{"Date":"2023-10-04T00:00:00+03:00","ConspectType":0,"Name":"PSI","ConspectText":"Enum'as semestrams suzymeti, veliau juos filtruoti su linq.\r\nsemestrus leisti pasirinkti prie createConspects ir uploadConspects\r\n"}

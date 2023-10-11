@@ -1,1 +1,1 @@
-{"Date":"2023-10-04","Name":"Matematika 4","ConspectText":"555"}
+{"Date":"2023-10-04T00:00:00+03:00","Name":"Matematika 4","ConspectText":"555"}

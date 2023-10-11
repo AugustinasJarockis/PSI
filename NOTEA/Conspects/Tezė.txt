@@ -1,1 +1,1 @@
-{"Date":"2023-10-04","Name":"Tezė","ConspectText":"Jei kodas neveikia, vadinasi reikia laukti Vyckos"}
+{"Date":"2023-10-04T00:00:00+03:00","Name":"Tezė","ConspectText":"Jei kodas neveikia, vadinasi reikia laukti Vyckos"}
