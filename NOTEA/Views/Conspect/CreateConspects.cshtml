@@ -13,10 +13,6 @@
                 <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
                 <p></p>
-                @* @Html.DropDownListFor(model => model.ConspectSemester,
-                new SelectList(Enum.GetValues(typeof(ConspectSemester))),
-                "Select semester") *@
-                @* @Model.ConspectSemester.DisplayName() *@
                 <label asp-for="ConspectSemester" class="control-label">Semester</label>
                 @Html.DropDownListFor(model => model.ConspectSemester, EnumHelper<ConspectSemester>.GetSelectList(), new { @class = "selectpicker show-menu-arrow", data_live_search = "true" })
                 <p></p>

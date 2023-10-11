@@ -32,10 +32,8 @@ namespace NOTEA.Models
         }
         public int CompareTo(ConspectModel other)
         {
-            if (Date.IsLater(other.Date))
-                return 1;
-            if (other.Date.IsLater(Date))
-                return -1;
+            if (Date.CompareTo(other.Date) != 0)
+                return Date.CompareTo(other.Date);
             return Name.CompareTo(other.Name);
         }
     }
