@@ -1,0 +1,1 @@
+{"Date":"2023-10-10T14:40:07.7306276+03:00","ConspectSemester":7,"Name":"Žemės ūkis","ConspectText":"Bulvėms reikia vandens"}

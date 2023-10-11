@@ -45,10 +45,9 @@
             <tr>
                 <td>
                     <input type="submit" onclick="location.href='@Url.Action("ViewConspect","Conspect", new { name = conspectModel.Name, text = conspectModel.ConspectText })'" value="@conspectModel.Name" />
-                    
                 </td>
                 <td>
-                    @conspectModel.Date
+                    @conspectModel.Date.ToLongDateString()
                 </td>
             </tr>
         }

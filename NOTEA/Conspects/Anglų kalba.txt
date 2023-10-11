@@ -1,1 +1,1 @@
-{"Date":"2023-10-02","Name":"Anglų kalba","ConspectText":"Hello world. My name is Petras. I'm from Vilnius, Lithuania."}
+{"Date":"2023-10-02T00:00:00+03:00","Name":"Anglų kalba","ConspectText":"Hello world. My name is Petras. I'm from Vilnius, Lithuania."}
