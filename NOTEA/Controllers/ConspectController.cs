@@ -26,11 +26,17 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult CreateConspects(string name, ConspectSemester conspectSemester, string conspectText)
         {
-            ConspectModel conspectModel = new ConspectModel(name : name, conspectSemester : conspectSemester, conspectText : conspectText) ;
-            FileService.SaveConspect(conspectModel);
-            conspectListModel = null;
-            CloseWindow();
-
+            if(name.IsValidFilename())
+            {
+                ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
+                FileService.SaveConspect(conspectModel);
+                conspectListModel = null;
+                CloseWindow();
+            }
+            else
+            {
+                Console.WriteLine("Error: Invalid name");
+            }
             return View();
         }
         public IActionResult CloseWindow()
