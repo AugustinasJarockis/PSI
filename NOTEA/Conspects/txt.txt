@@ -1,1 +1,1 @@
-{"Date":"2023-10-11","ConspectSemester":0,"Name":"txt","ConspectText":"Tuscia","ConspectRecords":[]}
+{"Date":"2023-10-11T00:00:00+03:00","ConspectSemester":0,"Name":"txt","ConspectText":"Tuscia","ConspectRecords":[]}
