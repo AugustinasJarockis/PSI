@@ -22,3 +22,52 @@
         <input asp-page-handler="Upload" class="btn btn-primary" type="submit" value="Upload" />
     </form>
 </div>
+
+
+<!-- Error Message Modal -->
+<div class="modal fade" id="myModalError" tabindex="-1" role="dialog" aria-labelledby="myModalErrorLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ff6b6b; color: white;">
+                <h5 class="modal-title" id="myModalErrorLabel">Oops...</h5>
+            </div>
+            <div class="modal-body">
+                <div id="MyModalErrorAlertBody">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        function openSuccessModal(strMessage) {
+            var myDiv = document.getElementById("MyModalSuccessAlertBody");
+            myDiv.innerHTML = strMessage;
+            $('#myModalSuccess').modal('show');
+        }
+        $(document).ready(function () {
+            var msg = "@TempData["SuccessMessage"]";
+            if (msg)
+                openSuccessModal(msg);
+            closeOnEscape: true
+        });
+    </script>
+    <script type="text/javascript">
+        function openErrorModal(errorMessage) {
+            var errorDiv = document.getElementById("MyModalErrorAlertBody");
+            errorDiv.innerHTML = errorMessage;
+            $('#myModalError').modal('show');
+        }
+
+        $(document).ready(function () {
+            var errorMsg = "@TempData["ErrorMessage"]";
+            if (errorMsg)
+                openErrorModal(errorMsg);
+        });
+    </script>
+}

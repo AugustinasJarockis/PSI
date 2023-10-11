@@ -5,6 +5,7 @@ using NOTEA.Services;
 using NuGet.Protocol.Plugins;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace NOTEA.Controllers
 {
@@ -31,18 +32,13 @@ namespace NOTEA.Controllers
                 ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
                 FileService.SaveConspect(conspectModel);
                 conspectListModel = null;
-                CloseWindow();
+                TempData["SuccessMessage"] = "Your notea has been saved successfully!";
             }
             else
             {
-                Console.WriteLine("Error: Invalid name");
+                TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty or contain any of the following characters: \\\\ / : * . ? \" < > | ";
             }
             return View();
-        }
-        public IActionResult CloseWindow()
-        {
-            TempData["SuccessMessage"] = "Your notea has been saved successfully!";
-            return RedirectToAction(nameof(CreateConspects));
         }
         public IActionResult UploadConspect()
         {
@@ -65,10 +61,11 @@ namespace NOTEA.Controllers
                     new ConspectModel(name : Path.GetFileNameWithoutExtension(file.FileName),
                                       conspectText : text, ConspectSemester.Unknown)
                     );
+                TempData["SuccessMessage"] = "Your notea has been saved successfully!";
             }
             else
             {
-                Console.WriteLine("Error: wrong type of file specified");
+                TempData["ErrorMessage"] = "Wrong type of file specified.";
             }
             conspectListModel = null;
             return View(filemodel);
@@ -83,12 +80,11 @@ namespace NOTEA.Controllers
             }
             if (string.IsNullOrEmpty(searchValue))
             {
-                TempData["InfoMessage"] = "Please provide search value.";
+                TempData["ErrorMessage"] = "Please provide search value.";
                 return View(conspectListModel);
             }
             else
             {
-
                 if (searchBy.ToLower() == "name")
                 {
              
