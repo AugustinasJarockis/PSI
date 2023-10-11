@@ -7,5 +7,6 @@ namespace NOTEA.Services
         public void SaveConspect<ConspectType>(ConspectType conspect) where ConspectType : IConspectModel;
         public ConspectType LoadConspect<ConspectType>(string filePath);
         public ConspectListModel<ConspectType> LoadConspects<ConspectType>(string directoryPath);
+        public void SaveExceptionInfo(ExceptionModel exception);
     }
 }

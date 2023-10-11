@@ -33,9 +33,24 @@ namespace NOTEA.Services
                     string serializedJSON = JsonConvert.SerializeObject(conspect);
                     writer.Write(serializedJSON);
                 }
-                catch (Exception exp)
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Error: could not save file: " + conspect.Name);
+                    ExceptionModel info = new ExceptionModel(ex);
+                    SaveExceptionInfo(info);
+                }
+        }
+        public void SaveExceptionInfo(ExceptionModel exception) 
+        {
+            using (StreamWriter writer = new StreamWriter("Exceptions//exceptions.txt", append: true))
+                try
+                {
+                    string serializedJSON = JsonConvert.SerializeObject(exception);
+                    writer.WriteLine(serializedJSON);
+                }
+                catch (Exception ex)
+                {
+                    ExceptionModel info = new ExceptionModel(ex);
+                    SaveExceptionInfo(info);
                 }
         }
     }

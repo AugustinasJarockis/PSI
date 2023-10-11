@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Differencing;
 using NOTEA.Models;
 using NOTEA.Services;
-using NuGet.Protocol.Plugins;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace NOTEA.Controllers
 {
@@ -26,16 +22,29 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult CreateConspects(string name, ConspectSemester conspectSemester, string conspectText)
         {
-            if(name.IsValidFilename())
+            try
             {
-                ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
-                FileService.SaveConspect(conspectModel);
-                conspectListModel = null;
-                CloseWindow();
+                if (name.IsValidFilename())
+                {
+                    ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
+                    FileService.SaveConspect(conspectModel);
+                    conspectListModel = null;
+                    CloseWindow();
+                }
+                else
+                {
+                    throw new ArgumentNullException("file name", "File name is null");
+                }
             }
-            else
+            catch (ArgumentNullException ex)
             {
-                Console.WriteLine("Error: Invalid name");
+                ExceptionModel info = new ExceptionModel(ex);
+                FileService.SaveExceptionInfo(info);
+            }
+            catch (Exception ex)
+            {
+                ExceptionModel info = new ExceptionModel(ex);
+                FileService.SaveExceptionInfo(info);
             }
             return View();
         }
@@ -52,25 +61,50 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult UploadConspect(IFormFile file)
         {
-            //TODO: Use stream to save a file, not just text
-            if (file.ContentType == "text/plain")
+            try
             {
-                String text = "";
-                using (Stream stream = file.OpenReadStream())
+                if (file == null)
                 {
-                    using StreamReader sr = new StreamReader(stream);
-                    text = sr.ReadToEnd();
+                    throw new ArgumentNullException("file", "File is null");
                 }
-                FileService.SaveConspect(
-                    new ConspectModel(name : Path.GetFileNameWithoutExtension(file.FileName),
-                                      conspectText : text, ConspectSemester.Unknown)
+
+                if (file.ContentType == "text/plain")
+                {
+                    string text = "";
+                    using (Stream stream = file.OpenReadStream())
+                    using (StreamReader sr = new StreamReader(stream))
+                    {
+                        text = sr.ReadToEnd();
+                    }
+
+                    FileService.SaveConspect(
+                        new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName),
+                                          conspectText: text, ConspectSemester.Unknown)
                     );
+                }
+                else
+                {
+                    throw new InvalidOperationException("Wrong type of file specified");
+                }
+
+                conspectListModel = null;
             }
-            else
+            catch (ArgumentNullException ex)
             {
-                Console.WriteLine("Error: wrong type of file specified");
+                ExceptionModel info = new ExceptionModel(ex);
+                FileService.SaveExceptionInfo(info);
             }
-            conspectListModel = null;
+            catch (InvalidOperationException ex)
+            {
+                ExceptionModel info = new ExceptionModel(ex);
+                FileService.SaveExceptionInfo(info);
+            }
+            catch (Exception ex)
+            {
+                ExceptionModel info = new ExceptionModel(ex);
+                FileService.SaveExceptionInfo(info);
+            }
+
             return View(filemodel);
         }
 
@@ -91,7 +125,7 @@ namespace NOTEA.Controllers
 
                 if (searchBy.ToLower() == "name")
                 {
-             
+
                     var searchByName = conspectListModel.conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
                     ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
                     return View(tempConspectListModel);
@@ -112,7 +146,7 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult ViewConspect(string name, ConspectSemester conspectSemester, string text)
         {
-            ConspectModel conspectModel = new ConspectModel(name : name, conspectSemester: conspectSemester, conspectText : text);
+            ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: text);
             return View(conspectModel);
         }
     }
