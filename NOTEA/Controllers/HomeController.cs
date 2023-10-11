@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NOTEA.Models;
+using NOTEA.Services;
 using System.Diagnostics;
 
 namespace NOTEA.Controllers
@@ -7,7 +8,6 @@ namespace NOTEA.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -22,6 +22,7 @@ namespace NOTEA.Controllers
         {
             return View();
         }
+    
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

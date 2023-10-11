@@ -1,20 +1,50 @@
 ﻿@model NOTEA.Models.ConspectListModel<ConspectModel>
- 
+
 @{
     ViewData["Title"] = "Conspect list";
 }
 
 <h1>The list of conspects</h1>
 
-<input type="submit" onclick="location.href='@Url.Action("SortConspect","Conspect")'" value="Sort" />
+<br />
 
+<div>
+    @using (Html.BeginForm("ConspectList", "Conspect", FormMethod.Get))
+    {
+        <table>
+            <tr>
+                <td>
+                    <span><b>Search by:</b></span>
+                    @Html.RadioButton("searchBy", "name", true)
+                    <text> Conspect name </text>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.TextBox("searchValue", null, new {Class = "form-control", placeholder = " Enter conspect name"})
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    <input type="submit" value="Search" class="btn btn-success" />
+                </td>
+            </tr>
+        </table>
+    }
+</div>
+<br />
+
+<input type="submit" onclick="location.href='@Url.Action("SortConspect","Conspect")'" value="Sort by date" />
+<br />
+<p></p>
 <table class="table">
     <tbody>
         @foreach (ConspectModel conspectModel in Model.conspects)
         {
             <tr>
                 <td>
-                    <input type="submit" onclick="location.href='@Url.Action("ViewConspect","Conspect", new { name = conspectModel.Name, text = conspectModel.ConspectText })'" value=@conspectModel.Name />      
+                    <input type="submit" onclick="location.href='@Url.Action("ViewConspect","Conspect", new { name = conspectModel.Name, text = conspectModel.ConspectText })'" value="@conspectModel.Name" />
                 </td>
                 <td>
                     @conspectModel.Date.ToLongDateString()

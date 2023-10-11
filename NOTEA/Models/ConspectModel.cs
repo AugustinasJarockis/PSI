@@ -1,4 +1,7 @@
-﻿namespace NOTEA.Models
+﻿using System.ComponentModel;
+using System.Reflection;
+
+namespace NOTEA.Models
 {
     public class ConspectModel : IComparable<ConspectModel>, IConspectModel
     {
@@ -6,6 +9,8 @@
         public ConspectSemester ConspectSemester { get; set; }
         public string Name { get; set; }
         public string ConspectText { get; set; }
+
+        public LinkedList<RecordModel> ConspectRecords { get; set; } = new LinkedList<RecordModel>();
 
         public ConspectModel(){
             Date = DateTime.Now;
@@ -37,14 +42,14 @@
     }
     public enum ConspectSemester
     {
-        Unknown,
-        semester1,
-        semester2,
-        semester3,
-        semester4,
-        semester5,
-        semester6,
-        semester7,
-        semester8
+        [Display(Name = "Unknown")] Unknown = 0,
+        [Display(Name = "2022 autumn")] Autumn_2022 = 1,
+        [Display(Name = "2023 spring")] Spring_2023 = 2,
+        [Display(Name = "2023 autumn")] Autumn_2023 = 3,
+        [Display(Name = "2024 spring")] Spring_2024 = 4,
+        [Display(Name = "2024 autumn")] Autumn_2024 = 5,
+
+
     }
+
 }

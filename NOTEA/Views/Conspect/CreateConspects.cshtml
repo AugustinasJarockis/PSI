@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create conspects";
 }
 
-<h1>Create conspects</h1>
+<h1>Create a conspect</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -13,9 +13,12 @@
                 <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
                 <p></p>
-                @Html.DropDownListFor(model => model.ConspectSemester,
+                @* @Html.DropDownListFor(model => model.ConspectSemester,
                 new SelectList(Enum.GetValues(typeof(ConspectSemester))),
-                "Select semester")
+                "Select semester") *@
+                @* @Model.ConspectSemester.DisplayName() *@
+                <label asp-for="ConspectSemester" class="control-label">Semester</label>
+                @Html.DropDownListFor(model => model.ConspectSemester, EnumHelper<ConspectSemester>.GetSelectList(), new { @class = "selectpicker show-menu-arrow", data_live_search = "true" })
                 <p></p>
                 <label asp-for="ConspectText" class="control-label">Text</label>
                 <textarea  asp-for="ConspectText" cols="150" rows="20"></textarea>
