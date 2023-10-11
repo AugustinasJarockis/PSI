@@ -36,14 +36,14 @@ namespace NOTEA.Controllers
                     _fileService.SaveConspect(conspectModel);
                     conspectListModel = null;
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
-                    return View();
+                    return RedirectToAction(nameof(CreateConspects));
                 }
                 else
                 {
                     TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty or contain any of the following characters: \\\\ / : * . ? \" < > | ";
                     throw new ArgumentNullException("file name", "File name is null");
                 }
-      
+                return View();
             }
             catch (ArgumentNullException ex)
             {
