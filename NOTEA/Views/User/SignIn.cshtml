@@ -1,0 +1,42 @@
+﻿@model NOTEA.Models.UserLog
+
+@{
+    ViewData["Title"] = "Sign In";
+}
+
+<h1>Sign In</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-controller="User" asp-action="SignIn">
+            <div class="form-group">
+                <label asp-for="username" class="control-label">usename</label>
+                <input asp-for="username" class="form-control" />
+                <label asp-for="password" class="control-label">password</label>
+                <input asp-for="password" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        function openSuccessModal(strMessage) {
+            var myDiv = document.getElementById("MyModalSuccessAlertBody");
+            myDiv.innerHTML = strMessage;
+            $('#myModalSuccess').modal('show');
+        }
+        $(document).ready(function () {
+            var msg = "@TempData["SuccessMessage"]";
+            if (msg)
+                openSuccessModal(msg);
+        });
+    </script>
+}
