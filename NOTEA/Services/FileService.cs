@@ -6,6 +6,11 @@ namespace NOTEA.Services
 {
     public class FileService : IFileService
     {
+        private readonly ILogsService _logsService;
+        public FileService(ILogsService logsService) 
+        {
+            _logsService = logsService;
+        }
         public ConspectType LoadConspect<ConspectType>(string filePath)
         {
             string text = File.ReadAllText(filePath);
@@ -36,21 +41,7 @@ namespace NOTEA.Services
                 catch (Exception ex)
                 {
                     ExceptionModel info = new ExceptionModel(ex);
-                    SaveExceptionInfo(info);
-                }
-        }
-        public void SaveExceptionInfo(ExceptionModel exception) 
-        {
-            using (StreamWriter writer = new StreamWriter("Exceptions//exceptions.txt", append: true))
-                try
-                {
-                    string serializedJSON = JsonConvert.SerializeObject(exception);
-                    writer.WriteLine(serializedJSON);
-                }
-                catch (Exception ex)
-                {
-                    ExceptionModel info = new ExceptionModel(ex);
-                    SaveExceptionInfo(info);
+                    _logsService.SaveExceptionInfo(info);
                 }
         }
     }

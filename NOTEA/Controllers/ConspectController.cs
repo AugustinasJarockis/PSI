@@ -8,10 +8,12 @@ namespace NOTEA.Controllers
     {
         private static ConspectListModel<ConspectModel> conspectListModel = null;
         private static FileHandlerModel filemodel = new FileHandlerModel();
-        private readonly IFileService FileService;
-        public ConspectController(IFileService fileService)
+        private readonly IFileService _fileService;
+        private readonly ILogsService _logsService;
+        public ConspectController(IFileService fileService, ILogsService logsService)
         {
-            FileService = fileService;
+            _fileService = fileService;
+            _logsService = logsService;
         }
 
         public IActionResult CreateConspects()
@@ -27,7 +29,7 @@ namespace NOTEA.Controllers
                 if (name.IsValidFilename())
                 {
                     ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
-                    FileService.SaveConspect(conspectModel);
+                    _fileService.SaveConspect(conspectModel);
                     conspectListModel = null;
                     CloseWindow();
                 }
@@ -39,12 +41,12 @@ namespace NOTEA.Controllers
             catch (ArgumentNullException ex)
             {
                 ExceptionModel info = new ExceptionModel(ex);
-                FileService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(info);
             }
             catch (Exception ex)
             {
                 ExceptionModel info = new ExceptionModel(ex);
-                FileService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(info);
             }
             return View();
         }
@@ -77,7 +79,7 @@ namespace NOTEA.Controllers
                         text = sr.ReadToEnd();
                     }
 
-                    FileService.SaveConspect(
+                    _fileService.SaveConspect(
                         new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName),
                                           conspectText: text, ConspectSemester.Unknown)
                     );
@@ -92,17 +94,17 @@ namespace NOTEA.Controllers
             catch (ArgumentNullException ex)
             {
                 ExceptionModel info = new ExceptionModel(ex);
-                FileService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(info);
             }
             catch (InvalidOperationException ex)
             {
                 ExceptionModel info = new ExceptionModel(ex);
-                FileService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(info);
             }
             catch (Exception ex)
             {
                 ExceptionModel info = new ExceptionModel(ex);
-                FileService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(info);
             }
 
             return View(filemodel);
@@ -113,7 +115,7 @@ namespace NOTEA.Controllers
         {
             if (conspectListModel == null)
             {
-                conspectListModel = FileService.LoadConspects<ConspectModel>("Conspects");
+                conspectListModel = _fileService.LoadConspects<ConspectModel>("Conspects");
             }
             if (string.IsNullOrEmpty(searchValue))
             {
