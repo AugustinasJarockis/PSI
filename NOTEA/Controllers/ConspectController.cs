@@ -43,7 +43,6 @@ namespace NOTEA.Controllers
                     TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty or contain any of the following characters: \\\\ / : * . ? \" < > | ";
                     throw new ArgumentNullException("file name", "File name is null");
                 }
-                return View();
             }
             catch (ArgumentNullException ex)
             {
@@ -54,8 +53,6 @@ namespace NOTEA.Controllers
             {
                 ExceptionModel info = new ExceptionModel(ex);
                 _logsService.SaveExceptionInfo(info);
-                
-
             }
             return View();
         }
@@ -122,11 +119,19 @@ namespace NOTEA.Controllers
             if (conspectListModel == null)
             {
                 conspectListModel = _fileService.LoadConspects<ConspectModel>("Conspects");
+                if (string.IsNullOrEmpty(searchValue))
+                {
+                    return View(conspectListModel);
+                }
             }
             if (string.IsNullOrEmpty(searchValue))
             {
-                //TempData["ErrorMessage"] = "Please provide search value.";
+                TempData["ErrorMessage"] = "Please provide search value.";
                 return View(conspectListModel);
+            }
+            else if(conspectListModel == null)
+            {
+                TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
             }
             else
             {
@@ -146,6 +151,10 @@ namespace NOTEA.Controllers
             if (conspectListModel != null)
             {
                 conspectListModel.conspects.Sort();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
             }
             return RedirectToAction(nameof(ConspectList));
         }
