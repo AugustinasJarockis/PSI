@@ -20,22 +20,29 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult SignIn(string username, string password)
         {
-            user.username = username;
-            user.password = password;
-            userList = LoadUsers();
-            userList.userList.Add(user);
+           if(username.IsValidFilename() && password.IsValidFilename())
+           {
+                user.username = username;
+                user.password = password;
+                userList = LoadUsers();
+                userList.userList.Add(user);
 
-            using (StreamWriter writer = new StreamWriter("Users//Users.txt"))
-                try
-                {
-                    string serializedJSON = JsonConvert.SerializeObject(userList);
-                    writer.Write(serializedJSON);
-                }
-                catch (Exception exp)
-                {
-                    Console.WriteLine("Error: could not save user ");
-                }
+                using (StreamWriter writer = new StreamWriter("Users//Users.txt"))
+                    try
+                    {
+                        string serializedJSON = JsonConvert.SerializeObject(userList);
+                        writer.Write(serializedJSON);
+                    }
+                    catch (Exception exp)
+                    {
+                        Console.WriteLine("Error: could not save user ");
+                    }
 
+                TempData["SuccessMessage"] = "Your registration has been successfull!";
+            }
+            else{
+                TempData["ErrorMessage"] = "Your username or password is invalid! It can't be empty, longer than 80 symbols or contain any of the following characters:\n \\\\ / : * . ? \" < > | ";
+            }
             return View(user);
         }
 

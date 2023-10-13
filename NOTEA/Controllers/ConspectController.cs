@@ -40,7 +40,7 @@ namespace NOTEA.Controllers
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty or contain any of the following characters: \\\\ / : * . ? \" < > | ";
+                    TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty, longer than 80 symbols or contain the following characters: \\\\ / : * . ? \" < > | ";
                     throw new ArgumentNullException("file name", "File name is null");
                 }
             }
@@ -132,6 +132,10 @@ namespace NOTEA.Controllers
             else if (conspectListModel == null)
             {
                 TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
+            }
+            else if (searchValue.Length > 80)
+            {
+                TempData["ErrorMessage"] = "Search query can't be longer than 80 characters";
             }
             else
             {
