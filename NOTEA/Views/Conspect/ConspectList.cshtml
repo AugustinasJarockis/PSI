@@ -17,11 +17,13 @@
                     <span><b>Search by:</b></span>
                     @Html.RadioButton("searchBy", "name", true)
                     <text> Conspect name </text>
+                    @Html.RadioButton("searchBy", "ConspectSemester", false)
+                    <text> Semester </text>
                 </td>
             </tr>
             <tr>
                 <td>
-                    @Html.TextBox("searchValue", null, new {Class = "form-control", placeholder = " Enter conspect name"})
+                    @Html.TextBox("searchValue", null, new {Class = "form-control", placeholder = " Enter conspect name", required = true})
                 </td>
                 <td>
                     &nbsp;

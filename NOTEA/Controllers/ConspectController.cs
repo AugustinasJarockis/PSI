@@ -119,17 +119,17 @@ namespace NOTEA.Controllers
             if (conspectListModel == null)
             {
                 conspectListModel = _fileService.LoadConspects<ConspectModel>("Conspects");
+                ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(conspectListModel.conspects);
                 if (string.IsNullOrEmpty(searchValue))
                 {
-                    return View(conspectListModel);
+                    return View(tempConspectListModel);
                 }
             }
             if (string.IsNullOrEmpty(searchValue))
             {
-                TempData["ErrorMessage"] = "Please provide search value.";
                 return View(conspectListModel);
             }
-            else if(conspectListModel == null)
+            else if (conspectListModel == null)
             {
                 TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
             }
@@ -141,6 +141,27 @@ namespace NOTEA.Controllers
                     var searchByName = conspectListModel.conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
                     ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
                     return View(tempConspectListModel);
+                }
+
+                //LINQ - SEARCH BY SEMESTER
+                //if (searchBy.ToLower() == "conspectsemester")
+                //{
+
+                //    var searchBySemester = conspectListModel.conspects.Where(c => c.ConspectSemester.ToString().Contains(searchValue.ToLower())).ToList();
+                //    ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
+                //    return View(tempConspectListModel);
+
+                //}
+                if (Enum.TryParse<ConspectSemester>(searchValue, out ConspectSemester searchEnum))
+                {
+                    // Use the enum value in your LINQ query
+                    var searchBySemester = conspectListModel.conspects
+                        .Where(item => item.ConspectSemester == searchEnum)
+                        .ToList();
+
+                    ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
+                    return View(tempConspectListModel);
+                    // Now 'queryResult' contains the filtered data
                 }
             }
             return View(conspectListModel);
