@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NOTEA.Models;
 using NOTEA.Services;
+using System.Text.Json.Serialization;
 
 namespace NOTEA.Controllers
 {
@@ -180,10 +181,9 @@ namespace NOTEA.Controllers
         }
 
         [HttpGet]
-        public IActionResult ViewConspect(string name, ConspectSemester conspectSemester, string text)
+        public IActionResult ViewConspect(int Index)
         {
-            ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: text);
-            return View(conspectModel);
+            return View(conspectListModel.conspects[Index]);
         }
     }
 }
