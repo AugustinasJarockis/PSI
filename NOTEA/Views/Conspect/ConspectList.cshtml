@@ -1,4 +1,5 @@
-﻿@model NOTEA.Models.ConspectListModel<ConspectModel>
+﻿@using Newtonsoft.Json;
+@model NOTEA.Models.ConspectListModel<ConspectModel>
 
 @{
     ViewData["Title"] = "Conspect list";
@@ -42,11 +43,11 @@
 <p></p>
 <table class="table">
     <tbody>
-        @foreach (ConspectModel conspectModel in Model.conspects)
+        @foreach  (ConspectModel conspectModel in Model.conspects)
         {
             <tr>
                 <td>
-                    <input type="submit" onclick="location.href='@Url.Action("ViewConspect","Conspect", new { name = conspectModel.Name, text = conspectModel.ConspectText })'" value="@conspectModel.Name" />
+                    <input type="submit" onclick="location.href='@Url.Action("ViewConspect","Conspect", new {Index = Model.conspects.IndexOf(conspectModel) })'" value="@conspectModel.Name" />
                 </td>
                 <td>
                     @conspectModel.Date.ToLongDateString()
