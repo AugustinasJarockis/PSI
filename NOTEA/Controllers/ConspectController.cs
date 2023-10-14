@@ -1,17 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NOTEA.Models;
 using NOTEA.Services;
-using NuGet.Protocol.Plugins;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
         private static ConspectListModel<ConspectModel> conspectListModel = null;
-        private static FileHandlerModel filemodel = new FileHandlerModel();
         private readonly IFileService _fileService;
         private readonly ILogsService _logsService;
         public ConspectController(IFileService fileService, ILogsService logsService)
@@ -58,7 +53,7 @@ namespace NOTEA.Controllers
         }
         public IActionResult UploadConspect()
         {
-            return View(filemodel);
+            return View();
         }
 
         [HttpPost]
@@ -111,7 +106,7 @@ namespace NOTEA.Controllers
                 _logsService.SaveExceptionInfo(info);
             }
 
-            return View(filemodel);
+            return View();
         }
         [HttpGet]
         public IActionResult ConspectList(string searchBy, string searchValue)
