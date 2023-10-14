@@ -8,42 +8,66 @@ namespace NOTEA.Controllers
 {
     public class UserController : Controller
     {
-        UserLog user = new UserLog();
+        //UserLog user = new UserLog();
         UserListModel userList = new UserListModel();
 
 
         public IActionResult SignIn()
         {
-            return View(user);
+            return View();
         }
 
         [HttpPost]
-        public IActionResult SignIn(string username, string password)
+        public IActionResult SignIn(string username, string password, string passwordCheck)
         {
-           if(username.IsValidFilename() && password.IsValidFilename())
-           {
-                user.username = username;
-                user.password = password;
+            bool usernameTaken = false;
+            if (username.IsValidFilename() && password.IsValidFilename() && passwordCheck.IsValidFilename())
+            {
                 userList = LoadUsers();
-                userList.userList.Add(user);
-
-                using (StreamWriter writer = new StreamWriter("Users//Users.txt"))
-                    try
+                foreach (var userModel in userList.userList)
+                {
+                    if(username == userModel.Username)
                     {
-                        string serializedJSON = JsonConvert.SerializeObject(userList);
-                        writer.Write(serializedJSON);
+                        usernameTaken = true;
                     }
-                    catch (Exception exp)
-                    {
-                        Console.WriteLine("Error: could not save user ");
-                    }
+                }
+                if (password == passwordCheck && !usernameTaken)
+                {
+                    UserModel user = new UserModel(username, password);
+                    
+                    userList.userList.Add(user);
 
-                TempData["SuccessMessage"] = "Your registration has been successfull!";
+                    using (StreamWriter writer = new StreamWriter("Users//Users.txt"))
+                        try
+                        {
+                            string serializedJSON = JsonConvert.SerializeObject(userList);
+                            writer.Write(serializedJSON);
+                        }
+                        catch (Exception exp)
+                        {
+                            Console.WriteLine("Error: could not save user ");
+                        }
+
+                    TempData["SuccessMessage"] = "Your registration has been successfull!";
+                    return RedirectToAction("LogIn", "User");
+                }
+                else
+                {
+                    if (usernameTaken)
+                    {
+                        TempData["ErrorMessage"] = "This username is already taken";
+                    }
+                    else
+                    {
+                    TempData["ErrorMessage"] = "The passwords you entered does not match!";
+                    }
+                }
             }
-            else{
+            else
+            {
                 TempData["ErrorMessage"] = "Your username or password is invalid! It can't be empty, longer than 80 symbols or contain any of the following characters:\n \\\\ / : * . ? \" < > | ";
             }
-            return View(user);
+            return View();
         }
 
         public UserListModel LoadUsers()
@@ -52,5 +76,40 @@ namespace NOTEA.Controllers
             UserListModel userList = JsonConvert.DeserializeObject<UserListModel>(text);
             return userList;
         }
+        public IActionResult LogIn()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult LogIn(string username, string password)
+        {
+            UserModel user = new UserModel();
+            if (username.IsValidFilename() && password.IsValidFilename())
+            {
+                userList = LoadUsers();
+                foreach (var userModel in userList.userList)
+                {
+                    if(userModel.Username.Equals(username) && userModel.Password.Equals(password))
+                    {
+                        user = new UserModel(username, password);
+                    }
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Your username or password is invalid! It can't be empty, longer than 80 symbols or contain any of the following characters:\n \\\\ / : * . ? \" < > | ";
+            }
+            if(user.Username == "" && user.Password == "")
+            {
+                TempData["ErrorMessage"] = "Your username or password is wrong";
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
     }
 }
+

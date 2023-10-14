@@ -1,25 +1,24 @@
 ﻿@model NOTEA.Models.UserModel
 
 @{
-    ViewData["Title"] = "Sign In";
+    ViewData["Title"] = "Log In";
 }
 
-<h1>Sign In</h1>
+<h1>Log In</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-controller="User" asp-action="SignIn">
+        <form asp-controller="User" asp-action="LogIn">
             <div class="form-group">
                 <label asp-for="Username" class="control-label">Username</label><br />
                 <input id="username" name="username" type="text" value="" /><br />
                 <label asp-for="Password" class="control-label">Password</label><br />
                 <input id="Password" name="Password" type="password" value="" /><br />
-                <label asp-for="PasswordCheck" class="control-label">Repeat password</label><br />
-                <input id="PasswordCheck" name="PasswordCheck" type="password" value="" />
             </div>
             <p></p>
             <div class="form-group">
-                <input type="submit" value="Sign in" class="btn btn-primary" />
+                <input type="submit" value="Log in" class="btn btn-primary" />
+               @*  <input type="submit" onclick="location.href='@Url.Action("Index","Home")'" value="Log in" /> *@
             </div>
         </form>
     </div>
