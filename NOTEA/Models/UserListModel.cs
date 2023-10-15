@@ -2,6 +2,6 @@
 {
     public class UserListModel
     {
-        public List<UserLog> userList = new List<UserLog>();
+        public List<UserModel> userList = new List<UserModel>();
     }
 }
