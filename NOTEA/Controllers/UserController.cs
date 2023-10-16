@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NOTEA.Models;
+using NOTEA.Services;
 using System.IO;
 
 namespace NOTEA.Controllers
@@ -9,11 +10,14 @@ namespace NOTEA.Controllers
     public class UserController : Controller
     {
         public readonly IHttpContextAccessor _contextAccessor;
-        public UserController(IHttpContextAccessor contextAccessor)
+        private readonly IUserService _userService;
+        public UserController(IHttpContextAccessor contextAccessor, IUserService userService)
         {
             _contextAccessor = contextAccessor;
+            _userService = userService;
         }
         UserListModel userList = new UserListModel();
+
         public IActionResult SignIn()
         {
             return View();
@@ -25,7 +29,7 @@ namespace NOTEA.Controllers
             bool usernameTaken = false;
             if (username.IsValidFilename() && password.IsValidFilename() && passwordCheck.IsValidFilename())
             {
-                userList = LoadUsers();
+                userList = _userService.LoadUsers();
                 foreach (var userModel in userList.userList)
                 {
                     if(username == userModel.Username)
@@ -41,17 +45,7 @@ namespace NOTEA.Controllers
                     
                         userList.userList.Add(user);
 
-                        using (StreamWriter writer = new StreamWriter("Users//Users.txt"))
-                            try
-                            {
-                                string serializedJSON = JsonConvert.SerializeObject(userList);
-                                writer.Write(serializedJSON);
-                            }
-                            catch (Exception exp)
-                            {
-                                Console.WriteLine("Error: could not save user ");
-                            }
-
+                        _userService.SaveUsers(userList);
                         TempData["SuccessMessage"] = "Your registration has been successfull!";
                         return RedirectToAction("LogIn", "User");
                     }
@@ -71,19 +65,9 @@ namespace NOTEA.Controllers
             }
             return View();
         }
-
-        public UserListModel LoadUsers()
-        {
-            string text = System.IO.File.ReadAllText("Users//Users.txt");
-            UserListModel userList = JsonConvert.DeserializeObject<UserListModel>(text);
-            return userList;
-        }
         public IActionResult LogIn()
         {
-            //ViewBag.hasLogedIn = "t";
-            /* HttpContext.Session.SetString("user", "lala");   */      /*   Session["lele"] = "scf";*/
             _contextAccessor.HttpContext.Session.SetString("User", "");
-
             return View();
         }
 
@@ -93,7 +77,7 @@ namespace NOTEA.Controllers
             UserModel user = new UserModel();
             if (username.IsValidFilename() && password.IsValidFilename())
             {
-                userList = LoadUsers();
+                userList = _userService.LoadUsers();
                 foreach (var userModel in userList.userList)
                 {
                     if(userModel.Username.Equals(username) && userModel.Password.Equals(password))
@@ -112,13 +96,7 @@ namespace NOTEA.Controllers
             }
             else
             {
-                //Console.WriteLine(ViewBag.hasLogedIn);
-                //ViewBag.hasLogedIn = true;
-                //Console.WriteLine(ViewBag.hasLogedIn);
-                ////ViewData["user"] = user.Username;
                 _contextAccessor.HttpContext.Session.SetString("User", user.Username);
-                //SessionExtensions.SetString(this Http.Sesion)
-                //_contextAccessor.HttpContext.Session.SetString("user", user.Username);
                 return RedirectToAction("Index", "Home");
             }
             return View();
