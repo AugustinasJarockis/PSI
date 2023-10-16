@@ -15,23 +15,16 @@
             <tr>
                 <td>
                     <span><b>Search by:</b></span>
-                    <input type="checkbox" id="check" name="searchBy" value="name" onchange="showHideInput('check', 'text_box', 'button54')">
-                    <label>Conspect name</label>
-                    <input type="checkbox" id="check1" name="searchBy" value="ConspectSemester" onchange="showHideInput('check1', 'semester', 'button54')">
-                    <label>Semester</label>
+                    @Html.RadioButton("searchBy", "name", true)
+                    <text> Conspect name </text>
+                    @Html.RadioButton("searchBy", "ConspectSemester", false)
+                    <text> Semester </text>
                 </td>
             </tr>
             <tr>
                 <td>
                     @Html.TextBox("searchValue", null, new {Class = "form-control", placeholder = " Enter conspect name", id="text_box", style="display: none;", required = true})
                 </td>
-                <td>
-                    @* @Html.DropDownListFor(Model => Model.Conspects[0].ConspectSemester, EnumHelper<ConspectSemester>.GetSelectList(), new { @class = "selectpicker show-menu-arrow", id="semester", style="height:40px;display: none;", data_live_search = "true" }) *@
-                    @Html.DropDownListFor(o => o.ConspectSemesters, Enum.GetValues(typeof(ConspectSemester)).Cast<ConspectSemester>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() }))
-                    @* @Html.DropDownList("searchValueSemester",
-                Enum.GetValues(typeof(ConspectSemester)).Cast<ConspectSemester>()
-                .Select(x => new SelectListItem {Text = x.ToDescription(), Value = x.ToString()})) //tsg kitaip parodo values drop down liste*@
-                    </td>
                 <td>
                     &nbsp;
                 </td>
