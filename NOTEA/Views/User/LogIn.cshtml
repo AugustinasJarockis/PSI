@@ -1,7 +1,12 @@
-﻿@model NOTEA.Models.UserModel
+﻿@inject IHttpContextAccessor context
+@model NOTEA.Models.UserModel
 
 @{
     ViewData["Title"] = "Log In";
+    if (context.HttpContext.Session.GetString("User") != null)
+    {
+        context.HttpContext.Response.Redirect("/Home/Index");
+    }
 }
 <p></p>
 <div style="float:right">

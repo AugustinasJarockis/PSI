@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Conspect upload";
-    if (context.HttpContext.Session.GetString("User") == "")
+    if (context.HttpContext.Session.GetString("User") == null)
     {
         context.HttpContext.Response.Redirect("/User/LogIn");
     }

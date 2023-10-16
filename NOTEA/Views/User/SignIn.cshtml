@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Sign In";
-    if (context.HttpContext.Session.GetString("User") != "")
+    if (context.HttpContext.Session.GetString("User") != null)
     {
         context.HttpContext.Response.Redirect("/Home/Index");
     }
