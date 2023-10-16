@@ -67,10 +67,6 @@ namespace NOTEA.Controllers
         }
         public IActionResult LogIn()
         {
-            //if (_contextAccessor.HttpContext.Session.GetString("User") == null)
-            //{
-            //_contextAccessor.HttpContext.Session.SetString("User", "");
-            //}
             return View();
         }
 
@@ -106,7 +102,6 @@ namespace NOTEA.Controllers
         }
         public IActionResult LogOut()
         {
-            //_contextAccessor.HttpContext.Session.SetString("User", "");
             _contextAccessor.HttpContext.Session.Clear();
             return RedirectToAction("LogIn", "User");
         }
