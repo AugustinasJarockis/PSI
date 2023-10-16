@@ -1,7 +1,12 @@
-﻿@model NOTEA.Models.ConspectModel
+﻿@inject IHttpContextAccessor context
+@model NOTEA.Models.ConspectModel
 
 @{
     ViewData["Title"] = "Create conspects";
+    if (context.HttpContext.Session.GetString("User") == "")
+    {
+        context.HttpContext.Response.Redirect("/User/LogIn");
+    }
 }
 
 <style>
