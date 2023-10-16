@@ -67,7 +67,10 @@ namespace NOTEA.Controllers
         }
         public IActionResult LogIn()
         {
-            _contextAccessor.HttpContext.Session.SetString("User", "");
+            //if (_contextAccessor.HttpContext.Session.GetString("User") == null)
+            //{
+            //_contextAccessor.HttpContext.Session.SetString("User", "");
+            //}
             return View();
         }
 
@@ -100,6 +103,12 @@ namespace NOTEA.Controllers
                 return RedirectToAction("Index", "Home");
             }
             return View();
+        }
+        public IActionResult LogOut()
+        {
+            //_contextAccessor.HttpContext.Session.SetString("User", "");
+            _contextAccessor.HttpContext.Session.Clear();
+            return RedirectToAction("LogIn", "User");
         }
     }
 }
