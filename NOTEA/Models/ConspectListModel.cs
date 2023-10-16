@@ -4,9 +4,9 @@ namespace NOTEA.Models
 {
     public class ConspectListModel<ConspectType>
     {
-        public List<ConspectType> conspects = new List<ConspectType>();
+        public List<ConspectType> Conspects = new List<ConspectType>();
         public ConspectListModel() { }
-        public ConspectListModel(List<ConspectType> conspects) { this.conspects = conspects; }
+        public ConspectListModel(List<ConspectType> conspects) { this.Conspects = conspects; }
 
     }
 

@@ -15,7 +15,6 @@ namespace NOTEA.Controllers
             _fileService = fileService;
             _logsService = logsService;
         }
-
         public IActionResult CreateConspects()
         {
             return View();
@@ -110,68 +109,56 @@ namespace NOTEA.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult ConspectList(string searchBy, string searchValue)
+        public IActionResult ConspectList(string searchBy, string searchValue = "")
         {
             if (conspectListModel == null)
             {
                 conspectListModel = _fileService.LoadConspects<ConspectModel>("Conspects");
-                ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(conspectListModel.conspects);
+                ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(conspectListModel.Conspects);
                 if (string.IsNullOrEmpty(searchValue))
                 {
                     return View(tempConspectListModel);
                 }
             }
-            if (string.IsNullOrEmpty(searchValue))
+            if (!string.IsNullOrWhiteSpace(searchValue))
             {
+                if (conspectListModel == null)
+                {
+                    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
+                }
+                else if (searchValue.Length > 80)
+                {
+                    TempData["ErrorMessage"] = "Search query can't be longer than 80 characters";
+                }
+                else
+                {
+                    if (searchBy.ToLower() == "name")
+                    {
+                        var searchByName = conspectListModel.Conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
+                        ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
+                        return View(tempConspectListModel);
+                    }
+                    else if (searchBy.ToLower() == "conspectsemester")
+                    {
+                        var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.ToDescription().ToLower().Contains(searchValue.ToLower())).ToList();
+                        ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
+                        return View(tempConspectListModel);
+                    }
+                }
                 return View(conspectListModel);
-            }
-            else if (conspectListModel == null)
-            {
-                TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
-            }
-            else if (searchValue.Length > 80)
-            {
-                TempData["ErrorMessage"] = "Search query can't be longer than 80 characters";
             }
             else
             {
-                if (searchBy.ToLower() == "name")
-                {
-
-                    var searchByName = conspectListModel.conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
-                    ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
-                    return View(tempConspectListModel);
-                }
-
-                //LINQ - SEARCH BY SEMESTER
-                //if (searchBy.ToLower() == "conspectsemester")
-                //{
-
-                //    var searchBySemester = conspectListModel.conspects.Where(c => c.ConspectSemester.ToString().Contains(searchValue.ToLower())).ToList();
-                //    ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
-                //    return View(tempConspectListModel);
-
-                //}
-                if (Enum.TryParse<ConspectSemester>(searchValue, out ConspectSemester searchEnum))
-                {
-                    // Use the enum value in your LINQ query
-                    var searchBySemester = conspectListModel.conspects
-                        .Where(item => item.ConspectSemester == searchEnum)
-                        .ToList();
-
-                    ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
-                    return View(tempConspectListModel);
-                    // Now 'queryResult' contains the filtered data
-                }
+                TempData["ErrorMessage"] = "Please provide at least one search key.";
             }
-            return View(conspectListModel);
+             return View(conspectListModel);
         }
         [HttpGet]
         public IActionResult SortConspect()
         {
             if (conspectListModel != null)
             {
-                conspectListModel.conspects.Sort();
+                conspectListModel.Conspects.Sort();
             }
             else
             {
@@ -183,7 +170,7 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult ViewConspect(int Index)
         {
-            return View(conspectListModel.conspects[Index]);
+            return View(conspectListModel.Conspects[Index]);
         }
     }
 }

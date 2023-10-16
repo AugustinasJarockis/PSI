@@ -29,7 +29,8 @@
             </tr>
             <tr>
                 <td>
-                    @Html.TextBox("searchValue", null, new {Class = "form-control", placeholder = " Enter conspect name", required = true})
+                    @Html.TextBox("searchValue", null, new {Class = "form-control", required = true})
+                    @Html.ValidationMessage("Field can't be empty")
                 </td>
                 <td>
                     &nbsp;
@@ -48,11 +49,11 @@
 <p></p>
 <table class="table">
     <tbody>
-        @foreach  (ConspectModel conspectModel in Model.conspects)
+        @foreach  (ConspectModel conspectModel in Model.Conspects)
         {
             <tr>
                 <td>
-                    <input type="submit" onclick="location.href='@Url.Action("ViewConspect","Conspect", new {Index = Model.conspects.IndexOf(conspectModel) })'" value="@conspectModel.Name" />
+                    <input type="submit" onclick="location.href='@Url.Action("ViewConspect","Conspect", new {Index = Model.Conspects.IndexOf(conspectModel) })'" value="@conspectModel.Name" />
                 </td>
                 <td>
                     @conspectModel.Date.ToLongDateString()
@@ -96,3 +97,18 @@
         });
     </script>
 }
+
+<script>
+    function showHideInput(checkboxId, panInputId, buttonId) {
+        let checkbox = document.getElementById(checkboxId);
+        let pan_input = document.getElementById(panInputId);
+        let button = document.getElementById(buttonId)
+
+        if (checkbox.checked) {
+            pan_input.style.display = "flex";
+            button.style.display = "flex";
+        } else {
+            pan_input.style.display = "none";
+        }
+    }
+</script>
