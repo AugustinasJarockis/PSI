@@ -30,6 +30,7 @@
             <tr>
                 <td>
                     @Html.TextBox("searchValue", null, new {Class = "form-control", required = true})
+                    @Html.ValidationMessage("Field can't be empty")
                 </td>
                 <td>
                     &nbsp;

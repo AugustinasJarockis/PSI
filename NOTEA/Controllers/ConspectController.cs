@@ -15,7 +15,6 @@ namespace NOTEA.Controllers
             _fileService = fileService;
             _logsService = logsService;
         }
-
         public IActionResult CreateConspects()
         {
             return View();
@@ -141,7 +140,7 @@ namespace NOTEA.Controllers
                     }
                     else if (searchBy.ToLower() == "conspectsemester")
                     {
-                        var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.ToDescription().Contains(searchValue.ToLower())).ToList();
+                        var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.ToDescription().ToLower().Contains(searchValue.ToLower())).ToList();
                         ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
                         return View(tempConspectListModel);
                     }
@@ -152,7 +151,6 @@ namespace NOTEA.Controllers
             {
                 TempData["ErrorMessage"] = "Please provide at least one search key.";
             }
-            
              return View(conspectListModel);
         }
         [HttpGet]
