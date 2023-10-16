@@ -25,7 +25,7 @@ namespace NOTEA.Services
             ArrayList filenameList = new ArrayList(Directory.GetFiles(fullDirectoryPath));
             foreach (string fileName in filenameList)
             {
-                conspectListModel.conspects.Add(LoadConspect<ConspectType>(fileName));
+                conspectListModel.Conspects.Add(LoadConspect<ConspectType>(fileName));
             }
             return conspectListModel;
         }
