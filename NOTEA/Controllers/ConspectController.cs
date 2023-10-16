@@ -110,7 +110,7 @@ namespace NOTEA.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult ConspectList(string searchBy, string searchValueSemester = "", string searchValue = "")
+        public IActionResult ConspectList(string searchBy, string searchValue = "")
         {
             if (conspectListModel == null)
             {
@@ -135,44 +135,18 @@ namespace NOTEA.Controllers
                 {
                     if (searchBy.ToLower() == "name")
                     {
-
                         var searchByName = conspectListModel.Conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
                         ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
                         return View(tempConspectListModel);
                     }
-                }
-                return View(conspectListModel);
-            }
-            else if (!string.IsNullOrWhiteSpace(searchValueSemester))
-            {
-                if (conspectListModel == null)
-                {
-                    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
-                }
-                else
-                {
-                    Console.WriteLine(searchValueSemester);
-                    //LINQ - SEARCH BY SEMESTER
-                    if (searchBy.ToLower() == "conspectsemester")
+                    else if (searchBy.ToLower() == "conspectsemester")
                     {
-
-                        var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.ToString().Contains(searchValueSemester.ToLower())).ToList();
+                        var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.ToDescription().Contains(searchValue.ToLower())).ToList();
                         ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
                         return View(tempConspectListModel);
-
                     }
-                    //if (Enum.TryParse<ConspectSemester>(searchValue, out ConspectSemester searchEnum))
-                    //{
-                    //    // Use the enum value in your LINQ query
-                    //    Console.WriteLine("Pries linq sakinuka");
-                    //    var searchBySemester = conspectListModel.Conspects
-                    //        .Where(item => item.ConspectSemester == searchEnum)
-                    //        .ToList();
-                    //    Console.WriteLine("Po linq sakinuko");
-                    //    ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
-                    //    return View(tempConspectListModel);
-                    //}
                 }
+                return View(conspectListModel);
             }
             else
             {

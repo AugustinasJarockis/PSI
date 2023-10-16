@@ -1,5 +1,4 @@
-
-﻿@inject IHttpContextAccessor context
+@inject IHttpContextAccessor context
 ﻿@using Newtonsoft.Json;
 @model NOTEA.Models.ConspectListModel<ConspectModel>
 
@@ -30,7 +29,7 @@
             </tr>
             <tr>
                 <td>
-                    @Html.TextBox("searchValue", null, new {Class = "form-control", placeholder = " Enter conspect name", id="text_box", style="display: none;", required = true})
+                    @Html.TextBox("searchValue", null, new {Class = "form-control", required = true})
                 </td>
                 <td>
                     &nbsp;
