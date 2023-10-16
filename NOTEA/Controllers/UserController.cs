@@ -8,10 +8,12 @@ namespace NOTEA.Controllers
 {
     public class UserController : Controller
     {
-        //UserLog user = new UserLog();
+        public readonly IHttpContextAccessor _contextAccessor;
+        public UserController(IHttpContextAccessor contextAccessor)
+        {
+            _contextAccessor = contextAccessor;
+        }
         UserListModel userList = new UserListModel();
-
-
         public IActionResult SignIn()
         {
             return View();
@@ -31,36 +33,36 @@ namespace NOTEA.Controllers
                         usernameTaken = true;
                     }
                 }
-                if (password == passwordCheck && !usernameTaken)
+                if (!usernameTaken)
                 {
-                    UserModel user = new UserModel(username, password);
-                    
-                    userList.userList.Add(user);
-
-                    using (StreamWriter writer = new StreamWriter("Users//Users.txt"))
-                        try
-                        {
-                            string serializedJSON = JsonConvert.SerializeObject(userList);
-                            writer.Write(serializedJSON);
-                        }
-                        catch (Exception exp)
-                        {
-                            Console.WriteLine("Error: could not save user ");
-                        }
-
-                    TempData["SuccessMessage"] = "Your registration has been successfull!";
-                    return RedirectToAction("LogIn", "User");
-                }
-                else
-                {
-                    if (usernameTaken)
+                    if (password == passwordCheck )
                     {
-                        TempData["ErrorMessage"] = "This username is already taken";
+                        UserModel user = new UserModel(username, password);
+                    
+                        userList.userList.Add(user);
+
+                        using (StreamWriter writer = new StreamWriter("Users//Users.txt"))
+                            try
+                            {
+                                string serializedJSON = JsonConvert.SerializeObject(userList);
+                                writer.Write(serializedJSON);
+                            }
+                            catch (Exception exp)
+                            {
+                                Console.WriteLine("Error: could not save user ");
+                            }
+
+                        TempData["SuccessMessage"] = "Your registration has been successfull!";
+                        return RedirectToAction("LogIn", "User");
                     }
                     else
                     {
-                    TempData["ErrorMessage"] = "The passwords you entered does not match!";
+                        TempData["ErrorMessage"] = "The passwords you entered does not match!";
                     }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "This username is already taken";
                 }
             }
             else
@@ -78,6 +80,10 @@ namespace NOTEA.Controllers
         }
         public IActionResult LogIn()
         {
+            //ViewBag.hasLogedIn = "t";
+            /* HttpContext.Session.SetString("user", "lala");   */      /*   Session["lele"] = "scf";*/
+            _contextAccessor.HttpContext.Session.SetString("User", "");
+
             return View();
         }
 
@@ -106,6 +112,13 @@ namespace NOTEA.Controllers
             }
             else
             {
+                //Console.WriteLine(ViewBag.hasLogedIn);
+                //ViewBag.hasLogedIn = true;
+                //Console.WriteLine(ViewBag.hasLogedIn);
+                ////ViewData["user"] = user.Username;
+                _contextAccessor.HttpContext.Session.SetString("User", user.Username);
+                //SessionExtensions.SetString(this Http.Sesion)
+                //_contextAccessor.HttpContext.Session.SetString("user", user.Username);
                 return RedirectToAction("Index", "Home");
             }
             return View();

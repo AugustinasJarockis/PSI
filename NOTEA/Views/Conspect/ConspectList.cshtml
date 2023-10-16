@@ -1,8 +1,14 @@
+
+﻿@inject IHttpContextAccessor context
 ﻿@using Newtonsoft.Json;
 @model NOTEA.Models.ConspectListModel<ConspectModel>
 
 @{
     ViewData["Title"] = "Conspect list";
+    if (context.HttpContext.Session.GetString("User") == "")
+    {
+        context.HttpContext.Response.Redirect("/User/LogIn");
+    }
 }
 
 <h1>The list of conspects</h1>

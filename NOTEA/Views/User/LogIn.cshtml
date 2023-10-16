@@ -3,7 +3,11 @@
 @{
     ViewData["Title"] = "Log In";
 }
-
+<p></p>
+<div style="float:right">
+    If you do not own an account yet
+    <input type="submit" onclick="location.href='@Url.Action("SignIn","User")'" value="Sign In" />
+</div>
 <h1>Log In</h1>
 <hr />
 <div class="row">
@@ -18,7 +22,6 @@
             <p></p>
             <div class="form-group">
                 <input type="submit" value="Log in" class="btn btn-primary" />
-               @*  <input type="submit" onclick="location.href='@Url.Action("Index","Home")'" value="Log in" /> *@
             </div>
         </form>
     </div>
