@@ -1,9 +1,14 @@
-﻿@model NOTEA.Models.UserModel
+﻿@inject IHttpContextAccessor context
+@model NOTEA.Models.UserModel
 
 @{
     ViewData["Title"] = "Sign In";
+    if (context.HttpContext.Session.GetString("User") != "")
+    {
+        context.HttpContext.Response.Redirect("/Home/Index");
+    }
 }
-
+<p></p>
 <h1>Sign In</h1>
 <hr />
 <div class="row">

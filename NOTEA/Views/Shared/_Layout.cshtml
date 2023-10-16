@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject IHttpContextAccessor context
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,9 +10,12 @@
     <link rel="stylesheet" href="~/NOTEA.styles.css" asp-append-version="true" />
 </head>
 <body> 
+        @{
+        if (context.HttpContext.Session.GetString("User") != "")
+            {
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
+                <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                    <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">NOTEA</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -35,16 +39,15 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Conspect" asp-action="UploadConspect">Upload conspects</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="SignIn">Sign In</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="LogIn">Log In</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="LogIn">Log out</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+             }
+         }
     <div class="container">
         <main role="main" class="pb-3">
 
