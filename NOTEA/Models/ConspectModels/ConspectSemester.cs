@@ -9,8 +9,6 @@ namespace NOTEA.Models.ConspectModels
         [Display(Name = "2023 spring")] Spring_2023 = 2,
         [Display(Name = "2023 autumn")] Autumn_2023 = 3,
         [Display(Name = "2024 spring")] Spring_2024 = 4,
-        [Display(Name = "2024 autumn")] Autumn_2024 = 5,
-
-
+        [Display(Name = "2024 autumn")] Autumn_2024 = 5
     }
 }

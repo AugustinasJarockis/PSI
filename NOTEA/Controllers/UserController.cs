@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using NOTEA.Helpers;
 using NOTEA.Models.UserModels;
 using NOTEA.Services.UserServices;
-using System.IO;
 
 namespace NOTEA.Controllers
 {
@@ -28,7 +25,7 @@ namespace NOTEA.Controllers
         public IActionResult SignIn(string username, string password, string passwordCheck)
         {
             bool usernameTaken = false;
-            if (username.IsValidFilename() && password.IsValidFilename() && passwordCheck.IsValidFilename())
+            if (username.IsValidName() && password.IsValidName() && passwordCheck.IsValidName())
             {
                 userList = _userService.LoadUsers();
                 foreach (var userModel in userList.userList)
@@ -47,12 +44,12 @@ namespace NOTEA.Controllers
                         userList.userList.Add(user);
 
                         _userService.SaveUsers(userList);
-                        TempData["SuccessMessage"] = "Your registration has been successfull!";
+                        TempData["SuccessMessage"] = "Your registration has been successful!";
                         return RedirectToAction("LogIn", "User");
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "The passwords you entered does not match!";
+                        TempData["ErrorMessage"] = "The passwords you entered do not match!";
                     }
                 }
                 else
@@ -75,7 +72,7 @@ namespace NOTEA.Controllers
         public IActionResult LogIn(string username, string password)
         {
             UserModel user = new UserModel();
-            if (username.IsValidFilename() && password.IsValidFilename())
+            if (username.IsValidName() && password.IsValidName())
             {
                 userList = _userService.LoadUsers();
                 foreach (var userModel in userList.userList)

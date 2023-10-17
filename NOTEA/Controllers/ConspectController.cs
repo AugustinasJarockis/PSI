@@ -5,7 +5,6 @@ using NOTEA.Models.ConspectModels;
 using NOTEA.Models.ExceptionModels;
 using NOTEA.Services.FileServices;
 using NOTEA.Services.LogServices;
-using System.Text.Json.Serialization;
 
 namespace NOTEA.Controllers
 {
@@ -29,7 +28,7 @@ namespace NOTEA.Controllers
         {
             try
             {
-                if (name.IsValidFilename())
+                if (name.IsValidName())
                 {
                     ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
                     _fileService.SaveConspect(conspectModel);
@@ -40,7 +39,7 @@ namespace NOTEA.Controllers
                 else
                 {
                     TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty, longer than 80 symbols or contain the following characters: \\\\ / : * . ? \" < > | ";
-                    throw new ArgumentNullException("file name", "File name is null");
+                    throw new ArgumentNullException("file name", "File name is not valid");
                 }
             }
             catch (ArgumentNullException ex)
@@ -72,17 +71,13 @@ namespace NOTEA.Controllers
 
                 if (file.ContentType == "text/plain")
                 {
-                    string text = "";
-                    using (Stream stream = file.OpenReadStream())
-                    using (StreamReader sr = new StreamReader(stream))
+                    string text;
+                    using (StreamReader sr = new StreamReader(file.OpenReadStream()))
                     {
                         text = sr.ReadToEnd();
                     }
 
-                    _fileService.SaveConspect(
-                        new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName),
-                                          conspectText: text, ConspectSemester.Unknown)
-                    );
+                    _fileService.SaveConspect(new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName), conspectText: text));
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                 }
                 else
@@ -90,8 +85,6 @@ namespace NOTEA.Controllers
                     TempData["ErrorMessage"] = "Wrong type of file specified.";
                     throw new InvalidOperationException("Wrong type of file specified");
                 }
-
-                conspectListModel = null;
             }
             catch (ArgumentNullException ex)
             {
@@ -113,15 +106,14 @@ namespace NOTEA.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult ConspectList(string searchBy, string searchValue = "")
+        public IActionResult ConspectList(string searchBy, string searchValue)
         {
             if (conspectListModel == null)
             {
                 conspectListModel = _fileService.LoadConspects<ConspectModel>("Conspects");
-                ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(conspectListModel.Conspects);
                 if (string.IsNullOrEmpty(searchValue))
                 {
-                    return View(tempConspectListModel);
+                    return View(conspectListModel);
                 }
             }
             if (!string.IsNullOrWhiteSpace(searchValue))
@@ -149,10 +141,8 @@ namespace NOTEA.Controllers
                         return View(tempConspectListModel);
                     }
                 }
-                return View(conspectListModel);
             }
-
-             return View(conspectListModel);
+            return View(conspectListModel);
         }
         [HttpGet]
         public IActionResult SortConspect()
@@ -167,7 +157,6 @@ namespace NOTEA.Controllers
             }
             return RedirectToAction(nameof(ConspectList));
         }
-
         [HttpGet]
         public IActionResult ViewConspect(int Index)
         {

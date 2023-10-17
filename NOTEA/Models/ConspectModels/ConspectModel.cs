@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using NOTEA.Models.RecordModels;
+﻿using NOTEA.Models.RecordModels;
 
 namespace NOTEA.Models.ConspectModels
 {
@@ -9,7 +8,6 @@ namespace NOTEA.Models.ConspectModels
         public ConspectSemester ConspectSemester { get; set; }
         public string Name { get; set; }
         public string ConspectText { get; set; }
-
         public LinkedList<RecordModel> ConspectRecords { get; set; } = new LinkedList<RecordModel>();
 
         public ConspectModel()
