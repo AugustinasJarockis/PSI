@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NOTEA.Models;
-using NOTEA.Services;
 using System.Diagnostics;
 using NOTEA.Models.ErrorModels;
 
