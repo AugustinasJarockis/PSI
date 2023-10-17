@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NOTEA.Models;
-using NOTEA.Services;
+using NOTEA.Extentions;
+using NOTEA.Helpers;
+using NOTEA.Models.ConspectModels;
+using NOTEA.Models.ExceptionModels;
+using NOTEA.Services.FileServices;
+using NOTEA.Services.LogServices;
 using System.Text.Json.Serialization;
 
 namespace NOTEA.Controllers
@@ -147,10 +151,7 @@ namespace NOTEA.Controllers
                 }
                 return View(conspectListModel);
             }
-            else
-            {
-                TempData["ErrorMessage"] = "Please provide at least one search key.";
-            }
+
              return View(conspectListModel);
         }
         [HttpGet]

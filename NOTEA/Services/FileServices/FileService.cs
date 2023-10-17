@@ -1,13 +1,15 @@
 ﻿using Newtonsoft.Json;
-using NOTEA.Models;
+using NOTEA.Models.ConspectModels;
+using NOTEA.Models.ExceptionModels;
+using NOTEA.Services.LogServices;
 using System.Collections;
 
-namespace NOTEA.Services
+namespace NOTEA.Services.FileServices
 {
     public class FileService : IFileService
     {
         private readonly ILogsService _logsService;
-        public FileService(ILogsService logsService) 
+        public FileService(ILogsService logsService)
         {
             _logsService = logsService;
         }

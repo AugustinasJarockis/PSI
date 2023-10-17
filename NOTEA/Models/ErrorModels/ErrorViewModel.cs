@@ -1,4 +1,4 @@
-namespace NOTEA.Models
+namespace NOTEA.Models.ErrorModels
 {
     public class ErrorViewModel
     {

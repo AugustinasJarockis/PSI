@@ -2,6 +2,7 @@
 using NOTEA.Models;
 using NOTEA.Services;
 using System.Diagnostics;
+using NOTEA.Models.ErrorModels;
 
 namespace NOTEA.Controllers
 {

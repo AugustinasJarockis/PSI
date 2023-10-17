@@ -1,4 +1,4 @@
-﻿namespace NOTEA.Models
+﻿namespace NOTEA.Models.ExceptionModels
 {
     public struct ExceptionModel
     {

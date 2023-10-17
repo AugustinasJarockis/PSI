@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using NOTEA.Models;
-using NOTEA.Services;
+using NOTEA.Helpers;
+using NOTEA.Models.UserModels;
+using NOTEA.Services.UserServices;
 using System.IO;
 
 namespace NOTEA.Controllers

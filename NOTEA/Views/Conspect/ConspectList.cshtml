@@ -1,6 +1,7 @@
 @inject IHttpContextAccessor context
 ﻿@using Newtonsoft.Json;
-@model NOTEA.Models.ConspectListModel<ConspectModel>
+@using NOTEA.Models.ConspectModels;
+@model ConspectListModel<ConspectModel>
 
 @{
     ViewData["Title"] = "Conspect list";
@@ -54,6 +55,9 @@
             <tr>
                 <td>
                     <input type="submit" onclick="location.href='@Url.Action("ViewConspect","Conspect", new {Index = Model.Conspects.IndexOf(conspectModel) })'" value="@conspectModel.Name" />
+                </td>
+                <td>
+                    @conspectModel.ConspectSemester
                 </td>
                 <td>
                     @conspectModel.Date.ToLongDateString()

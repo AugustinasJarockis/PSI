@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using NOTEA.Models;
+using NOTEA.Models.UserModels;
 
-namespace NOTEA.Services
+namespace NOTEA.Services.UserServices
 {
     public class UserService : IUserService
     {

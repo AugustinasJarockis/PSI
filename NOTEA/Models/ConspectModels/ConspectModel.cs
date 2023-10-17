@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using NOTEA.Models.RecordModels;
 
-namespace NOTEA.Models
+namespace NOTEA.Models.ConspectModels
 {
     public class ConspectModel : IComparable<ConspectModel>, IConspectModel
     {
@@ -11,7 +12,8 @@ namespace NOTEA.Models
 
         public LinkedList<RecordModel> ConspectRecords { get; set; } = new LinkedList<RecordModel>();
 
-        public ConspectModel(){
+        public ConspectModel()
+        {
             Date = DateTime.Now;
             Name = "";
             ConspectText = "";
