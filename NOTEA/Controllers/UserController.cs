@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NOTEA.Helpers;
+using NOTEA.Extentions;
 using NOTEA.Models.UserModels;
 using NOTEA.Services.UserServices;
 

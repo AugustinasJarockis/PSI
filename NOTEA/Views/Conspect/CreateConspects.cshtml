@@ -1,6 +1,6 @@
 ﻿@inject IHttpContextAccessor context
 @using NOTEA.Models.ConspectModels;
-@using NOTEA.Helpers;
+@using NOTEA.Extentions;
 @model ConspectModel
 
 @{
@@ -28,7 +28,7 @@
                 @Html.ValidationMessageFor(model => model.Name, null, new { @class = "validation-error" })
                 <br/>
                 <label asp-for="ConspectSemester" class="control-label">Semester</label>
-                @Html.DropDownListFor(model => model.ConspectSemester, EnumHelper<ConspectSemester>.GetSelectList(), new { @class = "selectpicker show-menu-arrow", data_live_search = "true" })
+                @Html.DropDownListFor(model => model.ConspectSemester, EnumExtention.GetSelectList<ConspectSemester>(), new { @class = "selectpicker show-menu-arrow", data_live_search = "true" })
                 <br/>
                 <label asp-for="ConspectText" class="control-label">Text</label>
                 <textarea  asp-for="ConspectText" cols="150" rows="20"></textarea>
