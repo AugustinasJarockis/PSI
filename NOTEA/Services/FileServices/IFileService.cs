@@ -1,6 +1,6 @@
-﻿using NOTEA.Models;
+﻿using NOTEA.Models.ConspectModels;
 
-namespace NOTEA.Services
+namespace NOTEA.Services.FileServices
 {
     public interface IFileService
     {

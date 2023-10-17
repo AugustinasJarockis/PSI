@@ -1,27 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel;
 
-namespace NOTEA.Models
+namespace NOTEA.Extentions
 {
     public static class EnumExtention
     {
-        public static string ToDescription(this System.Enum value)
+        public static string ToDescription(this Enum value)
         {
             var attributes = (DescriptionAttribute[])value.GetType().GetField(value.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false);
             return attributes.Length > 0 ? attributes[0].Description : value.ToString();
         }
 
-        public static IEnumerable<SelectListItem> ToSelectList<T>(this System.Enum enumValue)
+        public static IEnumerable<SelectListItem> ToSelectList<T>(this Enum enumValue)
         {
             return
-                System.Enum.GetValues(enumValue.GetType()).Cast<T>()
+                Enum.GetValues(enumValue.GetType()).Cast<T>()
                       .Select(
                           x =>
                           new SelectListItem
                           {
-                              Text = ((System.Enum)(object)x).ToDescription(),
+                              Text = ((Enum)(object)x).ToDescription(),
                               Value = x.ToString(),
-                              Selected = (enumValue.Equals(x))
+                              Selected = enumValue.Equals(x)
                           });
         }
     }

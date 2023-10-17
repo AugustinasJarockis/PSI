@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NOTEA.Models
+namespace NOTEA.Models.ConspectModels
 {
     public enum ConspectSemester
     {

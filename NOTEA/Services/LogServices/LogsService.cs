@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using NOTEA.Models;
+using NOTEA.Models.ExceptionModels;
 
-namespace NOTEA.Services
+namespace NOTEA.Services.LogServices
 {
     public class LogsService : ILogsService
     {
@@ -10,7 +10,7 @@ namespace NOTEA.Services
             using (StreamWriter writer = new StreamWriter("Logs//logs.txt", append: true))
                 try
                 {
-                    string info = "Message: " + exception.Message +" Stack trace: "+ exception.StackTrace + " Source: " + exception.Source;
+                    string info = "Message: " + exception.Message + " Stack trace: " + exception.StackTrace + " Source: " + exception.Source;
                     writer.WriteLine(info);
                 }
                 catch (Exception ex)

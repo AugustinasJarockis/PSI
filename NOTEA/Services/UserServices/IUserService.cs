@@ -1,6 +1,6 @@
-﻿using NOTEA.Models;
+﻿using NOTEA.Models.UserModels;
 
-namespace NOTEA.Services
+namespace NOTEA.Services.UserServices
 {
     public interface IUserService
     {

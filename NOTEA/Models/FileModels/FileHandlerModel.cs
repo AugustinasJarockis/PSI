@@ -1,4 +1,4 @@
-﻿namespace NOTEA.Models
+﻿namespace NOTEA.Models.FileModels
 {
     public class FileHandlerModel
     {

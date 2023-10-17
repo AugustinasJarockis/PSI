@@ -1,6 +1,6 @@
-﻿using NOTEA.Models;
+﻿using NOTEA.Models.ExceptionModels;
 
-namespace NOTEA.Services
+namespace NOTEA.Services.LogServices
 {
     public interface ILogsService
     {

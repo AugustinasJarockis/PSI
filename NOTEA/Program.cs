@@ -1,4 +1,6 @@
-using NOTEA.Services;
+using NOTEA.Services.FileServices;
+using NOTEA.Services.LogServices;
+using NOTEA.Services.UserServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
