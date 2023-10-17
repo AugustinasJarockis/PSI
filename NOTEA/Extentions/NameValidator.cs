@@ -1,4 +1,4 @@
-﻿namespace NOTEA.Helpers
+﻿namespace NOTEA.Extentions
 {
     public static class NameValidator
     {
