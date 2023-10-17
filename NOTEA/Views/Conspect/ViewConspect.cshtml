@@ -1,4 +1,5 @@
 ﻿@inject IHttpContextAccessor context
+@using NOTEA.Extentions;
 @using NOTEA.Models.ConspectModels;
 @model ConspectModel
 
@@ -19,6 +20,8 @@ div .text-wrapping{
 </style>
 
 <h1>@Model.Name</h1>
+
+<p>@Model.ConspectSemester.GetDisplayName()</p>
 
 <div class="text-wrapping">
     <p>@Model.ConspectText</p>

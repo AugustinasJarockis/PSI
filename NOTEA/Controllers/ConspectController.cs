@@ -136,7 +136,7 @@ namespace NOTEA.Controllers
                     }
                     else if (searchBy.ToLower() == "conspectsemester")
                     {
-                        var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.ToDescription().ToLower().Contains(searchValue.ToLower())).ToList();
+                        var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())).ToList();
                         ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
                         return View(tempConspectListModel);
                     }
