@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NOTEA.Models;
+using NOTEA.Database;
 
 #nullable disable
 
 namespace NOTEA.Migrations
 {
-    [DbContext(typeof(DatabaseMano))]
+    [DbContext(typeof(DatabaseContext))]
     partial class DatabaseManoModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
