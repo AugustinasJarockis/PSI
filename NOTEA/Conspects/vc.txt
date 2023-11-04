@@ -1,0 +1,1 @@
+{"Id":3,"Date":"2023-11-03T23:44:40.0651328+02:00","ConspectSemester":0,"Name":"vc","ConspectText":"vc","ConspectRecords":[]}

@@ -4,6 +4,7 @@ namespace NOTEA.Models.ConspectModels
 {
     public class ConspectModel : IComparable<ConspectModel>, IConspectModel
     {
+        public int Id { get; set; }
         public DateTime Date { get; set; }
         public ConspectSemester ConspectSemester { get; set; }
         public string Name { get; set; }

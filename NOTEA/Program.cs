@@ -1,6 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using NOTEA.Models;
 using NOTEA.Services.FileServices;
 using NOTEA.Services.LogServices;
 using NOTEA.Services.UserServices;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +15,10 @@ builder.Services.AddScoped<ILogsService, LogsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddDbContext<DatabaseMano>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
+});
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(120);

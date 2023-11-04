@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NOTEA.Extentions;
+using NOTEA.Models;
 using NOTEA.Models.ConspectModels;
 using NOTEA.Models.ExceptionModels;
 using NOTEA.Services.FileServices;
@@ -12,10 +13,12 @@ namespace NOTEA.Controllers
         private static ConspectListModel<ConspectModel> conspectListModel = null;
         private static ConspectListModel<ConspectModel> tempConspectListModel = null;
         private readonly IFileService _fileService;
+        private readonly DatabaseMano _context;
         private readonly ILogsService _logsService;
-        public ConspectController(IFileService fileService, ILogsService logsService)
+        public ConspectController(IFileService fileService, ILogsService logsService, DatabaseMano context)
         {
             _fileService = fileService;
+            _context = context; 
             _logsService = logsService;
         }
         public IActionResult CreateConspects()
@@ -33,6 +36,8 @@ namespace NOTEA.Controllers
                     ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
                     _fileService.SaveConspect(conspectModel);
                     conspectListModel = null;
+                    _context.Conspects.Add(conspectModel);
+                    _context.SaveChanges();
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                     return RedirectToAction(nameof(CreateConspects));
                 }
