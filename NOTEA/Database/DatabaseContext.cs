@@ -2,17 +2,17 @@
 using NOTEA.Models.ConspectModels;
 using NOTEA.Models.UserModels;
 
-namespace NOTEA.Models
+namespace NOTEA.Database
 {
-    public class DatabaseMano : DbContext
+    public class DatabaseContext : DbContext
     {
         public DbSet<ConspectModel> Conspects { get; set; }
 
         //public DbSet<UserModel> Users { get; set; }     
 
-        public DatabaseMano(DbContextOptions options) : base(options)
+        public DatabaseContext(DbContextOptions options) : base(options)
         {
-            
+
         }
     }
 }

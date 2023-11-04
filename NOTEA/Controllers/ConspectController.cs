@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NOTEA.Extentions;
-using NOTEA.Models;
 using NOTEA.Models.ConspectModels;
 using NOTEA.Models.ExceptionModels;
 using NOTEA.Services.FileServices;
 using NOTEA.Services.LogServices;
+using NOTEA.Database;
 
 namespace NOTEA.Controllers
 {
@@ -13,9 +13,9 @@ namespace NOTEA.Controllers
         private static ConspectListModel<ConspectModel> conspectListModel = null;
         private static ConspectListModel<ConspectModel> tempConspectListModel = null;
         private readonly IFileService _fileService;
-        private readonly DatabaseMano _context;
+        private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
-        public ConspectController(IFileService fileService, ILogsService logsService, DatabaseMano context)
+        public ConspectController(IFileService fileService, ILogsService logsService, DatabaseContext context)
         {
             _fileService = fileService;
             _context = context; 
@@ -36,8 +36,8 @@ namespace NOTEA.Controllers
                     ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
                     _fileService.SaveConspect(conspectModel);
                     conspectListModel = null;
-                    _context.Conspects.Add(conspectModel);
-                    _context.SaveChanges();
+                    //_context.Conspects.Add(conspectModel);
+                    //_context.SaveChanges();
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                     return RedirectToAction(nameof(CreateConspects));
                 }
@@ -116,7 +116,7 @@ namespace NOTEA.Controllers
         {
             if (conspectListModel == null)
             {
-                conspectListModel = _fileService.LoadConspects<ConspectModel>("Conspects");
+                conspectListModel = _fileService.LoadConspects();  
                 tempConspectListModel = conspectListModel;
                 if (string.IsNullOrEmpty(searchValue))
                 {

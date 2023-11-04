@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NOTEA.Models;
+using NOTEA.Database;
 
 #nullable disable
 
 namespace NOTEA.Migrations
 {
-    [DbContext(typeof(DatabaseMano))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20231103203201_InitialCreate")]
     partial class InitialCreate
     {
