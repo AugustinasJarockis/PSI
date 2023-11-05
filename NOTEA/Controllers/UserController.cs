@@ -9,12 +9,12 @@ namespace NOTEA.Controllers
     {
         public readonly IHttpContextAccessor _contextAccessor;
         private readonly IUserService _userService;
+        UserListModel userList = new UserListModel();
         public UserController(IHttpContextAccessor contextAccessor, IUserService userService)
         {
             _contextAccessor = contextAccessor;
             _userService = userService;
         }
-        UserListModel userList = new UserListModel();
 
         public IActionResult SignIn()
         {
@@ -24,7 +24,7 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult SignIn(string username, string password, string passwordCheck)
         {
-            bool usernameTaken = false;
+            bool usernameTaken = true;
             if (username.IsValidName() && password.IsValidName() && passwordCheck.IsValidName())
             {
                 userList = _userService.LoadUsers();
@@ -33,6 +33,7 @@ namespace NOTEA.Controllers
                     if(username == userModel.Username)
                     {
                         usernameTaken = true;
+                        break;
                     }
                 }
                 if (!usernameTaken)
@@ -43,7 +44,7 @@ namespace NOTEA.Controllers
                     
                         userList.userList.Add(user);
 
-                        _userService.SaveUsers(userList);
+                        _userService.SaveUser(user);
                         TempData["SuccessMessage"] = "Your registration has been successful!";
                         return RedirectToAction("LogIn", "User");
                     }

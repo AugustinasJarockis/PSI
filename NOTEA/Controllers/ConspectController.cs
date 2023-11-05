@@ -35,8 +35,6 @@ namespace NOTEA.Controllers
                     ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
                     _fileService.SaveConspect(conspectModel);
                     conspectListModel = null;
-                    //_context.Conspects.Add(conspectModel);
-                    //_context.SaveChanges();
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                     return RedirectToAction(nameof(CreateConspects));
                 }

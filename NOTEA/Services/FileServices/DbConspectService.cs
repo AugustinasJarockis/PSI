@@ -5,19 +5,19 @@ using NOTEA.Database;
 
 namespace NOTEA.Services.FileServices
 {
-    public class DatabaseConspectService : IFileService
+    public class DbConspectService : IFileService
     {
         private readonly ILogsService _logsService;
         private readonly DatabaseContext _database;
-        public DatabaseConspectService(ILogsService logsService, DatabaseContext database)
+        public DbConspectService(ILogsService logsService, DatabaseContext database)
         {
             _logsService = logsService;
             _database = database;
         }
         public ConspectListModel<ConspectModel> LoadConspects()
         {
-                var conspects = _database.Conspects.ToList();
-                return new ConspectListModel<ConspectModel>(conspects);
+            var conspects = _database.Conspects.ToList();
+            return new ConspectListModel<ConspectModel>(conspects);
         }
         public /*async*/ void SaveConspect(ConspectModel conspect)
         {

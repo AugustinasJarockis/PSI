@@ -11,18 +11,20 @@ namespace NOTEA.Services.UserServices
             UserListModel userList = JsonConvert.DeserializeObject<UserListModel>(text);
             return userList;
         }
-        public void SaveUsers(UserListModel userList)
+        public void SaveUser(UserModel user)
         {
+            UserListModel userList = LoadUsers();
+            userList.userList.Add(user);
             using (StreamWriter writer = new StreamWriter("Users//Users.txt"))
-                try
-                {
-                    string serializedJSON = JsonConvert.SerializeObject(userList);
-                    writer.Write(serializedJSON);
-                }
-                catch (Exception exp)
-                {
-                    Console.WriteLine("Error: could not save user ");
-                }
+            try
+            {
+                string serializedJSON = JsonConvert.SerializeObject(userList);
+                writer.Write(serializedJSON);
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine("Error: could not save user ");
+            }
         }
     }
 }
