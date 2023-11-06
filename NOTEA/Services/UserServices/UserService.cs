@@ -5,7 +5,7 @@ namespace NOTEA.Services.UserServices
 {
     public class UserService : IUserService
     {
-        public UserListModel LoadUsers()
+        private UserListModel LoadUsers()
         {
             string text = File.ReadAllText("Users//Users.txt");
             UserListModel userList = JsonConvert.DeserializeObject<UserListModel>(text);
@@ -25,6 +25,10 @@ namespace NOTEA.Services.UserServices
             {
                 Console.WriteLine("Error: could not save user ");
             }
+        }
+        bool IUserService.CheckLogIn(UserModel user)
+        {
+            throw new NotImplementedException();
         }
     }
 }
