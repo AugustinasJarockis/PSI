@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
-using NOTEA.Database;
-using NOTEA.Models.ConspectModels;
+﻿using NOTEA.Database;
 using NOTEA.Models.ExceptionModels;
 using NOTEA.Models.UserModels;
 using NOTEA.Services.LogServices;
+using NOTEA.Exceptions;
+using Microsoft.Data.SqlClient;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace NOTEA.Services.UserServices
 {
@@ -15,6 +17,12 @@ namespace NOTEA.Services.UserServices
         {
             _logsService = logsService;
             _database = database;
+        }
+        public bool CheckLogIn(UserModel user)
+        {
+            return _database.Users.Where(u =>
+                u.Username.Equals(user.Username) && u.Password.Equals(user.Username)
+                ).ToList().Count() == 1;
         }
         public UserListModel LoadUsers()
         {
@@ -29,6 +37,14 @@ namespace NOTEA.Services.UserServices
             {
                 _database.Users.Add(user);
                 _database.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException.GetType() == typeof(SqlException) && ((SqlException)ex.InnerException).Number == 2627)
+                {
+                    throw new UsernameTakenException();
+                }
+                else throw;
             }
             catch (Exception ex)
             {
