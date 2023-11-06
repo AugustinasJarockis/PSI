@@ -28,7 +28,15 @@ namespace NOTEA.Services.UserServices
         }
         bool IUserService.CheckLogIn(UserModel user)
         {
-            throw new NotImplementedException();
+            UserListModel userList = LoadUsers();
+            foreach (var userModel in userList.userList)
+            {
+                if (userModel.Username.Equals(user.Username) && userModel.Password.Equals(user.Password))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
