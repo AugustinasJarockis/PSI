@@ -7,7 +7,6 @@ namespace NOTEA.Models.UserModels
         [Key]
         public string Username { get; set; }
         public string Password { get; set; }
-        public string? PasswordCheck { get; set; }
         public UserModel(string username, string password)
         {
             Username = username;

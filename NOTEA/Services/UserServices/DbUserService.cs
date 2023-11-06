@@ -4,7 +4,6 @@ using NOTEA.Models.UserModels;
 using NOTEA.Services.LogServices;
 using NOTEA.Exceptions;
 using Microsoft.Data.SqlClient;
-using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace NOTEA.Services.UserServices
@@ -21,15 +20,8 @@ namespace NOTEA.Services.UserServices
         public bool CheckLogIn(UserModel user)
         {
             return _database.Users.Where(u =>
-                u.Username.Equals(user.Username) && u.Password.Equals(user.Username)
+                u.Username.Equals(user.Username) && u.Password.Equals(user.Password)
                 ).ToList().Count() == 1;
-        }
-        public UserListModel LoadUsers()
-        {
-            var users = _database.Users.ToList();
-            UserListModel userList = new UserListModel();
-            userList.userList = users;
-            return userList;
         }
         public void SaveUser(UserModel user)
         {

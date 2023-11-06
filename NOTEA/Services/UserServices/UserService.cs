@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NOTEA.Models.UserModels;
+using NOTEA.Exceptions;
 
 namespace NOTEA.Services.UserServices
 {
@@ -14,6 +15,13 @@ namespace NOTEA.Services.UserServices
         public void SaveUser(UserModel user)
         {
             UserListModel userList = LoadUsers();
+            foreach (var userModel in userList.userList)
+            {
+                if (user.Username == userModel.Username)
+                {
+                    throw new UsernameTakenException();
+                }
+            }
             userList.userList.Add(user);
             using (StreamWriter writer = new StreamWriter("Users//Users.txt"))
             try

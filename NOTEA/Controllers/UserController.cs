@@ -24,7 +24,6 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult SignIn(string username, string password, string passwordCheck)
         {
-            bool usernameTaken = false;
             if (username.IsValidName() && password.IsValidName() && passwordCheck.IsValidName())
             {
                 try

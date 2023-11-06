@@ -79,9 +79,6 @@ namespace NOTEA.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordCheck")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Username");
 
                     b.ToTable("Users");
