@@ -4,7 +4,7 @@ namespace NOTEA.Services.UserServices
 {
     public interface IUserService
     {
-        public void SaveUsers(UserListModel userList);
-        public UserListModel LoadUsers();
+        public void SaveUser(UserModel user);
+        public bool CheckLogIn(UserModel user);
     }
 }

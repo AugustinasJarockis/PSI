@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NOTEA.Database;
-using NOTEA.Migrations;
 using NOTEA.Services.FileServices;
 using NOTEA.Services.LogServices;
 using NOTEA.Services.UserServices;
@@ -11,9 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<IFileService, DatabaseConspectService>();
+builder.Services.AddScoped<IFileService, DbConspectService>();
 builder.Services.AddScoped<ILogsService, LogsService>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserService, DbUserService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddDbContext<DatabaseContext>(options =>

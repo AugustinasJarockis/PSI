@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NOTEA.Exceptions;
 using NOTEA.Extentions;
 using NOTEA.Models.UserModels;
 using NOTEA.Services.UserServices;
@@ -14,7 +15,6 @@ namespace NOTEA.Controllers
             _contextAccessor = contextAccessor;
             _userService = userService;
         }
-        UserListModel userList = new UserListModel();
 
         public IActionResult SignIn()
         {
@@ -24,26 +24,14 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult SignIn(string username, string password, string passwordCheck)
         {
-            bool usernameTaken = false;
             if (username.IsValidName() && password.IsValidName() && passwordCheck.IsValidName())
             {
-                userList = _userService.LoadUsers();
-                foreach (var userModel in userList.userList)
-                {
-                    if(username == userModel.Username)
-                    {
-                        usernameTaken = true;
-                    }
-                }
-                if (!usernameTaken)
+                try
                 {
                     if (password == passwordCheck )
                     {
                         UserModel user = new UserModel(username, password);
-                    
-                        userList.userList.Add(user);
-
-                        _userService.SaveUsers(userList);
+                        _userService.SaveUser(user);
                         TempData["SuccessMessage"] = "Your registration has been successful!";
                         return RedirectToAction("LogIn", "User");
                     }
@@ -52,7 +40,7 @@ namespace NOTEA.Controllers
                         TempData["ErrorMessage"] = "The passwords you entered do not match!";
                     }
                 }
-                else
+                catch (UsernameTakenException)
                 {
                     TempData["ErrorMessage"] = "This username is already taken";
                 }
@@ -71,30 +59,15 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult LogIn(string username, string password)
         {
-            UserModel user = new UserModel();
-            if (username.IsValidName() && password.IsValidName())
-            {
-                userList = _userService.LoadUsers();
-                foreach (var userModel in userList.userList)
-                {
-                    if(userModel.Username.Equals(username) && userModel.Password.Equals(password))
-                    {
-                        user = new UserModel(username, password);
-                    }
-                }
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Your username or password is invalid! It can't be empty, longer than 80 symbols or contain any of the following characters:\n \\\\ / : * . ? \" < > | ";
-            }
-            if(user.Username == "" && user.Password == "")
-            {
-                TempData["ErrorMessage"] = "Your username or password is wrong";
-            }
-            else
+            UserModel user = new UserModel(username, password);
+            if (username.IsValidName() && password.IsValidName() && _userService.CheckLogIn(user))
             {
                 _contextAccessor.HttpContext.Session.SetString("User", user.Username);
                 return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Your username or password is wrong";
             }
             return View();
         }

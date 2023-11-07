@@ -12,7 +12,7 @@ using NOTEA.Database;
 namespace NOTEA.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231103203201_InitialCreate")]
+    [Migration("20231106141312_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -71,6 +71,20 @@ namespace NOTEA.Migrations
                     b.HasIndex("ConspectModelId");
 
                     b.ToTable("RecordModel");
+                });
+
+            modelBuilder.Entity("NOTEA.Models.UserModels.UserModel", b =>
+                {
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Username");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("NOTEA.Models.RecordModels.RecordModel", b =>

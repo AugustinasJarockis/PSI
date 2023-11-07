@@ -8,7 +8,7 @@ namespace NOTEA.Database
     {
         public DbSet<ConspectModel> Conspects { get; set; }
 
-        //public DbSet<UserModel> Users { get; set; }     
+        public DbSet<UserModel> Users { get; set; }     
 
         public DatabaseContext(DbContextOptions options) : base(options)
         {

@@ -28,6 +28,18 @@ namespace NOTEA.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Username = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Username);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RecordModel",
                 columns: table => new
                 {
@@ -57,6 +69,9 @@ namespace NOTEA.Migrations
         {
             migrationBuilder.DropTable(
                 name: "RecordModel");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Conspects");
