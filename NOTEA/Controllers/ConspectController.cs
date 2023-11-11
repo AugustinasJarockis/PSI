@@ -171,5 +171,17 @@ namespace NOTEA.Controllers
         {
             return View(_fileService.LoadConspect(id));
         }
+        [HttpPost]
+        public IActionResult ViewConspect(ConspectModel model)
+        {
+            _fileService.SaveConspect(model);
+            conspectListModel = null;
+            return View(model);
+        }
+        [HttpGet]
+        public IActionResult EditConspect(int id)
+        {
+            return View(_fileService.LoadConspect(id));
+        }
     }
 }

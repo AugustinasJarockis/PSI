@@ -1,36 +1,43 @@
 ﻿@inject IHttpContextAccessor context
-@using NOTEA.Models.UserModels;
-@model SignInUserModel
+@using NOTEA.Models.ConspectModels;
+@using NOTEA.Extentions;
+@model ConspectModel
 
 @{
-    ViewData["Title"] = "Sign In";
-    if (context.HttpContext.Session.GetString("User") != null)
+    ViewData["Title"] = "Edit conspect";
+    if (context.HttpContext.Session.GetString("User") == null)
     {
-        context.HttpContext.Response.Redirect("/Home/Index");
+        context.HttpContext.Response.Redirect("/User/LogIn");
     }
 }
-<p></p>
-<div style="float:right">
-    <input type="submit" onclick="location.href='@Url.Action("LogIn","User")'" value="Back to Log in" />
-</div>
-<h1>Sign In</h1>
+
+<style>
+    .validation-error {
+        color: red;
+    }
+</style>
+
+<h1>Edit conspect</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-controller="User" asp-action="SignIn">
+        <form asp-controller="Conspect" asp-action="ViewConspect">
+                <input asp-for="Id" type="hidden" />
             <div class="form-group">
-                <label asp-for="Username" class="control-label">Username</label><br />
-                <input id="username" name="username" type="text" value="" /><br />
-                <label asp-for="Password" class="control-label">Password</label><br />
-                <input id="Password" name="Password" type="password" value="" /><br />
-                <label asp-for="PasswordCheck" class="control-label">Repeat password</label><br />
-                <input id="PasswordCheck" name="PasswordCheck" type="password" value="" /><br />
-                <label asp-for="Email" class="control-label">Email</label><br />
-                <input id="email" name="email" type="text" value="" /><br />
+                <label asp-for="Name" class="control-label">Name</label>
+                <input asp-for="Name" class="form-control" />
+                @Html.ValidationMessageFor(model => model.Name, null, new { @class = "validation-error" })
+                <br />
+                <label asp-for="ConspectSemester" class="control-label">Semester</label>
+                @Html.DropDownListFor(model => model.ConspectSemester, EnumExtention.GetSelectList<ConspectSemester>(), new { @class = "selectpicker show-menu-arrow", data_live_search = "true" })
+                <br />
+                <label asp-for="ConspectText" class="control-label">Text</label>
+                <textarea asp-for="ConspectText" cols="150" rows="20"></textarea>
+                @Html.ValidationMessageFor(model => model.ConspectText, null, new { @class = "validation-error" })
             </div>
-            <p></p>
+            <br />
             <div class="form-group">
-                <input type="submit" value="Sign in" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -51,7 +58,6 @@
     </div>
 </div>
 
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -67,9 +73,9 @@
             var msg = "@TempData["SuccessMessage"]";
             if (msg)
                 openSuccessModal(msg);
+            closeOnEscape: true
         });
     </script>
-
     <script type="text/javascript">
         function openErrorModal(errorMessage) {
             var errorDiv = document.getElementById("MyModalErrorAlertBody");
