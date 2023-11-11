@@ -12,7 +12,7 @@ using NOTEA.Database;
 namespace NOTEA.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231111180845_InitialCreate")]
+    [Migration("20231111224321_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -78,6 +78,10 @@ namespace NOTEA.Migrations
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
@@ -86,6 +90,9 @@ namespace NOTEA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Username");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

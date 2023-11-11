@@ -75,6 +75,10 @@ namespace NOTEA.Migrations
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
@@ -83,6 +87,9 @@ namespace NOTEA.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Username");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

@@ -22,15 +22,15 @@ namespace NOTEA.Controllers
         }
 
         [HttpPost]
-        public IActionResult SignIn(string username, string password, string passwordCheck) //Make return UserModel
+        public IActionResult SignIn(string username, string password, string passwordCheck, string email) //Make return UserModel
         {
-            if (username.IsValidName() && password.IsValidName() && passwordCheck.IsValidName())
+            if (username.IsValidName() && password.IsValidName() && passwordCheck.IsValidName() && email.IsValidEmail())
             {
                 try
                 {
                     if (password == passwordCheck )
                     {
-                        UserModel user = new UserModel(username, password);//_mapper.Map<UserModel>(SignInModel)
+                        UserModel user = new UserModel(username, password, "brr");//_mapper.Map<UserModel>(SignInModel)
                         _userService.SaveUser(user);
                         TempData["SuccessMessage"] = "Your registration has been successful!";
                         return RedirectToAction("LogIn", "User");
@@ -44,6 +44,11 @@ namespace NOTEA.Controllers
                 {
                     TempData["ErrorMessage"] = "This username is already taken";
                 }
+            }
+            else if (!email.IsValidEmail())
+            {
+                TempData["ErrorMessage"] = "Your email is not valid. It should follow the \"user\\@example.com\" pattern";
+
             }
             else
             {
@@ -59,7 +64,8 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult LogIn(string username, string password)
         {
-            UserModel user = new UserModel(username, password);
+            UserModel user = new UserModel(username, password, "");
+            //PAVOJUS KAS CIA REIKIA EMAILO ALIO NORIU KAD NEREIKETU
             if (username.IsValidName() && password.IsValidName() && _userService.CheckLogIn(user))
             {
                 _contextAccessor.HttpContext.Session.SetString("User", user.Username);

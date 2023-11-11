@@ -1,4 +1,6 @@
-﻿namespace NOTEA.Extentions
+﻿using System.Text.RegularExpressions;
+
+namespace NOTEA.Extentions
 {
     public static class NameValidator
     {
@@ -11,5 +13,13 @@
                 return false;
             return true;
         }
+        public static bool IsValidEmail (this string email)
+        {
+            Regex validateEmailRegex = new Regex("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
+            if (validateEmailRegex.IsMatch(email))
+              return true; 
+            return false; 
+        }
+
     }
 }
