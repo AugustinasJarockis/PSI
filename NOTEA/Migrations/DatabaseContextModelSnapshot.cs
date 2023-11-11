@@ -75,6 +75,9 @@ namespace NOTEA.Migrations
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

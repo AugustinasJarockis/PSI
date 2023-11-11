@@ -12,7 +12,7 @@ using NOTEA.Database;
 namespace NOTEA.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231106141312_InitialCreate")]
+    [Migration("20231111180845_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -77,6 +77,9 @@ namespace NOTEA.Migrations
                 {
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<string>("Password")
                         .IsRequired()
