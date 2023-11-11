@@ -54,6 +54,19 @@
     }
 
     <script type="text/javascript">
+        function openSuccessModal(strMessage) {
+            var myDiv = document.getElementById("MyModalSuccessAlertBody");
+            myDiv.innerHTML = strMessage;
+            $('#myModalSuccess').modal('show');
+        }
+        $(document).ready(function () {
+            var msg = "@TempData["SuccessMessage"]";
+            if (msg)
+                openSuccessModal(msg);
+        });
+    </script>
+
+    <script type="text/javascript">
         function openErrorModal(errorMessage) {
             var errorDiv = document.getElementById("MyModalErrorAlertBody");
             errorDiv.innerHTML = errorMessage;
