@@ -14,5 +14,11 @@ namespace NOTEA.Database
         {
 
         }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<UserModel>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+        }
     }
 }

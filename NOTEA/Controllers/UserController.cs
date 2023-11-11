@@ -22,7 +22,7 @@ namespace NOTEA.Controllers
         }
 
         [HttpPost]
-        public IActionResult SignIn(string username, string password, string passwordCheck)
+        public IActionResult SignIn(string username, string password, string passwordCheck) //Make return UserModel
         {
             if (username.IsValidName() && password.IsValidName() && passwordCheck.IsValidName())
             {
@@ -30,7 +30,7 @@ namespace NOTEA.Controllers
                 {
                     if (password == passwordCheck )
                     {
-                        UserModel user = new UserModel(username, password);
+                        UserModel user = new UserModel(username, password);//_mapper.Map<UserModel>(SignInModel)
                         _userService.SaveUser(user);
                         TempData["SuccessMessage"] = "Your registration has been successful!";
                         return RedirectToAction("LogIn", "User");

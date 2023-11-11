@@ -161,9 +161,9 @@ namespace NOTEA.Controllers
             return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]
-        public IActionResult ViewConspect(int Index)
+        public IActionResult ViewConspect(int id)
         {
-            return View(conspectListModel.Conspects[Index]);
+            return View(_fileService.LoadConspect(id));
         }
     }
 }
