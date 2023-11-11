@@ -11,6 +11,7 @@ namespace NOTEA.Controllers
     public class ConspectController : Controller
     {
         private static ConspectListModel<ConspectModel> conspectListModel = null;
+        private static ConspectListModel<ConspectModel> tempConspectListModel = null;
         private readonly IFileService _fileService;
         private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
@@ -87,6 +88,7 @@ namespace NOTEA.Controllers
                     TempData["ErrorMessage"] = "Wrong type of file specified.";
                     throw new InvalidOperationException("Wrong type of file specified");
                 }
+                conspectListModel = null;
             }
             catch (ArgumentNullException ex)
             {
@@ -112,8 +114,8 @@ namespace NOTEA.Controllers
         {
             if (conspectListModel == null)
             {
-                //conspectListModel = _fileService.LoadConspects<ConspectModel>("Conspects");
-                conspectListModel = _fileService.LoadConspects();
+                conspectListModel = _fileService.LoadConspects();  
+                tempConspectListModel = conspectListModel;
                 if (string.IsNullOrEmpty(searchValue))
                 {
                     return View(conspectListModel);
@@ -134,16 +136,20 @@ namespace NOTEA.Controllers
                     if (searchBy.ToLower() == "name")
                     {
                         var searchByName = conspectListModel.Conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
-                        ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
+                        tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
                         return View(tempConspectListModel);
                     }
                     else if (searchBy.ToLower() == "conspectsemester")
                     {
                         var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())).ToList();
-                        ConspectListModel<ConspectModel> tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
+                        tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
                         return View(tempConspectListModel);
                     }
                 }
+            }
+            else
+            {
+                tempConspectListModel.Conspects = conspectListModel.Conspects;
             }
             return View(conspectListModel);
         }
