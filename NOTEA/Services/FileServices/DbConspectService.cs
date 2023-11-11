@@ -16,7 +16,7 @@ namespace NOTEA.Services.FileServices
         }
         public ConspectModel LoadConspect(int id)
         {
-            return _database.Conspects.Where(c => c.Id == id).First();
+            return _database.Conspects.Find(id);
         }
         public ConspectListModel<ConspectModel> LoadConspects()
         {
@@ -27,11 +27,14 @@ namespace NOTEA.Services.FileServices
         {
             try
             {
-                _database.Conspects.Add(conspect);
-                string userN = Environment.UserName;
-                //var user = _database.Users.Where(c => c.Username == userN).First();
-                //user.Conspects_Id.Add(conspect.Id);
-                _database.Users.Where(c => c.Username == userN).First().Conspects_Id.Add(conspect.Id);
+                var temp = _database.Conspects.Find(conspect.Id);
+                if (temp == null)
+                    _database.Conspects.Add(conspect);
+                else
+                {
+                    _database.Entry(temp).CurrentValues.SetValues(conspect);
+
+                }
                 _database.SaveChanges();
             }
             catch (Exception ex)

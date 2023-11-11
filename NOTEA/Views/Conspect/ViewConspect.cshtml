@@ -23,15 +23,11 @@ div .text-wrapping{
 
 <p>@Model.ConspectSemester.GetDisplayName()</p>
 
-@*This is new part*@
-<td>
-    <input type="submit" onclick="location.href='@Url.Action("EditConspect","Conspect", new {Id = Model.Id })'" value="Edit" class="btn btn-primary" />
-</td>
-@*This is new part*@
 
 <div class="text-wrapping">
     <p>@Model.ConspectText</p>
 </div>
+<input type="submit" onclick="location.href='@Url.Action("EditConspect","Conspect", new {Id = Model.Id })'" value="Edit" class="btn btn-primary" />
 <div>
     <a asp-action="ConspectList">Back to List</a>
 </div>

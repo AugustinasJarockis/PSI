@@ -4,7 +4,7 @@
 @model ConspectModel
 
 @{
-    ViewData["Title"] = "Create conspects";
+    ViewData["Title"] = "Edit conspect";
     if (context.HttpContext.Session.GetString("User") == null)
     {
         context.HttpContext.Response.Redirect("/User/LogIn");
@@ -17,11 +17,12 @@
     }
 </style>
 
-<h1>Create a conspect</h1>
+<h1>Edit conspect</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-controller="Conspect" asp-action="CreateConspects">
+        <form asp-controller="Conspect" asp-action="ViewConspect">
+                <input asp-for="Id" type="hidden" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
