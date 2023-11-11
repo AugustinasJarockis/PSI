@@ -8,7 +8,7 @@ namespace NOTEA.Services.LogServices
         {
             using (StreamWriter writer = new StreamWriter("Logs//logs.txt", append: true))
             {
-                string info = "Message: " + exception.Message + " Stack trace: " + exception.StackTrace + " Source: " + exception.Source;
+                string info = "Message: " + exception.Message + " Time: " + exception.DateTime + " Stack trace: " + exception.StackTrace + " Source: " + exception.Source;
                 writer.WriteLine(info);
             }
         }
