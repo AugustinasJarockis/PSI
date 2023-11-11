@@ -15,13 +15,13 @@ namespace NOTEA.Models.UserModels
         {
             Username = username;
             Password = password;
-            Conspects_Id = new List<int>(null);
+            Conspects_Id = new List<int>();
         }
         public UserModel()
         {
             Username = "";
             Password = "";
-            Conspects_Id = new List<int>(null);
+            Conspects_Id = new List<int>();
         }
     }
 }
