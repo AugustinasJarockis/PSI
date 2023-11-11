@@ -14,6 +14,10 @@ namespace NOTEA.Services.FileServices
             _logsService = logsService;
             _database = database;
         }
+        public ConspectModel LoadConspect(int id)
+        {
+            return _database.Conspects.Where(c => c.Id == id).First();
+        }
         public ConspectListModel<ConspectModel> LoadConspects()
         {
             var conspects = _database.Conspects.ToList();

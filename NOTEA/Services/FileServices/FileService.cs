@@ -19,7 +19,12 @@ namespace NOTEA.Services.FileServices
             ConspectType conspectModel = JsonConvert.DeserializeObject<ConspectType>(text);
             return conspectModel;
         }
-
+        public ConspectModel LoadConspect(int id)
+        {
+            ConspectListModel<ConspectModel> conspectListModel = LoadConspects();
+            ConspectModel conspectModel = conspectListModel.Conspects.Where(c => c.Id == id).First();
+            return conspectModel;
+        }
         public ConspectListModel<ConspectType> LoadConspects<ConspectType>()
         {
             ConspectListModel<ConspectType> conspectListModel = new ConspectListModel<ConspectType>();
