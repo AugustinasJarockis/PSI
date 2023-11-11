@@ -28,6 +28,10 @@ namespace NOTEA.Services.FileServices
             try
             {
                 _database.Conspects.Add(conspect);
+                string userN = Environment.UserName;
+                //var user = _database.Users.Where(c => c.Username == userN).First();
+                //user.Conspects_Id.Add(conspect.Id);
+                _database.Users.Where(c => c.Username == userN).First().Conspects_Id.Add(conspect.Id);
                 _database.SaveChanges();
             }
             catch (Exception ex)
