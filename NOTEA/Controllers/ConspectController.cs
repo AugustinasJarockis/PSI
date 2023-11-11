@@ -171,5 +171,10 @@ namespace NOTEA.Controllers
         {
             return View(_fileService.LoadConspect(id));
         }
+        [HttpPost]
+        public IActionResult EditConspect(int id)
+        {
+            return View(_fileService.LoadConspect(id));
+        }
     }
 }

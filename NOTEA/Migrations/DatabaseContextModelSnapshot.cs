@@ -84,6 +84,9 @@ namespace NOTEA.Migrations
 
                     b.HasKey("Username");
 
+                    b.HasIndex("Username")
+                        .IsUnique();
+
                     b.ToTable("Users");
                 });
 
