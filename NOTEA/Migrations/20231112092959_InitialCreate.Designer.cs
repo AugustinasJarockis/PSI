@@ -12,7 +12,7 @@ using NOTEA.Database;
 namespace NOTEA.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231111224321_InitialCreate")]
+    [Migration("20231112092959_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

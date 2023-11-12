@@ -25,7 +25,7 @@ namespace NOTEA.Services.FileServices
             ConspectModel conspectModel = conspectListModel.Conspects.Where(c => c.Id == id).First();
             return conspectModel;
         }
-        public ConspectListModel<ConspectType> LoadConspects<ConspectType>()
+        public ConspectListModel<ConspectType> LoadConspects<ConspectType>(Func<ConspectType, bool> filter = null, Func<ConspectType, bool> order = null)
         {
             ConspectListModel<ConspectType> conspectListModel = new ConspectListModel<ConspectType>();
             string fullDirectoryPath = Directory.GetCurrentDirectory() + "\\" + "Conspects";
@@ -36,7 +36,7 @@ namespace NOTEA.Services.FileServices
             }
             return conspectListModel;
         }
-        public ConspectListModel<ConspectModel> LoadConspects()
+        public ConspectListModel<ConspectModel> LoadConspects(Func<ConspectModel, bool> filter = null, Func<ConspectModel, bool> order = null)
         {
             ConspectListModel<ConspectModel> conspectListModel = new ConspectListModel<ConspectModel>();
             string fullDirectoryPath = Directory.GetCurrentDirectory() + "\\" + "Conspects";

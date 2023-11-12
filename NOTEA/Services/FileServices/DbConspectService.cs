@@ -2,6 +2,8 @@
 using NOTEA.Services.LogServices;
 using NOTEA.Models.ExceptionModels;
 using NOTEA.Database;
+using System.Configuration;
+using System.Collections;
 
 namespace NOTEA.Services.FileServices
 {
@@ -18,9 +20,9 @@ namespace NOTEA.Services.FileServices
         {
             return _database.Conspects.Find(id);
         }
-        public ConspectListModel<ConspectModel> LoadConspects()
+        public ConspectListModel<ConspectModel> LoadConspects(Func<ConspectModel, bool> filter = null, Func<ConspectModel, string> order = null, IComparer<string> comparer = null)
         {
-            var conspects = _database.Conspects.ToList();
+            var conspects = _database.Conspects.Where(filter == null ? c => true : filter).OrderBy(order == null ? c => "" : order, comparer).ToList();
             return new ConspectListModel<ConspectModel>(conspects);
         }
         public /*async*/ void SaveConspect(ConspectModel conspect)

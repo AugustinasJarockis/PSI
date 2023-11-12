@@ -2,6 +2,7 @@
 @using NOTEA.Extentions;
 ﻿@using Newtonsoft.Json;
 @using NOTEA.Models.ConspectModels;
+@using NOTEA.Models.Utilities;
 @model ConspectListModel<ConspectModel>
 
 @{
@@ -11,6 +12,25 @@
         context.HttpContext.Response.Redirect("/User/LogIn");
     }
 }
+@{
+    string[] sortSymbols = { "", " ↑", " ↓" };
+
+    string NameCollumnName = "Name" + sortSymbols[(int)ListManipulationUtilities.collumnOrderValues[(int)SortCollumn.Name]];
+}
+
+<style>
+    .tableHeader {
+        background : transparent;
+        border: 1px solid transparent;
+        font-weight : bold;
+    }
+</style>
+<style>
+    .conspectName {
+        background: transparent;
+        border: 1px solid transparent;
+    }
+</style>
 
 <h1>The list of conspects</h1>
 
@@ -51,11 +71,18 @@
 <p></p>
 <table class="table">
     <tbody>
+        <tr>
+            <th>
+                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", SortCollumn.Name)'" value="@NameCollumnName" />
+            </th>
+            <th>Semester</th>
+            <th>Date</th>
+        </tr>
         @foreach  (ConspectModel conspectModel in Model.Conspects)
         {
             <tr>
                 <td>
-                    <input type="submit" onclick="location.href='@Url.Action("ViewConspect","Conspect", new {Id = conspectModel.Id })'" value="@conspectModel.Name" />
+                    <input type="submit" class="conspectName" onclick="location.href='@Url.Action("ViewConspect","Conspect", new {Id = conspectModel.Id })'" value="@conspectModel.Name" />
                 </td>
                 <td>
                     @conspectModel.ConspectSemester.GetDisplayName()
