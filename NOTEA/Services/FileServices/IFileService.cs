@@ -7,5 +7,6 @@ namespace NOTEA.Services.FileServices
         public void SaveConspect(ConspectModel conspect);
         public ConspectModel LoadConspect(int id);
         public ConspectListModel<ConspectModel> LoadConspects();
+        public void AssignToUser(int conspect_id, int user_id, char access_type = 'a');
     }
 }

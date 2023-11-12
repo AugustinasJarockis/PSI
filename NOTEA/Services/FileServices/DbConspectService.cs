@@ -1,4 +1,5 @@
 ﻿using NOTEA.Models.ConspectModels;
+using NOTEA.Models.UserModels;
 using NOTEA.Services.LogServices;
 using NOTEA.Models.ExceptionModels;
 using NOTEA.Database;
@@ -43,6 +44,19 @@ namespace NOTEA.Services.FileServices
                 _logsService.SaveExceptionInfo(info);
             }
             //await _database.SaveChangesAsync();
+        }
+        public void AssignToUser(int conspect_id, int user_id, char access_type = 'a')
+        {
+            try
+            {
+                _database.UserConspects.Add(new UserConspectsModel(user_id, conspect_id, access_type));
+                _database.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                ExceptionModel info = new ExceptionModel(ex);
+                _logsService.SaveExceptionInfo(info);
+             }
         }
     }
 }

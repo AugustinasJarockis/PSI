@@ -70,23 +70,47 @@ namespace NOTEA.Migrations
                     b.ToTable("RecordModel");
                 });
 
+            modelBuilder.Entity("NOTEA.Models.UserModels.UserConspectsModel", b =>
+                {
+                    b.Property<int>("User_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("User_Id"));
+
+                    b.Property<string>("Access_Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1)");
+
+                    b.Property<int>("Conspect_Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("User_Id");
+
+                    b.ToTable("UserConspects");
+                });
+
             modelBuilder.Entity("NOTEA.Models.UserModels.UserModel", b =>
                 {
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Username");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("Username")
                         .IsUnique();
