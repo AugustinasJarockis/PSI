@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using NOTEA.Models.ConspectModels;
 using NOTEA.Models.ExceptionModels;
+using NOTEA.Models.UserModels;
 using NOTEA.Services.LogServices;
 using System.Collections;
 
@@ -78,6 +79,9 @@ namespace NOTEA.Services.FileServices
                     ExceptionModel info = new ExceptionModel(ex);
                     _logsService.SaveExceptionInfo(info);
                 }
+        }
+        public void AssignToUser(int conspect_id, int user_id, char access_type = 'a')
+        {
         }
     }
 }

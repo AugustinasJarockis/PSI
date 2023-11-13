@@ -10,6 +10,9 @@ namespace NOTEA.Services.LogServices
             {
                 string info = "Message: " + exception.Message + " Time: " + exception.DateTime + " Stack trace: " + exception.StackTrace + " Source: " + exception.Source;
                 writer.WriteLine(info);
+                writer.WriteLine();
+                writer.WriteLine("=================================================================================");
+                writer.WriteLine();
             }
         }
     }

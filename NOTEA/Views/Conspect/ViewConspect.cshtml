@@ -28,6 +28,8 @@ div .text-wrapping{
     <p>@Model.ConspectText</p>
 </div>
 <input type="submit" onclick="location.href='@Url.Action("EditConspect","Conspect", new {Id = Model.Id })'" value="Edit" class="btn btn-primary" />
+<input type="submit" onclick="location.href='@Url.Action("DeleteConspect","Conspect", new {Id = Model.Id })'" value="Delete" class="btn btn-primary" />
+
 <div>
     <a asp-action="ConspectList">Back to List</a>
 </div>

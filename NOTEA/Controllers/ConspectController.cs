@@ -16,11 +16,13 @@ namespace NOTEA.Controllers
         private readonly IFileService _fileService;
         private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
-        public ConspectController(IFileService fileService, ILogsService logsService, DatabaseContext context)
+        public readonly IHttpContextAccessor _contextAccessor;
+        public ConspectController(IHttpContextAccessor contextAccessor, IFileService fileService, ILogsService logsService, DatabaseContext context)
         {
             _fileService = fileService;
             _context = context; 
             _logsService = logsService;
+            _contextAccessor = contextAccessor;
         }
         public IActionResult CreateConspects()
         {
@@ -36,7 +38,7 @@ namespace NOTEA.Controllers
                 {
                     ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
                     _fileService.SaveConspect(conspectModel);
-                    //conspectListModel = null;
+                    _fileService.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                     return RedirectToAction(nameof(CreateConspects));
                 }
@@ -80,8 +82,9 @@ namespace NOTEA.Controllers
                     {
                         text = sr.ReadToEnd();
                     }
-
-                    _fileService.SaveConspect(new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName), conspectText: text));
+                    var conspectModel = new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName), conspectText: text);
+                    _fileService.SaveConspect(conspectModel);
+                    _fileService.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                 }
                 else
@@ -223,6 +226,14 @@ namespace NOTEA.Controllers
         public IActionResult EditConspect(int id)
         {
             return View(_fileService.LoadConspect(id));
+        }
+        public IActionResult DeleteConspect(int id)
+        {
+            _context.Conspects.Remove(_context.Conspects.Find(id));
+            _context.UserConspects.Remove(_context.UserConspects.Find(id));
+            _context.SaveChanges();
+            conspectListModel = _fileService.LoadConspects();
+            return RedirectToAction("ConspectList", "Conspect");
         }
     }
 }
