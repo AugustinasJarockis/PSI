@@ -3,6 +3,9 @@ using NOTEA.Models.UserModels;
 using NOTEA.Services.LogServices;
 using NOTEA.Models.ExceptionModels;
 using NOTEA.Database;
+using System.Configuration;
+using System.Collections;
+using Microsoft.EntityFrameworkCore;
 
 namespace NOTEA.Services.FileServices
 {
@@ -19,9 +22,9 @@ namespace NOTEA.Services.FileServices
         {
             return _database.Conspects.Find(id);
         }
-        public ConspectListModel<ConspectModel> LoadConspects()
+        public ConspectListModel<ConspectModel> LoadConspects(Func<DbSet<ConspectModel>, List<ConspectModel>> Select = null)
         {
-            var conspects = _database.Conspects.ToList();
+            var conspects = Select == null ? _database.Conspects.ToList() : Select(_database.Conspects);
             return new ConspectListModel<ConspectModel>(conspects);
         }
         public /*async*/ void SaveConspect(ConspectModel conspect)

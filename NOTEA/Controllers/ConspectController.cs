@@ -5,13 +5,14 @@ using NOTEA.Models.ExceptionModels;
 using NOTEA.Services.FileServices;
 using NOTEA.Services.LogServices;
 using NOTEA.Database;
+using NOTEA.Models.Utilities;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 
 namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
-        private static ConspectListModel<ConspectModel> conspectListModel = null;
-        private static ConspectListModel<ConspectModel> tempConspectListModel = null;
         private readonly IFileService _fileService;
         private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
@@ -38,7 +39,6 @@ namespace NOTEA.Controllers
                     ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
                     _fileService.SaveConspect(conspectModel);
                     _fileService.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
-                    conspectListModel = null;
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                     return RedirectToAction(nameof(CreateConspects));
                 }
@@ -92,7 +92,6 @@ namespace NOTEA.Controllers
                     TempData["ErrorMessage"] = "Wrong type of file specified.";
                     throw new InvalidOperationException("Wrong type of file specified");
                 }
-                conspectListModel = null;
             }
             catch (ArgumentNullException ex)
             {
@@ -116,22 +115,29 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult ConspectList(string searchBy, string searchValue)
         {
-            if (conspectListModel == null)
+            if (ListManipulationUtilities.selectionExists == false)
             {
-                conspectListModel = _fileService.LoadConspects();  
-                tempConspectListModel = conspectListModel;
-                if (string.IsNullOrEmpty(searchValue))
-                {
-                    return View(conspectListModel);
-                }
+                ListManipulationUtilities.searchBy = searchBy;
+                ListManipulationUtilities.searchValue = searchValue;
             }
-            if (!string.IsNullOrWhiteSpace(searchValue))
+            ConspectListModel<ConspectModel> conspectListModel = null;
+            if (searchValue.IsNullOrEmpty())
             {
-                if (conspectListModel == null)
+                if(ListManipulationUtilities.selectionExists)
+                {
+                    conspectListModel = _fileService.LoadConspects(ListManipulationUtilities.selection);
+                    ListManipulationUtilities.selectionExists = false;
+                }
+                else
+                    conspectListModel = _fileService.LoadConspects();
+                if (conspectListModel?.Conspects.Count() == 0)
                 {
                     TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
                 }
-                else if (searchValue.Length > 80)
+            }
+            else 
+            {
+                if (searchValue.Length > 80)
                 {
                     TempData["ErrorMessage"] = "Search query can't be longer than 80 characters";
                 }
@@ -139,35 +145,70 @@ namespace NOTEA.Controllers
                 {
                     if (searchBy.ToLower() == "name")
                     {
-                        var searchByName = conspectListModel.Conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
-                        tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
-                        return View(tempConspectListModel);
+                        return View(_fileService.LoadConspects(list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList()));
                     }
                     else if (searchBy.ToLower() == "conspectsemester")
                     {
-                        var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())).ToList();
-                        tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
-                        return View(tempConspectListModel);
+                        return View(_fileService.LoadConspects(list => list.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())).ToList()));
                     }
                 }
-            }
-            else
-            {
-                tempConspectListModel.Conspects = conspectListModel.Conspects;
+                if (conspectListModel?.Conspects.Count() == 0)
+                {
+                    TempData["ErrorMessage"] = "No noteas match your search";
+                }
             }
             return View(conspectListModel);
         }
         [HttpGet]
-        public IActionResult SortConspect()
+        public IActionResult SortConspect(SortCollumn collumn)
         {
-            if (conspectListModel != null)
+            ListManipulationUtilities.collumnOrderValues[(int)collumn]++;
+            if ((int)ListManipulationUtilities.collumnOrderValues[(int)collumn] == 3)
+                ListManipulationUtilities.collumnOrderValues[(int)collumn] = SortPhase.None;
+
+            ListManipulationUtilities.collumnOrderValues[((int)collumn + 1) % 3] = SortPhase.None;
+            ListManipulationUtilities.collumnOrderValues[((int)collumn + 2) % 3] = SortPhase.None;
+
+            Func<ConspectModel, bool> filter = null;
+            if(ListManipulationUtilities.searchBy?.ToLower() == "name")
             {
-                conspectListModel.Conspects.Sort();
+                string searchValue = ListManipulationUtilities.searchValue;
+                filter = c => c.Name.ToLower().Contains(searchValue.ToLower());
             }
-            else
+            else if(ListManipulationUtilities.searchBy?.ToLower() == "conspectsemester")
             {
-                TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
+                string searchValue = ListManipulationUtilities.searchValue;
+                filter = c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower());
             }
+
+            Func<DbSet<ConspectModel>, List<ConspectModel>> selection = null;
+            switch(collumn + 3 * (int)ListManipulationUtilities.collumnOrderValues[(int)collumn])
+            {
+                case SortCollumn.Name + 3 * (int)SortPhase.Ascending:
+                    selection = SelectionBuilder<string>.Build(filter, c => c.Name);
+                    break;
+                case SortCollumn.Name + 3 * (int)SortPhase.Descending:
+                    selection = SelectionBuilder<string>.Build(filter : filter, order : c => c.Name, orderDescending : true);
+                    break;
+                case SortCollumn.Semester + 3 * (int)SortPhase.Ascending:
+                    selection = SelectionBuilder<int>.Build(filter: filter, order: c => (int)c.ConspectSemester);
+                    break;
+                case SortCollumn.Semester + 3 * (int)SortPhase.Descending:
+                    selection = SelectionBuilder<int>.Build(filter: filter, order: c => (int)c.ConspectSemester, orderDescending: true);
+                    break;
+                case SortCollumn.Date + 3 * (int)SortPhase.Ascending:
+                    selection = SelectionBuilder<DateTime>.Build(filter: filter, order: c => c.Date);
+                    break;
+                case SortCollumn.Date + 3 * (int)SortPhase.Descending:
+                    selection = SelectionBuilder<DateTime>.Build(filter: filter, order: c => c.Date, orderDescending: true);
+                    break;
+            }
+            if(selection == null)
+            {
+                selection = SelectionBuilder<DateTime>.Build(filter: filter);
+            }
+            ListManipulationUtilities.selection = selection;
+            ListManipulationUtilities.selectionExists = true;
             return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]
@@ -179,7 +220,6 @@ namespace NOTEA.Controllers
         public IActionResult ViewConspect(ConspectModel model)
         {
             _fileService.SaveConspect(model);
-            conspectListModel = null;
             return View(model);
         }
         [HttpGet]
