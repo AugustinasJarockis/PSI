@@ -21,9 +21,8 @@ namespace NOTEA.Services.FileServices
         {
             return _database.Conspects.Find(id);
         }
-        public ConspectListModel<ConspectModel> LoadConspects(Func<DbSet<ConspectModel>, List<ConspectModel>> Select = null/*Func<ConspectModel, bool> filter = null, Func<ConspectModel, string> order = null, IComparer<string> comparer = null*/)
+        public ConspectListModel<ConspectModel> LoadConspects(Func<DbSet<ConspectModel>, List<ConspectModel>> Select = null)
         {
-            //var conspects = _database.Conspects.Where(filter == null ? c => true : filter).OrderBy(order == null ? c => "" : order, comparer).ToList();
             var conspects = Select == null ? _database.Conspects.ToList() : Select(_database.Conspects);
             return new ConspectListModel<ConspectModel>(conspects);
         }

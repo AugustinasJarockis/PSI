@@ -6,7 +6,6 @@ using NOTEA.Services.FileServices;
 using NOTEA.Services.LogServices;
 using NOTEA.Database;
 using NOTEA.Models.Utilities;
-using NOTEA.Models.Utilities.Comparers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +13,6 @@ namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
-        //private static ConspectListModel<ConspectModel> conspectListModel = null;
-        //private static ConspectListModel<ConspectModel> tempConspectListModel = null;
         private readonly IFileService _fileService;
         private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
@@ -92,7 +89,6 @@ namespace NOTEA.Controllers
                     TempData["ErrorMessage"] = "Wrong type of file specified.";
                     throw new InvalidOperationException("Wrong type of file specified");
                 }
-                //conspectListModel = null;
             }
             catch (ArgumentNullException ex)
             {
@@ -113,18 +109,9 @@ namespace NOTEA.Controllers
 
             return View();
         }
-        //[HttpGet]
-        //public IActionResult ConspectList()
-        //{
-        //    return View(_fileService.LoadConspects());
-        //}
         [HttpGet]
-        public IActionResult ConspectList(string searchBy, string searchValue/*Func<DbSet<ConspectModel>, List<ConspectModel>>? selection = null*/)
+        public IActionResult ConspectList(string searchBy, string searchValue)
         {
-            //if (conspectListModel == null)
-            //{
-            //ConspectListModel<ConspectModel> conspectListModel = _fileService.LoadConspects();  
-            //tempConspectListModel = conspectListModel;
             if (ListManipulationUtilities.selectionExists == false)
             {
                 ListManipulationUtilities.searchBy = searchBy;
@@ -145,9 +132,6 @@ namespace NOTEA.Controllers
                     TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
                 }
             }
-            //}
-            //if (!string.IsNullOrWhiteSpace(searchValue))
-            //{
             else 
             {
                 if (searchValue.Length > 80)
@@ -158,14 +142,10 @@ namespace NOTEA.Controllers
                 {
                     if (searchBy.ToLower() == "name")
                     {
-                        //var searchByName = conspectListModel.Conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
-                        //tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
                         return View(_fileService.LoadConspects(list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList()));
                     }
                     else if (searchBy.ToLower() == "conspectsemester")
                     {
-                        //var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())).ToList();
-                        //tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
                         return View(_fileService.LoadConspects(list => list.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())).ToList()));
                     }
                 }
@@ -174,17 +154,8 @@ namespace NOTEA.Controllers
                     TempData["ErrorMessage"] = "No noteas match your search";
                 }
             }
-           // else
-            //{
-                //tempConspectListModel.Conspects = conspectListModel.Conspects;
-            //}
             return View(conspectListModel);
         }
-        //[HttpGet]
-        //public IActionResult ConspectList(ConspectListModel<ConspectModel> conspectList)
-        //{
-        //    return View(conspectList);
-        //}
         [HttpGet]
         public IActionResult SortConspect(SortCollumn collumn)
         {
@@ -208,8 +179,6 @@ namespace NOTEA.Controllers
             }
 
             Func<DbSet<ConspectModel>, List<ConspectModel>> selection = null;
-            //Func<ConspectModel, string> order = null;
-            //IComparer<string> comparer = null;
             switch(collumn + 3 * (int)ListManipulationUtilities.collumnOrderValues[(int)collumn])
             {
                 case SortCollumn.Name + 3 * (int)SortPhase.Ascending:
@@ -237,8 +206,6 @@ namespace NOTEA.Controllers
             }
             ListManipulationUtilities.selection = selection;
             ListManipulationUtilities.selectionExists = true;
-            //ConspectListModel<ConspectModel>  conspectList = _fileService.LoadConspects(filter: filter, order: order, comparer: comparer);
-            //return RedirectToAction(nameof(ConspectList), conspectList);
             return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]
@@ -250,7 +217,6 @@ namespace NOTEA.Controllers
         public IActionResult ViewConspect(ConspectModel model)
         {
             _fileService.SaveConspect(model);
-            //conspectListModel = null;
             return View(model);
         }
         [HttpGet]
