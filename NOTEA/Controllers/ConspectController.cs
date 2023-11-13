@@ -232,7 +232,6 @@ namespace NOTEA.Controllers
             _context.Conspects.Remove(_context.Conspects.Find(id));
             _context.UserConspects.Remove(_context.UserConspects.Find(id));
             _context.SaveChanges();
-            conspectListModel = _fileService.LoadConspects();
             return RedirectToAction("ConspectList", "Conspect");
         }
     }
