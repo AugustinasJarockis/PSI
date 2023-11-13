@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using NOTEA.Models.ConspectModels;
 using NOTEA.Models.ExceptionModels;
 using NOTEA.Services.LogServices;
@@ -25,7 +26,7 @@ namespace NOTEA.Services.FileServices
             ConspectModel conspectModel = conspectListModel.Conspects.Where(c => c.Id == id).First();
             return conspectModel;
         }
-        public ConspectListModel<ConspectType> LoadConspects<ConspectType>(Func<ConspectType, bool> filter = null, Func<ConspectType, bool> order = null)
+        public ConspectListModel<ConspectType> LoadConspects<ConspectType>(Func<ConspectType, string> filter = null, Func<ConspectType, bool> order = null)
         {
             ConspectListModel<ConspectType> conspectListModel = new ConspectListModel<ConspectType>();
             string fullDirectoryPath = Directory.GetCurrentDirectory() + "\\" + "Conspects";
@@ -36,7 +37,8 @@ namespace NOTEA.Services.FileServices
             }
             return conspectListModel;
         }
-        public ConspectListModel<ConspectModel> LoadConspects(Func<ConspectModel, bool> filter = null, Func<ConspectModel, bool> order = null)
+        //Non of the optional parameters work here at all
+        public ConspectListModel<ConspectModel> LoadConspects(Func<DbSet<ConspectModel>, List<ConspectModel>> Select = null/*Func<ConspectModel, bool> filter = null, Func<ConspectModel, string> order = null, IComparer<string> comparer = null*/)
         {
             ConspectListModel<ConspectModel> conspectListModel = new ConspectListModel<ConspectModel>();
             string fullDirectoryPath = Directory.GetCurrentDirectory() + "\\" + "Conspects";

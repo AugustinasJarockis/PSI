@@ -6,9 +6,9 @@ using NOTEA.Services.FileServices;
 using NOTEA.Services.LogServices;
 using NOTEA.Database;
 using NOTEA.Models.Utilities;
+using NOTEA.Models.Utilities.Comparers;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Azure.WebJobs.Host.Bindings;
-using System.Diagnostics.Metrics;
+using Microsoft.EntityFrameworkCore;
 
 namespace NOTEA.Controllers
 {
@@ -113,17 +113,33 @@ namespace NOTEA.Controllers
 
             return View();
         }
+        //[HttpGet]
+        //public IActionResult ConspectList()
+        //{
+        //    return View(_fileService.LoadConspects());
+        //}
         [HttpGet]
-        public IActionResult ConspectList(string searchBy, string searchValue)
+        public IActionResult ConspectList(string searchBy, string searchValue/*Func<DbSet<ConspectModel>, List<ConspectModel>>? selection = null*/)
         {
             //if (conspectListModel == null)
             //{
             //ConspectListModel<ConspectModel> conspectListModel = _fileService.LoadConspects();  
             //tempConspectListModel = conspectListModel;
+            if (ListManipulationUtilities.selectionExists == false)
+            {
+                ListManipulationUtilities.searchBy = searchBy;
+                ListManipulationUtilities.searchValue = searchValue;
+            }
             ConspectListModel<ConspectModel> conspectListModel = null;
             if (searchValue.IsNullOrEmpty())
             {
-                conspectListModel = _fileService.LoadConspects();
+                if(ListManipulationUtilities.selectionExists)
+                {
+                    conspectListModel = _fileService.LoadConspects(ListManipulationUtilities.selection);
+                    ListManipulationUtilities.selectionExists = false;
+                }
+                else
+                    conspectListModel = _fileService.LoadConspects();
                 if (conspectListModel?.Conspects.Count() == 0)
                 {
                     TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
@@ -144,13 +160,13 @@ namespace NOTEA.Controllers
                     {
                         //var searchByName = conspectListModel.Conspects.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList();
                         //tempConspectListModel = new ConspectListModel<ConspectModel>(searchByName);
-                        return View(_fileService.LoadConspects(filter : c => c.Name.ToLower().Contains(searchValue.ToLower())));
+                        return View(_fileService.LoadConspects(list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList()));
                     }
                     else if (searchBy.ToLower() == "conspectsemester")
                     {
                         //var searchBySemester = conspectListModel.Conspects.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())).ToList();
                         //tempConspectListModel = new ConspectListModel<ConspectModel>(searchBySemester);
-                        return View(_fileService.LoadConspects(filter: c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())));
+                        return View(_fileService.LoadConspects(list => list.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())).ToList()));
                     }
                 }
                 if (conspectListModel?.Conspects.Count() == 0)
@@ -164,10 +180,11 @@ namespace NOTEA.Controllers
             //}
             return View(conspectListModel);
         }
-        public IActionResult ConspectList(ConspectListModel<ConspectModel> sortedConspect)
-        {
-            return View(sortedConspect);
-        }
+        //[HttpGet]
+        //public IActionResult ConspectList(ConspectListModel<ConspectModel> conspectList)
+        //{
+        //    return View(conspectList);
+        //}
         [HttpGet]
         public IActionResult SortConspect(SortCollumn collumn)
         {
@@ -175,49 +192,54 @@ namespace NOTEA.Controllers
             if ((int)ListManipulationUtilities.collumnOrderValues[(int)collumn] == 3)
                 ListManipulationUtilities.collumnOrderValues[(int)collumn] = SortPhase.None;
 
+            ListManipulationUtilities.collumnOrderValues[((int)collumn + 1) % 3] = SortPhase.None;
+            ListManipulationUtilities.collumnOrderValues[((int)collumn + 2) % 3] = SortPhase.None;
+
             Func<ConspectModel, bool> filter = null;
-            if(ListManipulationUtilities.searchBy.ToLower() == "name")
+            if(ListManipulationUtilities.searchBy?.ToLower() == "name")
             {
-                filter = c => c.Name.ToLower().Contains(ListManipulationUtilities.searchValue.ToLower());
+                string searchValue = ListManipulationUtilities.searchValue;
+                filter = c => c.Name.ToLower().Contains(searchValue.ToLower());
             }
-            else if(ListManipulationUtilities.searchBy.ToLower() == "conspectsemester")
+            else if(ListManipulationUtilities.searchBy?.ToLower() == "conspectsemester")
             {
-                filter = c => c.ConspectSemester.GetDisplayName().ToLower().Contains(ListManipulationUtilities.searchValue.ToLower());
+                string searchValue = ListManipulationUtilities.searchValue;
+                filter = c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower());
             }
 
-            Func<ConspectModel, string> order = null;
-            IComparer<string> comparer = null;
+            Func<DbSet<ConspectModel>, List<ConspectModel>> selection = null;
+            //Func<ConspectModel, string> order = null;
+            //IComparer<string> comparer = null;
             switch(collumn + 3 * (int)ListManipulationUtilities.collumnOrderValues[(int)collumn])
             {
                 case SortCollumn.Name + 3 * (int)SortPhase.Ascending:
-                    order = c => c.Name;
+                    selection = SelectionBuilder<string>.Build(filter, c => c.Name);
                     break;
                 case SortCollumn.Name + 3 * (int)SortPhase.Descending:
-                    order = c => c.Name;
+                    selection = SelectionBuilder<string>.Build(filter : filter, order : c => c.Name, orderDescending : true);
                     break;
                 case SortCollumn.Semester + 3 * (int)SortPhase.Ascending:
-                    order = c => ((int)c.ConspectSemester).ToString();
+                    selection = SelectionBuilder<int>.Build(filter: filter, order: c => (int)c.ConspectSemester);
                     break;
                 case SortCollumn.Semester + 3 * (int)SortPhase.Descending:
-                    order = c => (-(int)c.ConspectSemester).ToString();
+                    selection = SelectionBuilder<int>.Build(filter: filter, order: c => (int)c.ConspectSemester, orderDescending: true);
                     break;
                 case SortCollumn.Date + 3 * (int)SortPhase.Ascending:
-                    order = c => c.Date.ToFileTime().ToString();
+                    selection = SelectionBuilder<DateTime>.Build(filter: filter, order: c => c.Date);
                     break;
                 case SortCollumn.Date + 3 * (int)SortPhase.Descending:
-                    order = c => (-c.Date.ToFileTime()).ToString();
+                    selection = SelectionBuilder<DateTime>.Build(filter: filter, order: c => c.Date, orderDescending: true);
                     break;
             }
-            if (ListManipulationUtilities.collumnOrderValues[(int)collumn] = SortPhase.None)
+            if(selection == null)
             {
-                filter = c => c.Name.ToLower().Contains(ListManipulationUtilities.searchValue.ToLower());
+                selection = SelectionBuilder<DateTime>.Build(filter: filter);
             }
-            else if (ListManipulationUtilities.searchBy.ToLower() == "conspectsemester")
-            {
-                filter = c => c.ConspectSemester.GetDisplayName().ToLower().Contains(ListManipulationUtilities.searchValue.ToLower());
-            }
-            ConspectListModel<ConspectModel>  conspectList = _fileService.LoadConspects(filter: filter, order: order, comparer: );
-            return RedirectToAction(nameof(ConspectList), conspectList);
+            ListManipulationUtilities.selection = selection;
+            ListManipulationUtilities.selectionExists = true;
+            //ConspectListModel<ConspectModel>  conspectList = _fileService.LoadConspects(filter: filter, order: order, comparer: comparer);
+            //return RedirectToAction(nameof(ConspectList), conspectList);
+            return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]
         public IActionResult ViewConspect(int id)

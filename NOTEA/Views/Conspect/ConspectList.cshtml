@@ -16,6 +16,8 @@
     string[] sortSymbols = { "", " ↑", " ↓" };
 
     string NameCollumnName = "Name" + sortSymbols[(int)ListManipulationUtilities.collumnOrderValues[(int)SortCollumn.Name]];
+    string SemesterCollumnName = "Semester" + sortSymbols[(int)ListManipulationUtilities.collumnOrderValues[(int)SortCollumn.Semester]];
+    string DateCollumnName = "Date" + sortSymbols[(int)ListManipulationUtilities.collumnOrderValues[(int)SortCollumn.Date]];
 }
 
 <style>
@@ -64,19 +66,23 @@
         </table>
     }
 </div>
-<br />
+@* <br />
 
-<input type="submit" onclick="location.href='@Url.Action("SortConspect","Conspect")'" value="Sort by date" />
-<br />
+@* <input type="submit" onclick="location.href='@Url.Action("SortConspect","Conspect")'" value="Sort by date" /> *@
+@* <br /> *@
 <p></p>
 <table class="table">
     <tbody>
         <tr>
             <th>
-                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", SortCollumn.Name)'" value="@NameCollumnName" />
+                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", new { Collumn = SortCollumn.Name })'" value="@NameCollumnName" />
             </th>
-            <th>Semester</th>
-            <th>Date</th>
+            <th>
+                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", new { Collumn = SortCollumn.Semester })'" value="@SemesterCollumnName" />
+            </th>
+            <th>
+                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", new { Collumn = SortCollumn.Date })'" value="@DateCollumnName" />
+            </th>
         </tr>
         @foreach  (ConspectModel conspectModel in Model.Conspects)
         {
