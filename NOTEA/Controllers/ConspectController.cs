@@ -149,7 +149,7 @@ namespace NOTEA.Controllers
                     }
                     else if (searchBy.ToLower() == "conspectsemester")
                     {
-                        conspectListModel = _fileService.LoadConspects(list => list.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())).ToList());
+                        conspectListModel = _fileService.LoadConspects(list => list.Where((Func<ConspectModel, bool>)(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower()))).ToList());
                     }
                 }
                 if (conspectListModel?.Conspects.Count() == 0)
