@@ -1,10 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NOTEA.Models.ConspectModels;
+using System.Collections.Generic;
+using System;
+
 namespace NOTEA.Models.Utilities
 {
-    public static class SelectionBuilder<OrderReturnType>
+    public static class SelectionBuilder
     {
-        public static Func<DbSet<ConspectModel>, List<ConspectModel>> Build(Func<ConspectModel, bool> filter = null, Func<ConspectModel, OrderReturnType> order = null, bool orderDescending = false)
+        //private static IEnumerable<ConspectModel> whereStatement = null;
+        //private static IEnumerable<ConspectModel> orderStatement = null;
+        public static Func<DbSet<ConspectModel>, List<ConspectModel>> Build<OrderReturnType>(Func<ConspectModel, bool> filter = null, Func<ConspectModel, OrderReturnType> order = null, bool orderDescending = false)
         {
             if (filter == null && order == null)
             {
