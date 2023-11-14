@@ -1,4 +1,5 @@
 ﻿using NOTEA.Models.RecordModels;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NOTEA.Models.ConspectModels
 {

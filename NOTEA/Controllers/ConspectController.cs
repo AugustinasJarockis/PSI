@@ -130,10 +130,10 @@ namespace NOTEA.Controllers
                 }
                 else
                     conspectListModel = _fileService.LoadConspects();
-                if (conspectListModel?.Conspects.Count() == 0)
-                {
-                    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
-                }
+                //if (conspectListModel?.Conspects.Count() == 0)
+                //{
+                //    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
+                //}
             }
             else 
             {
@@ -145,11 +145,11 @@ namespace NOTEA.Controllers
                 {
                     if (searchBy.ToLower() == "name")
                     {
-                        return View(_fileService.LoadConspects(list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList()));
+                        conspectListModel = _fileService.LoadConspects(list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList());
                     }
                     else if (searchBy.ToLower() == "conspectsemester")
                     {
-                        return View(_fileService.LoadConspects(list => list.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())).ToList()));
+                        conspectListModel = _fileService.LoadConspects(list => list.Where((Func<ConspectModel, bool>)(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower()))).ToList());
                     }
                 }
                 if (conspectListModel?.Conspects.Count() == 0)
@@ -185,27 +185,27 @@ namespace NOTEA.Controllers
             switch(collumn + 3 * (int)ListManipulationUtilities.collumnOrderValues[(int)collumn])
             {
                 case SortCollumn.Name + 3 * (int)SortPhase.Ascending:
-                    selection = SelectionBuilder<string>.Build(filter, c => c.Name);
+                    selection = SelectionBuilder.Build<string>(filter, c => c.Name);
                     break;
                 case SortCollumn.Name + 3 * (int)SortPhase.Descending:
-                    selection = SelectionBuilder<string>.Build(filter : filter, order : c => c.Name, orderDescending : true);
+                    selection = SelectionBuilder.Build<string>(filter : filter, order : c => c.Name, orderDescending : true);
                     break;
                 case SortCollumn.Semester + 3 * (int)SortPhase.Ascending:
-                    selection = SelectionBuilder<int>.Build(filter: filter, order: c => (int)c.ConspectSemester);
+                    selection = SelectionBuilder.Build<int>(filter: filter, order: c => (int)c.ConspectSemester);
                     break;
                 case SortCollumn.Semester + 3 * (int)SortPhase.Descending:
-                    selection = SelectionBuilder<int>.Build(filter: filter, order: c => (int)c.ConspectSemester, orderDescending: true);
+                    selection = SelectionBuilder.Build<int>(filter: filter, order: c => (int)c.ConspectSemester, orderDescending: true);
                     break;
                 case SortCollumn.Date + 3 * (int)SortPhase.Ascending:
-                    selection = SelectionBuilder<DateTime>.Build(filter: filter, order: c => c.Date);
+                    selection = SelectionBuilder.Build<DateTime>(filter: filter, order: c => c.Date);
                     break;
                 case SortCollumn.Date + 3 * (int)SortPhase.Descending:
-                    selection = SelectionBuilder<DateTime>.Build(filter: filter, order: c => c.Date, orderDescending: true);
+                    selection = SelectionBuilder.Build<DateTime>(filter: filter, order: c => c.Date, orderDescending: true);
                     break;
             }
             if(selection == null)
             {
-                selection = SelectionBuilder<DateTime>.Build(filter: filter);
+                selection = SelectionBuilder.Build<int>(filter: filter);
             }
             ListManipulationUtilities.selection = selection;
             ListManipulationUtilities.selectionExists = true;
