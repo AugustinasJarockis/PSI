@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting.Internal;
 using NOTEA.Exceptions;
 using NOTEA.Extentions;
 using NOTEA.Models.UserModels;
@@ -22,16 +23,16 @@ namespace NOTEA.Controllers
         }
 
         [HttpPost]
-        public IActionResult SignIn(string username, string password, string passwordCheck, string email) //Make return UserModel
+        public async Task<IActionResult> SignInAsync(string username, string password, string passwordCheck, string email) //Make return UserModel
         {
             if (username.IsValidName() && password.IsValidName() && passwordCheck.IsValidName() && email.IsValidEmail())
             {
                 try
                 {
-                    if (password == passwordCheck )
+                    if (password == passwordCheck)
                     {
-                        UserModel user = new UserModel(username, password, "brr");//_mapper.Map<UserModel>(SignInModel)
-                        _userService.SaveUser(user);
+                        UserModel user = new UserModel(username, password, email);//_mapper.Map<UserModel>(SignInModel)
+                        await _userService.SaveUserAsync(user);
                         TempData["SuccessMessage"] = "Your registration has been successful!";
                         return RedirectToAction("LogIn", "User");
                     }

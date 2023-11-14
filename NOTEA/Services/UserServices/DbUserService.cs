@@ -23,12 +23,12 @@ namespace NOTEA.Services.UserServices
                 u.Username.Equals(user.Username) && u.Password.Equals(user.Password)
                 ).ToList().Count() == 1;
         }
-        public void SaveUser(UserModel user)
+        public async Task SaveUserAsync(UserModel user)
         {
             try
             {
                 _database.Users.Add(user);
-                _database.SaveChanges();
+                await _database.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
             {
