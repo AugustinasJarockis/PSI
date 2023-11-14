@@ -10,8 +10,8 @@ namespace NOTEA.Controllers
     public class UserController : Controller
     {
         public readonly IHttpContextAccessor _contextAccessor;
-        private readonly IUserService _userService;
-        public UserController(IHttpContextAccessor contextAccessor, IUserService userService)
+        private readonly IUserRepository _userService;
+        public UserController(IHttpContextAccessor contextAccessor, IUserRepository userService)
         {
             _contextAccessor = contextAccessor;
             _userService = userService;
@@ -70,6 +70,7 @@ namespace NOTEA.Controllers
             if (username.IsValidName() && password.IsValidName() && _userService.CheckLogIn(user))
             {
                 _contextAccessor.HttpContext.Session.SetString("User", user.Username);
+                user.Id = _userService.GetUserId(username);
                 _contextAccessor.HttpContext.Session.SetInt32("Id", user.Id);
                 return RedirectToAction("Index", "Home");
             }

@@ -31,14 +31,15 @@ namespace NOTEA.Migrations
                 name: "UserConspects",
                 columns: table => new
                 {
-                    User_Id = table.Column<int>(type: "int", nullable: false)
+                    No = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    User_Id = table.Column<int>(type: "int", nullable: false),
                     Conspect_Id = table.Column<int>(type: "int", nullable: false),
                     Access_Type = table.Column<string>(type: "nvarchar(1)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserConspects", x => x.User_Id);
+                    table.PrimaryKey("PK_UserConspects", x => x.No);
                 });
 
             migrationBuilder.CreateTable(
