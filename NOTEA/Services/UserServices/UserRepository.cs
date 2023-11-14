@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace NOTEA.Services.UserServices
 {
-    public class DbUserService : IUserService
+    public class UserRepository : IUserRepository
     {
         private readonly ILogsService _logsService;
         private readonly DatabaseContext _database;
-        public DbUserService(ILogsService logsService, DatabaseContext database)
+        public UserRepository(ILogsService logsService, DatabaseContext database)
         {
             _logsService = logsService;
             _database = database;

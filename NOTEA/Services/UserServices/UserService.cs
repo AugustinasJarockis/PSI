@@ -4,7 +4,7 @@ using NOTEA.Exceptions;
 
 namespace NOTEA.Services.UserServices
 {
-    public class UserService : IUserService
+    public class UserService : IUserRepository
     {
         private UserListModel LoadUsers()
         {
@@ -34,7 +34,7 @@ namespace NOTEA.Services.UserServices
                  Console.WriteLine("Error: could not save user ");
             }
         }
-        bool IUserService.CheckLogIn(UserModel user)
+        bool IUserRepository.CheckLogIn(UserModel user)
         {
             UserListModel userList = LoadUsers();
             foreach (var userModel in userList.userList)

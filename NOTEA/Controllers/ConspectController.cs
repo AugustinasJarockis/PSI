@@ -13,13 +13,14 @@ namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
-        private readonly IFileService _fileService;
+        IGenericRepository<ConspectModel> _repository;
+        //private readonly IGenericRepository _fileService;
         private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
         public readonly IHttpContextAccessor _contextAccessor;
-        public ConspectController(IHttpContextAccessor contextAccessor, IFileService fileService, ILogsService logsService, DatabaseContext context)
+        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, DatabaseContext context)
         {
-            _fileService = fileService;
+            _repository = repository;
             _context = context; 
             _logsService = logsService;
             _contextAccessor = contextAccessor;
@@ -37,8 +38,8 @@ namespace NOTEA.Controllers
                 if (name.IsValidName())
                 {
                     ConspectModel conspectModel = new ConspectModel(name: name, conspectSemester: conspectSemester, conspectText: conspectText);
-                    _fileService.SaveConspect(conspectModel);
-                    _fileService.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
+                    _repository.SaveConspect(conspectModel, conspectModel.Id);
+                    _repository.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                     return RedirectToAction(nameof(CreateConspects));
                 }
@@ -83,8 +84,8 @@ namespace NOTEA.Controllers
                         text = sr.ReadToEnd();
                     }
                     var conspectModel = new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName), conspectText: text);
-                    _fileService.SaveConspect(conspectModel);
-                    _fileService.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
+                    _repository.SaveConspect(conspectModel, conspectModel.Id);
+                    _repository.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                 }
                 else
@@ -125,11 +126,11 @@ namespace NOTEA.Controllers
             {
                 if(ListManipulationUtilities.selectionExists)
                 {
-                    conspectListModel = _fileService.LoadConspects(ListManipulationUtilities.selection);
+                    conspectListModel = _repository.LoadConspects(ListManipulationUtilities.selection);
                     ListManipulationUtilities.selectionExists = false;
                 }
                 else
-                    conspectListModel = _fileService.LoadConspects();
+                    conspectListModel = _repository.LoadConspects();
                 //if (conspectListModel?.Conspects.Count() == 0)
                 //{
                 //    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
@@ -145,11 +146,11 @@ namespace NOTEA.Controllers
                 {
                     if (searchBy.ToLower() == "name")
                     {
-                        conspectListModel = _fileService.LoadConspects(list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList());
+                        conspectListModel = _repository.LoadConspects(list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList());
                     }
                     else if (searchBy.ToLower() == "conspectsemester")
                     {
-                        conspectListModel = _fileService.LoadConspects(list => list.Where((Func<ConspectModel, bool>)(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower()))).ToList());
+                        conspectListModel = _repository.LoadConspects(list => list.Where((Func<ConspectModel, bool>)(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower()))).ToList());
                     }
                 }
                 if (conspectListModel?.Conspects.Count() == 0)
@@ -214,24 +215,25 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult ViewConspect(int id)
         {
-            return View(_fileService.LoadConspect(id));
+            return View(_repository.LoadConspect(id));
         }
         [HttpPost]
         public IActionResult ViewConspect(ConspectModel model)
         {
-            _fileService.SaveConspect(model);
+            _repository.SaveConspect(model, model.Id);
             return View(model);
         }
         [HttpGet]
         public IActionResult EditConspect(int id)
         {
-            return View(_fileService.LoadConspect(id));
+            return View(_repository.LoadConspect(id));
         }
         public IActionResult DeleteConspect(int id)
         {
-            _context.Conspects.Remove(_context.Conspects.Find(id));
-            _context.UserConspects.Remove(_context.UserConspects.Find(id));
-            _context.SaveChanges();
+            _repository.DeleteConspect(id);
+            //_context.Conspects.Remove(_context.Conspects.Find(id));
+            //_context.UserConspects.Remove(_context.UserConspects.Find(id));
+            //_context.SaveChanges();
             return RedirectToAction("ConspectList", "Conspect");
         }
     }
