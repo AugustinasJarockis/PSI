@@ -30,22 +30,11 @@
             </div>
             <p></p>
             <div class="form-group">
-                <input type="submit" onclick="myFunction()" value="Sign in" class="btn btn-primary" />
+                <input type="submit" onclick="JavascriptFunction()" value="Sign in" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
-
-<div id="LoadMessage">Loading...</div>
-
-<style>
-    #LoadMessage{
-        display: none;
-        background-color: white transparent white transparent;
-        width: 830px;
-        height: 180px;
-    }
-</style>
 
 <!-- Error Message Modal -->
 <div class="modal fade" id="myModalError" tabindex="-1" role="dialog" aria-labelledby="myModalErrorLabel" aria-hidden="true">
@@ -60,6 +49,14 @@
             </div>
         </div>
     </div>
+</div>
+
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...  <img src="../../Content/images/ajax-loading.gif">
+    </p>
 </div>
 
 @section Scripts {
@@ -94,10 +91,15 @@
         });
     </script>
 
-    <script>
-        function myFunction() {
-            document.getElementById("LoadMessage").style.display = "block";
+    <script type="text/javascript" language="javascript">
+        function JavascriptFunction() {
+            var url = '@Url.Action("LogIn", "User")';
+            $("#divLoading").show();
+            $.post(url, null,
+                function (data) {
+                    $("#PID")[0].innerHTML = data;
+                    $("#divLoading").hide();
+                });
         }
     </script>
-
 }
