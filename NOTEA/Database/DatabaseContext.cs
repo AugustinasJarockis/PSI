@@ -21,7 +21,7 @@ namespace NOTEA.Database
                 .HasIndex(u => u.Username)
                 .IsUnique();
             builder.Entity<UserConspectsModel>()
-                .HasKey(a => a.User_Id);
+                .HasKey(s => s.No);
         }
     }
 }

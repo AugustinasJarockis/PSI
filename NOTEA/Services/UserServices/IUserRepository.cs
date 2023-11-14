@@ -6,5 +6,6 @@ namespace NOTEA.Services.UserServices
     {
         public Task SaveUserAsync(UserModel user);
         public bool CheckLogIn(UserModel user);
+        public int GetUserId(string username);
     }
 }

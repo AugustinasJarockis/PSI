@@ -1,7 +1,11 @@
-﻿namespace NOTEA.Models.UserModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace NOTEA.Models.UserModels
 {
     public class UserConspectsModel
     {
+        [Key]
+        public int No {  get; set; }
         public int User_Id { get; set; }
         public int Conspect_Id { get; set; }
         public char Access_Type { get; set; }

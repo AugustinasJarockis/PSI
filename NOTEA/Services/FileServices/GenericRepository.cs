@@ -45,7 +45,7 @@ namespace NOTEA.Services.FileServices
                     _database.Entry(temp).CurrentValues.SetValues(conspect);
 
                 }
-                _database.SaveChangesAsync();
+                _database.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -54,14 +54,12 @@ namespace NOTEA.Services.FileServices
             }
             //await _database.SaveChangesAsync();
         }
-        public async Task AssignToUser(int conspect_id, int user_id, char access_type = 'a')
+        public void AssignToUser(int conspect_id, int user_id, char access_type = 'a')
         {
             try
             {
-                //await AddAsync(conspect_id, user_id, access_type);
                 _database.UserConspects.Add(new UserConspectsModel(user_id, conspect_id, access_type));
-                await _database.SaveChangesAsync();
-                //_database.SaveChanges();
+                _database.SaveChanges();
             }
             catch (Exception ex)
             {

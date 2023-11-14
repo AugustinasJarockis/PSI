@@ -5,6 +5,7 @@ using NOTEA.Services.LogServices;
 using NOTEA.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace NOTEA.Services.UserServices
 {
@@ -43,6 +44,10 @@ namespace NOTEA.Services.UserServices
                 ExceptionModel info = new ExceptionModel(ex);
                 _logsService.SaveExceptionInfo(info);
             }
+        }
+        public int GetUserId(string username)
+        {
+            return _database.Users.Where(u => u.Username.Equals(username)).First().Id;
         }
     }
 }

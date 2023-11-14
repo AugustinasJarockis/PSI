@@ -70,6 +70,7 @@ namespace NOTEA.Controllers
             if (username.IsValidName() && password.IsValidName() && _userService.CheckLogIn(user))
             {
                 _contextAccessor.HttpContext.Session.SetString("User", user.Username);
+                user.Id = _userService.GetUserId(username);
                 _contextAccessor.HttpContext.Session.SetInt32("Id", user.Id);
                 return RedirectToAction("Index", "Home");
             }

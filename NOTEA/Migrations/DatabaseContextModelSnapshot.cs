@@ -72,11 +72,11 @@ namespace NOTEA.Migrations
 
             modelBuilder.Entity("NOTEA.Models.UserModels.UserConspectsModel", b =>
                 {
-                    b.Property<int>("User_Id")
+                    b.Property<int>("No")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("User_Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("No"));
 
                     b.Property<string>("Access_Type")
                         .IsRequired()
@@ -85,7 +85,10 @@ namespace NOTEA.Migrations
                     b.Property<int>("Conspect_Id")
                         .HasColumnType("int");
 
-                    b.HasKey("User_Id");
+                    b.Property<int>("User_Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("No");
 
                     b.ToTable("UserConspects");
                 });

@@ -46,5 +46,9 @@ namespace NOTEA.Services.UserServices
             }
             return false;
         }
+        public int GetUserId(string username)
+        {
+            return -1;
+        }
     }
 }
