@@ -30,11 +30,22 @@
             </div>
             <p></p>
             <div class="form-group">
-                <input type="submit" value="Sign in" class="btn btn-primary" />
+                <input type="submit" onclick="myFunction()" value="Sign in" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
+
+<div id="LoadMessage">Loading...</div>
+
+<style>
+    #LoadMessage{
+        display: none;
+        background-color: white transparent white transparent;
+        width: 830px;
+        height: 180px;
+    }
+</style>
 
 <!-- Error Message Modal -->
 <div class="modal fade" id="myModalError" tabindex="-1" role="dialog" aria-labelledby="myModalErrorLabel" aria-hidden="true">
@@ -50,7 +61,6 @@
         </div>
     </div>
 </div>
-
 
 @section Scripts {
     @{
@@ -83,4 +93,11 @@
                 openErrorModal(errorMsg);
         });
     </script>
+
+    <script>
+        function myFunction() {
+            document.getElementById("LoadMessage").style.display = "block";
+        }
+    </script>
+
 }

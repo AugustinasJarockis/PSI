@@ -12,7 +12,7 @@ namespace NOTEA.Services.UserServices
             UserListModel userList = JsonConvert.DeserializeObject<UserListModel>(text);
             return userList;
         }
-        public void SaveUser(UserModel user)
+        public async Task SaveUserAsync(UserModel user)
         {
             UserListModel userList = LoadUsers();
             foreach (var userModel in userList.userList)
@@ -31,7 +31,7 @@ namespace NOTEA.Services.UserServices
             }
             catch (Exception exp)
             {
-                Console.WriteLine("Error: could not save user ");
+                 Console.WriteLine("Error: could not save user ");
             }
         }
         bool IUserService.CheckLogIn(UserModel user)

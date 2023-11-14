@@ -27,7 +27,7 @@ namespace NOTEA.Services.FileServices
             var conspects = Select == null ? _database.Conspects.ToList() : Select(_database.Conspects);
             return new ConspectListModel<ConspectModel>(conspects);
         }
-        public /*async*/ void SaveConspect(ConspectModel conspect)
+        public void SaveConspect(ConspectModel conspect)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace NOTEA.Services.FileServices
                     _database.Entry(temp).CurrentValues.SetValues(conspect);
 
                 }
-                _database.SaveChanges();
+                _database.SaveChangesAsync();
             }
             catch (Exception ex)
             {

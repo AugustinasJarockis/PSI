@@ -34,3 +34,21 @@ div .text-wrapping{
     <a asp-action="ConspectList">Back to List</a>
 </div>
 
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script type="text/javascript">
+        function openErrorModal(errorMessage) {
+            var errorDiv = document.getElementById("MyModalErrorAlertBody");
+            errorDiv.innerHTML = errorMessage;
+            $('#myModalError').modal('show');
+        }
+
+        $(document).ready(function () {
+            var errorMsg = "@TempData["ErrorMessage"]";
+            if (errorMsg)
+                openErrorModal(errorMsg);
+        });
+    </script>
+}
