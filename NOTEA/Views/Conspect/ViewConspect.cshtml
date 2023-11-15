@@ -29,15 +29,70 @@ div .text-wrapping{
 </div>
 <input type="submit" onclick="location.href='@Url.Action("EditConspect","Conspect", new {Id = Model.Id })'" value="Edit" class="btn btn-primary" />
 <input type="submit" onclick="location.href='@Url.Action("DeleteConspect","Conspect", new {Id = Model.Id })'" value="Delete" class="btn btn-primary" />
+@*     <input type="text" id="usernamea" placeholder="nop"  /> *@
+
+
+
+
+
+<button onclick="showDiv()">Share conspect</button>
+<div id="formElement" style="display: none;">
+    @using (Html.BeginForm("ShareConspect", "Conspect", new { Id = Model.Id, Name = Model.Name, Date = Model.Date }, FormMethod.Post))
+    {
+        <input type="text" name="username" id="username" placeholder="Enter receivers username" />
+
+        <input type="submit" value="Share" />
+    }
+</div>
+
 
 <div>
     <a asp-action="ConspectList">Back to List</a>
 </div>
 
+<script type="text/javascript">
+    function showDiv() {
+        document.getElementById('formElement').style.display = 'block';
+    }
+</script>
+
+
+<!-- Error Message Modal -->
+<div class="modal fade" id="myModalError" tabindex="-1" role="dialog" aria-labelledby="myModalErrorLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ff6b6b; color: black;">
+                <h5 class="modal-title" id="myModalErrorLabel">Oops...</h5>
+            </div>
+            <div class="modal-body">
+                <div id="MyModalErrorAlertBody">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script type="text/javascript">
+        function openSuccessModal(strMessage) {
+            var myDiv = document.getElementById("MyModalSuccessAlertBody");
+            myDiv.innerHTML = strMessage;
+            $('#myModalSuccess').modal('show');
+        }
+        $(document).ready(function () {
+            var msg = "@TempData["SuccessMessage"]";
+            if (msg)
+                openSuccessModal(msg);
+            closeOnEscape: true
+        });
+    </script>
+
     <script type="text/javascript">
         function openErrorModal(errorMessage) {
             var errorDiv = document.getElementById("MyModalErrorAlertBody");
