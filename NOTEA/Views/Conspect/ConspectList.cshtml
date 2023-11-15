@@ -26,11 +26,16 @@
         border: 1px solid transparent;
         font-weight : bold;
     }
-</style>
-<style>
+    .tableHeader:hover {
+        background: #BBBBBB55;
+    }
     .conspectName {
         background: transparent;
         border: 1px solid transparent;
+    }
+
+    .conspectName:hover {
+            background: #BBBBBB44;
     }
 </style>
 
@@ -84,7 +89,7 @@
         {
             <tr>
                 <td>
-                    <input type="submit" class="conspectName" onclick="location.href='@Url.Action("ViewConspect","Conspect", new {Id = conspectModel.Id })'" value="@conspectModel.Name" />
+                    <input type="submit" class="conspectName" onclick="location.href='@Url.Action("ViewConspect","Conspect", new {Id = conspectModel.Id })'" value="@conspectModel.Name">
                 </td>
                 <td>
                     @conspectModel.ConspectSemester.GetDisplayName()
