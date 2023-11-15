@@ -27,10 +27,18 @@
             </div>
             <p></p>
             <div class="form-group">
-                <input type="submit" value="Log in" class="btn btn-primary" />
+                <input type="submit" onclick="JavascriptFunction()" value="Log in" class="btn btn-primary" />
             </div>
         </form>
     </div>
+</div>
+
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...  <img src="../../Content/images/ajax-loading.gif">
+    </p>
 </div>
 
 <!-- Error Message Modal -->
@@ -78,5 +86,17 @@
             if (errorMsg)
                 openErrorModal(errorMsg);
         });
+    </script>
+
+    <script type="text/javascript" language="javascript">
+        function JavascriptFunction() {
+            var url = '@Url.Action("LogIn", "User")';
+            $("#divLoading").show();
+            $.post(url, null,
+                function (data) {
+                    $("#PID")[0].innerHTML = data;
+                    $("#divLoading").hide();
+                });
+        }
     </script>
 }

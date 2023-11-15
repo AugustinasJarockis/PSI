@@ -9,7 +9,7 @@ namespace NOTEA.Models.Utilities
     {
         //private static IEnumerable<ConspectModel> whereStatement = null;
         //private static IEnumerable<ConspectModel> orderStatement = null;
-        public static Func<DbSet<ConspectModel>, List<ConspectModel>> Build<OrderReturnType>(Func<ConspectModel, bool> filter = null, Func<ConspectModel, OrderReturnType> order = null, bool orderDescending = false)
+        public static Func<IQueryable<ConspectModel>, List<ConspectModel>> Build<OrderReturnType>(Func<ConspectModel, bool> filter = null, Func<ConspectModel, OrderReturnType> order = null, bool orderDescending = false)
         {
             if (filter == null && order == null)
             {
