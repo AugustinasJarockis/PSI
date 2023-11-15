@@ -15,6 +15,11 @@ namespace NOTEA.Models.UserModels
             Password = password;
             Email = email;
         }
+        public UserModel(string username, string password)
+        {
+            Username = username;
+            Password = password;
+        }
         public UserModel()
         {
             Username = "";
