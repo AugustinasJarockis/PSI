@@ -33,7 +33,7 @@ namespace NOTEA.Services.UserServices
             }
             catch (DbUpdateException ex)
             {
-                if (ex.InnerException.GetType() == typeof(SqlException) && ((SqlException)ex.InnerException).Number == 2627)
+                if (ex.InnerException.GetType() == typeof(SqlException) && ((SqlException)ex.InnerException).Number == 2601)
                 {
                     throw new UsernameTakenException();
                 }
