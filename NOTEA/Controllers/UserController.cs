@@ -65,8 +65,7 @@ namespace NOTEA.Controllers
         [HttpPost]
         public IActionResult LogIn(string username, string password)
         {
-            UserModel user = new UserModel(username, password, "");
-            //PAVOJUS KAS CIA REIKIA EMAILO ALIO NORIU KAD NEREIKETU
+            UserModel user = new UserModel(username, password);
             if (username.IsValidName() && password.IsValidName() && _userService.CheckLogIn(user))
             {
                 _contextAccessor.HttpContext.Session.SetString("User", user.Username);
