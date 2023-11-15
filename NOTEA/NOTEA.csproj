@@ -29,8 +29,11 @@
 
   <ItemGroup>
     <Folder Include="Logs\" />
-    <Folder Include="Migrations\" />
     <Folder Include="Users\" />
   </ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include ="NoteaTests"/>
+	</ItemGroup>
 
 </Project>
