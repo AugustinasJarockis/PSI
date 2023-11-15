@@ -126,11 +126,11 @@ namespace NOTEA.Controllers
             {
                 if(ListManipulationUtilities.selectionExists)
                 {
-                    conspectListModel = _repository.LoadConspects(ListManipulationUtilities.selection);
+                    conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, ListManipulationUtilities.selection);
                     ListManipulationUtilities.selectionExists = false;
                 }
                 else
-                    conspectListModel = _repository.LoadConspects();
+                    conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
                 //if (conspectListModel?.Conspects.Count() == 0)
                 //{
                 //    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
@@ -146,11 +146,11 @@ namespace NOTEA.Controllers
                 {
                     if (searchBy.ToLower() == "name")
                     {
-                        conspectListModel = _repository.LoadConspects(list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList());
+                        conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList());
                     }
                     else if (searchBy.ToLower() == "conspectsemester")
                     {
-                        conspectListModel = _repository.LoadConspects(list => list.Where((Func<ConspectModel, bool>)(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower()))).ToList());
+                        conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, list => list.Where((Func<ConspectModel, bool>)(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower()))).ToList());
                     }
                 }
                 if (conspectListModel?.Conspects.Count() == 0)
@@ -182,7 +182,7 @@ namespace NOTEA.Controllers
                 filter = c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower());
             }
 
-            Func<DbSet<ConspectModel>, List<ConspectModel>> selection = null;
+            Func<IQueryable<ConspectModel>, List<ConspectModel>> selection = null;
             switch(collumn + 3 * (int)ListManipulationUtilities.collumnOrderValues[(int)collumn])
             {
                 case SortCollumn.Name + 3 * (int)SortPhase.Ascending:
