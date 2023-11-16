@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace NOTEA.Services.FileServices
 {
-    public class GenericRepository<ConspectType> : IGenericRepository<ConspectType> where ConspectType : class
+    public class GenericRepository<ConspectType> : IGenericRepository<ConspectType> where ConspectType : class, IConspectModel
     {
         private readonly ILogsService _logsService;
         private readonly DatabaseContext _database;
@@ -26,10 +26,14 @@ namespace NOTEA.Services.FileServices
             return _conspectTypes.Find(id);
             //return _database.Conspects.Find(id);
         }
-        public ConspectListModel<ConspectType> LoadConspects(Func<DbSet<ConspectType>, List<ConspectType>> Select = null)
+        public ConspectListModel<ConspectType> LoadConspects(int user_id, Func<IQueryable<ConspectType>, List<ConspectType>> Select = null)
         {
-            var conspects = Select == null ? _conspectTypes.ToList() : Select(_conspectTypes);
-            //var conspects = Select == null ? _database.Conspects.ToList() : Select(_database.Conspects);
+            //var x = _conspectTypes.Where(a => a.Conspect_Id == _s);
+
+            var conspects = Select == null ? _database.UserConspects.Where(uc => uc.User_Id == user_id)
+                                                                    .Join(_conspectTypes, uc => uc.Conspect_Id, c => c.Id, (uc, c) => c).ToList()
+                                           : Select(_database.UserConspects.Where(uc => uc.User_Id == user_id)
+                                                                    .Join(_conspectTypes, uc => uc.Conspect_Id, c => c.Id, (uc, c) => c).ToList().AsQueryable());
             return new ConspectListModel<ConspectType>(conspects);
         }
         public void SaveConspect(ConspectType conspect, int id)
