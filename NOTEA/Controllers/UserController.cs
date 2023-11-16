@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting.Internal;
 using NOTEA.Exceptions;
 using NOTEA.Extentions;
 using NOTEA.Models.UserModels;

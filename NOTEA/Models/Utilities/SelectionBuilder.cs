@@ -11,6 +11,9 @@ namespace NOTEA.Models.Utilities
         //private static IEnumerable<ConspectModel> orderStatement = null;
         public static Func<IQueryable<ConspectModel>, List<ConspectModel>> Build<OrderReturnType>(Func<ConspectModel, bool> filter = null, Func<ConspectModel, OrderReturnType> order = null, bool orderDescending = false)
         {
+            //Func<IQueryable<ConspectModel>, IQueryable<ConspectModel>> t = null;
+            //t = c => c;
+            //t += t.OrderBy(order);
             if (filter == null && order == null)
             {
                 return c => c.ToList();
