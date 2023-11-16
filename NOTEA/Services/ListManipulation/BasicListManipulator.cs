@@ -2,6 +2,7 @@
 using NOTEA.Models.ConspectModels;
 using NOTEA.Extentions;
 using Microsoft.IdentityModel.Tokens;
+using System.Runtime.Serialization;
 
 namespace NOTEA.Services.ListManipulation
 {
@@ -9,6 +10,8 @@ namespace NOTEA.Services.ListManipulation
     {
         private bool _filterExists = false;
         public bool FilterExists { get { return _filterExists; } }
+
+        public SortPhase[] SortStatus { get { return collumnOrderValues; } }
 
         private Func<IQueryable<ConspectModel>, IQueryable<ConspectModel>> whereStatement = null;
         private Func<IQueryable<ConspectModel>, IQueryable<ConspectModel>> orderStatement = null;

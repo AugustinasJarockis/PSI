@@ -164,11 +164,12 @@ namespace NOTEA.Controllers
                 //        conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, list => list.Where((Func<ConspectModel, bool>)(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower()))).ToList());
                 //    }
                 //}
-                if (conspectListModel?.Conspects.Count() == 0)
-                {
+                //if (conspectListModel?.Conspects.Count() == 0)
+                //{
                     
-                }
+                //}
             //}
+            ViewData["SortStatus"] = _listManipulationService.SortStatus;
             return View(conspectListModel);
         }
         [HttpGet]
@@ -187,8 +188,10 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult SortConspect(SortCollumn collumn)
         {
+            //_contextAccessor.HttpContext.Session.Set("ListManipulator", _listManipulationService);
             _listManipulationService.UpdateSort(collumn);
-            //ListManipulationUtilities.collumnOrderValues[(int)collumn]++;
+            _contextAccessor.HttpContext.Session.SetString(_listManipulationService.)
+            //ListManipulationUtilities.collumnOrderValues[(int)collumn]++;0
             //if ((int)ListManipulationUtilities.collumnOrderValues[(int)collumn] == 3)
             //    ListManipulationUtilities.collumnOrderValues[(int)collumn] = SortPhase.None;
 
