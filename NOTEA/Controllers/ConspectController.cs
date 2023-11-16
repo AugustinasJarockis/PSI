@@ -116,15 +116,23 @@ namespace NOTEA.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult ConspectList(string searchBy, string searchValue)
+        public IActionResult ConspectList(/*string searchBy, string searchValue*/)
         {
-        //    if (ListManipulationUtilities.selectionExists == false)
-        //    {
-        //        ListManipulationUtilities.searchBy = searchBy;
-        //        ListManipulationUtilities.searchValue = searchValue;
-        //    }
+            //    if (ListManipulationUtilities.selectionExists == false)
+            //    {
+            //        ListManipulationUtilities.searchBy = searchBy;
+            //        ListManipulationUtilities.searchValue = searchValue;
+            //    }
             //ConspectListModel<ConspectModel> conspectListModel = null;
+            
             ConspectListModel<ConspectModel> conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, _listManipulationService.GetSelection());
+            if(conspectListModel?.Conspects.Count() == 0)
+            {
+                if(_listManipulationService.FilterExists)
+                    TempData["ErrorMessage"] = "No noteas match your search";
+                else
+                    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
+            }
             //if (searchValue.IsNullOrEmpty())
             //{
             //    if(ListManipulationUtilities.selectionExists)
@@ -158,9 +166,9 @@ namespace NOTEA.Controllers
                 //}
                 if (conspectListModel?.Conspects.Count() == 0)
                 {
-                    TempData["ErrorMessage"] = "No noteas match your search";
+                    
                 }
-            }
+            //}
             return View(conspectListModel);
         }
         [HttpGet]

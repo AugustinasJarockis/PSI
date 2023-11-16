@@ -7,6 +7,9 @@ namespace NOTEA.Services.ListManipulation
 {
     public class BasicListManipulator : IListManipulationService
     {
+        private bool _filterExists = false;
+        public bool FilterExists { get { return _filterExists; } }
+
         private Func<IQueryable<ConspectModel>, IQueryable<ConspectModel>> whereStatement = null;
         private Func<IQueryable<ConspectModel>, IQueryable<ConspectModel>> orderStatement = null;
 
@@ -23,6 +26,8 @@ namespace NOTEA.Services.ListManipulation
             if (searchValue.IsNullOrEmpty())
             {
                 whereStatement = null;
+                _filterExists = false;
+                return;
             }
             if (searchBy.ToLower() == "name")
             {
@@ -32,6 +37,7 @@ namespace NOTEA.Services.ListManipulation
             {
                whereStatement = list => (IQueryable<ConspectModel>)list.Where((Func<ConspectModel, bool>)(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())));
             }
+            _filterExists = true;
         }
 
         public void UpdateSort(SortCollumn collumn)
@@ -69,6 +75,7 @@ namespace NOTEA.Services.ListManipulation
 
         public void ClearFilter()
         {
+            _filterExists = false;
             whereStatement = null;
         }
 

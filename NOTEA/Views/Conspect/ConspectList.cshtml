@@ -15,7 +15,10 @@
 @{
     string[] sortSymbols = { "", " ↑", " ↓" };
 
-    string NameCollumnName = "Name" + sortSymbols[(int)ListManipulationUtilities.collumnOrderValues[(int)SortCollumn.Name]];
+    SortPhase[] temp = { SortPhase.None, SortPhase.None, SortPhase.None };
+    SortPhase[] sortPhases = ViewData["Sort status"] == null ? temp : (SortPhase[])ViewData["Sort status"];
+
+    string NameCollumnName = "Name" + sortSymbols[(int)((SortPhase[])(ViewData["Sort status"] == null ? new {sortPhases = { SortPhase.None, SortPhase.None, SortPhase.None} } : ViewData["Sort status"]))[(int)SortCollumn.Name]];
     string SemesterCollumnName = "Semester" + sortSymbols[(int)ListManipulationUtilities.collumnOrderValues[(int)SortCollumn.Semester]];
     string DateCollumnName = "Date" + sortSymbols[(int)ListManipulationUtilities.collumnOrderValues[(int)SortCollumn.Date]];
 }
@@ -44,7 +47,7 @@
 <br />
 
 <div>
-    @using (Html.BeginForm("ConspectList", "Conspect", FormMethod.Get))
+    @using (Html.BeginForm("FilterConspect", "Conspect", FormMethod.Get))
     {
         <table>
             <tr>

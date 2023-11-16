@@ -5,6 +5,7 @@ namespace NOTEA.Services.ListManipulation
 {
     public interface IListManipulationService
     {
+        public bool FilterExists { get; }
         public void UpdateFilter(string searchBy, string searchValue);
         public void UpdateSort(SortCollumn collumn);
         public void ClearFilter();
