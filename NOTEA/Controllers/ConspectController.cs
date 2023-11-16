@@ -125,22 +125,22 @@ namespace NOTEA.Controllers
         //    }
             //ConspectListModel<ConspectModel> conspectListModel = null;
             ConspectListModel<ConspectModel> conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, _listManipulationService.GetSelection());
-            if (searchValue.IsNullOrEmpty())
-            {
-                if(ListManipulationUtilities.selectionExists)
-                {
-                    conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, ListManipulationUtilities.selection);
-                    ListManipulationUtilities.selectionExists = false;
-                }
-                else
-                    conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
-                //if (conspectListModel?.Conspects.Count() == 0)
-                //{
-                //    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
-                //}
-            }
-            else 
-            {
+            //if (searchValue.IsNullOrEmpty())
+            //{
+            //    if(ListManipulationUtilities.selectionExists)
+            //    {
+            //        conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, ListManipulationUtilities.selection);
+            //        ListManipulationUtilities.selectionExists = false;
+            //    }
+            //    else
+            //        conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
+            //    //if (conspectListModel?.Conspects.Count() == 0)
+            //    //{
+            //    //    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
+            //    //}
+            //}
+            //else 
+            //{
                 //if (searchValue.Length > 80)
                 //{
                 //    TempData["ErrorMessage"] = "Search query can't be longer than 80 characters";
