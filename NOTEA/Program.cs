@@ -15,7 +15,7 @@ builder.Services.AddControllersWithViews();
 //builder.Services.AddScoped<IGenericRepository<ConspectModel>, GenericRepository<ConspectModel>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ILogsService, LogsService>();
-builder.Services.AddScoped<IListManipulationService, BasicListManipulator>();
+builder.Services.AddScoped<IListManipulationService, ListManipulator>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddDistributedMemoryCache();
