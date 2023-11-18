@@ -2,7 +2,7 @@
 @using NOTEA.Extentions;
 ﻿@using Newtonsoft.Json;
 @using NOTEA.Models.ConspectModels;
-@using NOTEA.Models.Utilities;
+@using NOTEA.Utilities.ListManipulation;
 @model ConspectListModel<ConspectModel>
 
 @{
@@ -15,9 +15,12 @@
 @{
     string[] sortSymbols = { "", " ↑", " ↓" };
 
-    string NameCollumnName = "Name" + sortSymbols[(int)ListManipulationUtilities.collumnOrderValues[(int)SortCollumn.Name]];
-    string SemesterCollumnName = "Semester" + sortSymbols[(int)ListManipulationUtilities.collumnOrderValues[(int)SortCollumn.Semester]];
-    string DateCollumnName = "Date" + sortSymbols[(int)ListManipulationUtilities.collumnOrderValues[(int)SortCollumn.Date]];
+    SortPhase[] temp = { SortPhase.None, SortPhase.None, SortPhase.None };
+    SortPhase[] sortPhases = ViewData["SortStatus"] == null ? temp : (SortPhase[])ViewData["SortStatus"];
+
+    string NameCollumnName = "Name" + sortSymbols[(int)sortPhases[(int)SortCollumn.Name]];
+    string SemesterCollumnName = "Semester" + sortSymbols[(int)sortPhases[(int)SortCollumn.Semester]];
+    string DateCollumnName = "Date" + sortSymbols[(int)sortPhases[(int)SortCollumn.Date]];
 }
 
 <style>
@@ -44,21 +47,21 @@
 <br />
 
 <div>
-    @using (Html.BeginForm("ConspectList", "Conspect", FormMethod.Get))
+    @using (Html.BeginForm("FilterConspect", "Conspect", FormMethod.Get))
     {
         <table>
             <tr>
                 <td>
                     <span><b>Search by:</b></span>
-                    @Html.RadioButton("searchBy", "name", true)
+                    @Html.RadioButton("searchBy", "name", ((string)ViewData["SearchBy"])?.ToLower() == "name")
                     <text> Conspect name </text>
-                    @Html.RadioButton("searchBy", "ConspectSemester", false)
+                    @Html.RadioButton("searchBy", "ConspectSemester", ((string)ViewData["SearchBy"])?.ToLower() == "conspectsemester")
                     <text> Semester </text>
                 </td>
             </tr>
             <tr>
                 <td>
-                    @Html.TextBox("searchValue", null, new {Class = "form-control", required = true})
+                    @Html.TextBox("searchValue", (string)ViewData["SearchValue"], new {Class = "form-control", required = true})
                     @Html.ValidationMessage("Field can't be empty")
                 </td>
                 <td>
@@ -69,6 +72,10 @@
                 </td>
             </tr>
         </table>
+    }
+    @if (ViewData["SearchValue"] != null)
+    {
+        <input type="submit" onclick="location.href='@Url.Action("CancelSearch","Conspect")'" value="Clear" class="btn btn-success" />
     }
 </div>
 <p></p>
@@ -136,6 +143,15 @@
         });
     </script>
 }
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#cancelSearch").click(function (e) {
+            e.preventDefault();
+            GetInfo1();
+        });
+    });
+</script>
 
 <script>
     function showHideInput(checkboxId, panInputId, buttonId) {

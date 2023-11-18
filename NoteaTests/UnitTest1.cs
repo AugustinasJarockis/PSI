@@ -10,7 +10,7 @@ namespace NoteaTests
     {
         private readonly WebApplicationFactory<Program> _factory;
         private readonly HttpClient httpClient;
-        //private readonly IUserRepository _userService;
+        //private readonly IUserRepository _userService; No dependency injection
 
         public UnitTest1(/*IUserRepository userService*/)
         {
