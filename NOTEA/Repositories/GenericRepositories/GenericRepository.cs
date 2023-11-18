@@ -64,11 +64,6 @@ namespace NOTEA.Repositories.GenericRepositories
                 _logsService.SaveExceptionInfo(new ExceptionModel(ex));
              }
         }
-        //private Task AddAsync(int conspect_id, int user_id, char access_type = 'a')
-        //{
-        //    return Task.Factory.StartNew(() =>
-        //    { _database.UserConspects.Add(new UserConspectsModel(user_id, conspect_id, access_type)); });
-        //}
         public void DeleteConspect(int id)
         {
             _conspectTypes.Remove(_conspectTypes.Find(id));
