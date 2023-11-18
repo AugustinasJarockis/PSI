@@ -11,11 +11,11 @@ namespace NOTEA.Controllers
     public class UserController : Controller
     {
         public readonly IHttpContextAccessor _contextAccessor;
-        private readonly IUserRepository _userService;
-        public UserController(IHttpContextAccessor contextAccessor, IUserRepository userService)
+        private readonly IUserRepository _userRepository;
+        public UserController(IHttpContextAccessor contextAccessor, IUserRepository userRepository)
         {
             _contextAccessor = contextAccessor;
-            _userService = userService;
+            _userRepository = userRepository;
         }
 
         public IActionResult SignIn()
@@ -33,7 +33,7 @@ namespace NOTEA.Controllers
                     if (password == passwordCheck)
                     {
                         UserModel user = new UserModel(username, password, email);//_mapper.Map<UserModel>(SignInModel)
-                        await _userService.SaveUserAsync(user);
+                        await _userRepository.SaveUserAsync(user);
                         TempData["SuccessMessage"] = "Your registration has been successful!";
                         return RedirectToAction("LogIn", "User");
                     }
@@ -67,11 +67,11 @@ namespace NOTEA.Controllers
         public IActionResult LogIn(string username, string password)
         {
             UserModel user = new UserModel(username, password);
-            if (username.IsValidName() && password.IsValidName() && _userService.CheckLogIn(user))
+            if (username.IsValidName() && password.IsValidName() && _userRepository.CheckLogIn(user))
             {
                 _contextAccessor.HttpContext.Session.SetString("User", user.Username);
                 _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(new ListManipulator()));
-                user.Id = _userService.GetUserId(username);
+                user.Id = _userRepository.GetUserId(username);
                 _contextAccessor.HttpContext.Session.SetInt32("Id", user.Id);
                 return RedirectToAction("Index", "Home");
             }

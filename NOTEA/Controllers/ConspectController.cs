@@ -7,21 +7,26 @@ using NOTEA.Services.LogServices;
 using NOTEA.Database;
 using Newtonsoft.Json;
 using NOTEA.Utilities.ListManipulation;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using NOTEA.Services.UserServices;
 
 namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
         IGenericRepository<ConspectModel> _repository;
+        private readonly IUserRepository _userRepository;
         private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
         public readonly IHttpContextAccessor _contextAccessor;
-        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, DatabaseContext context)
+        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, DatabaseContext context, IUserRepository userRepository)
         {
             _repository = repository;
             _context = context; 
             _logsService = logsService;
             _contextAccessor = contextAccessor;
+            _userRepository = userRepository;
         }
         public IActionResult CreateConspects()
         {
@@ -184,6 +189,30 @@ namespace NOTEA.Controllers
         {
             _repository.DeleteConspect(id);
             return RedirectToAction("ConspectList", "Conspect");
+        }
+
+        [HttpPost]
+        public IActionResult ShareConspect(ConspectModel model, string username)
+        {
+
+            if (_context.Users.Any(x => x.Username.Equals(username)))
+            {
+                if (username != _contextAccessor.HttpContext.Session.GetString("User"))
+                {
+                    int user_id = _userRepository.GetUserId(username);
+                    _repository.AssignToUser(model.Id, user_id, 'e');
+                    TempData["SuccessMessage"] = "Your notea has been shared successfully!";
+                }
+                else 
+                {
+                    TempData["ErrorMessage"] = "You can not share conspect with yourself";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "The username you entered does not exist";
+            }
+            return RedirectToAction("ViewConspect", "Conspect", new { ID = model.Id, Name = model.Name, Date = model.Date });
         }
     }
 }

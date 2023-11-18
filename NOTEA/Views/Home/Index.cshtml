@@ -13,3 +13,36 @@
     <p>Try it now!</p>
     <input type="submit" onclick="location.href='@Url.Action("CreateConspects","Conspect")'" value="Create my new conspect" />
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        function openSuccessModal(strMessage) {
+            var myDiv = document.getElementById("MyModalSuccessAlertBody");
+            myDiv.innerHTML = strMessage;
+            $('#myModalSuccess').modal('show');
+        }
+        $(document).ready(function () {
+            var msg = "@TempData["SuccessMessage"]";
+            if (msg)
+                openSuccessModal(msg);
+            closeOnEscape: true
+        });
+    </script>
+    <script type="text/javascript">
+        function openErrorModal(errorMessage) {
+            var errorDiv = document.getElementById("MyModalErrorAlertBody");
+            errorDiv.innerHTML = errorMessage;
+            $('#myModalError').modal('show');
+        }
+
+        $(document).ready(function () {
+            var errorMsg = "@TempData["ErrorMessage"]";
+            if (errorMsg)
+                openErrorModal(errorMsg);
+        });
+    </script>
+    }
