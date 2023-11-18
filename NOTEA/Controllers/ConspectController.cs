@@ -2,14 +2,14 @@
 using NOTEA.Extentions;
 using NOTEA.Models.ConspectModels;
 using NOTEA.Models.ExceptionModels;
-using NOTEA.Services.FileServices;
 using NOTEA.Services.LogServices;
 using NOTEA.Database;
 using Newtonsoft.Json;
 using NOTEA.Utilities.ListManipulation;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
-using NOTEA.Services.UserServices;
+using NOTEA.Repositories.GenericRepositories;
+using NOTEA.Repositories.UserRepositories;
 
 namespace NOTEA.Controllers
 {
@@ -54,13 +54,11 @@ namespace NOTEA.Controllers
             }
             catch (ArgumentNullException ex)
             {
-                ExceptionModel info = new ExceptionModel(ex);
-                _logsService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
             }
             catch (Exception ex)
             {
-                ExceptionModel info = new ExceptionModel(ex);
-                _logsService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
             }
             return View();
         }
@@ -99,19 +97,16 @@ namespace NOTEA.Controllers
             }
             catch (ArgumentNullException ex)
             {
-                ExceptionModel info = new ExceptionModel(ex);
-                _logsService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
                 
             }
             catch (InvalidOperationException ex)
             {
-                ExceptionModel info = new ExceptionModel(ex);
-                _logsService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
             }
             catch (Exception ex)
             {
-                ExceptionModel info = new ExceptionModel(ex);
-                _logsService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
             }
 
             return View();

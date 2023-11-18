@@ -1,1 +1,0 @@
-{"Date":"2023-10-18T16:45:26.0196551+03:00","ConspectSemester":3,"Name":"Atsiskaitymas","ConspectText":"Bus liuks!","ConspectRecords":[]}

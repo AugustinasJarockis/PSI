@@ -29,19 +29,16 @@ div .text-wrapping{
 </div>
 <input type="submit" onclick="location.href='@Url.Action("EditConspect","Conspect", new {Id = Model.Id })'" value="Edit" class="btn btn-primary" />
 <input type="submit" onclick="location.href='@Url.Action("DeleteConspect","Conspect", new {Id = Model.Id })'" value="Delete" class="btn btn-primary" />
-@*     <input type="text" id="usernamea" placeholder="nop"  /> *@
 
 
-
-
-
-<button onclick="showDiv()">Share conspect</button>
+<button class="btn btn-primary" onclick="showDiv()">Share conspect </button
+<p></p>
 <div id="formElement" style="display: none;">
     @using (Html.BeginForm("ShareConspect", "Conspect", new { Id = Model.Id, Name = Model.Name, Date = Model.Date }, FormMethod.Post))
     {
-        <input type="text" name="username" id="username" placeholder="Enter receivers username" />
+        <input type="text" name="username" id="username" placeholder="Enter receivers username" style="height: 35px;"/>
 
-        <input type="submit" value="Share" />
+        <input type="submit" value="Share" class="btn btn-primary"/>
     }
 </div>
 
