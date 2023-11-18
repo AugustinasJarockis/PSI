@@ -2,20 +2,19 @@
 using NOTEA.Extentions;
 using NOTEA.Models.ConspectModels;
 using NOTEA.Models.ExceptionModels;
-using NOTEA.Services.FileServices;
 using NOTEA.Services.LogServices;
 using NOTEA.Database;
 using NOTEA.Models.Utilities;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
-using NOTEA.Services.UserServices;
+using NOTEA.Repositories.UserRepositories;
+using NOTEA.Repositories.GenericRepositories;
 
 namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
         IGenericRepository<ConspectModel> _repository;
-        //private readonly IGenericRepository _fileService;
         private readonly IUserRepository _userRepository;
         private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
@@ -54,13 +53,11 @@ namespace NOTEA.Controllers
             }
             catch (ArgumentNullException ex)
             {
-                ExceptionModel info = new ExceptionModel(ex);
-                _logsService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
             }
             catch (Exception ex)
             {
-                ExceptionModel info = new ExceptionModel(ex);
-                _logsService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
             }
             return View();
         }
@@ -134,10 +131,6 @@ namespace NOTEA.Controllers
                 }
                 else
                     conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
-                //if (conspectListModel?.Conspects.Count() == 0)
-                //{
-                //    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
-                //}
             }
             else 
             {

@@ -7,13 +7,12 @@ using System.Configuration;
 using System.Collections;
 using Microsoft.EntityFrameworkCore;
 
-namespace NOTEA.Services.FileServices
+namespace NOTEA.Repositories.GenericRepositories
 {
     public class GenericRepository<ConspectType> : IGenericRepository<ConspectType> where ConspectType : class, IConspectModel
     {
         private readonly ILogsService _logsService;
         private readonly DatabaseContext _database;
-        //private DSGeneralEntities _context = null;
         private DbSet<ConspectType> _conspectTypes;
         public GenericRepository(ILogsService logsService, DatabaseContext database)
         {
@@ -24,11 +23,9 @@ namespace NOTEA.Services.FileServices
         public ConspectType LoadConspect(int id)
         {
             return _conspectTypes.Find(id);
-            //return _database.Conspects.Find(id);
         }
         public ConspectListModel<ConspectType> LoadConspects(int user_id, Func<IQueryable<ConspectType>, List<ConspectType>> Select = null)
         {
-            //var x = _conspectTypes.Where(a => a.Conspect_Id == _s);
 
             var conspects = Select == null ? _database.UserConspects.Where(uc => uc.User_Id == user_id)
                                                                     .Join(_conspectTypes, uc => uc.Conspect_Id, c => c.Id, (uc, c) => c).ToList()
@@ -42,7 +39,6 @@ namespace NOTEA.Services.FileServices
             {
                 var temp = _conspectTypes.Find(id);
                 if (temp == null)
-                   // _database.Conspects.Add(conspect);
                    _conspectTypes.Add(conspect);
                 else
                 {
@@ -53,10 +49,8 @@ namespace NOTEA.Services.FileServices
             }
             catch (Exception ex)
             {
-                ExceptionModel info = new ExceptionModel(ex);
-                _logsService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
             }
-            //await _database.SaveChangesAsync();
         }
         public void AssignToUser(int conspect_id, int user_id, char access_type = 'a')
         {
@@ -67,19 +61,13 @@ namespace NOTEA.Services.FileServices
             }
             catch (Exception ex)
             {
-                ExceptionModel info = new ExceptionModel(ex);
-                _logsService.SaveExceptionInfo(info);
+                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
              }
         }
-        private Task AddAsync(int conspect_id, int user_id, char access_type = 'a')
-        {
-            return Task.Factory.StartNew(() =>
-            { _database.UserConspects.Add(new UserConspectsModel(user_id, conspect_id, access_type)); });
-        }
-        //private Task SaveAsync()
+        //private Task AddAsync(int conspect_id, int user_id, char access_type = 'a')
         //{
         //    return Task.Factory.StartNew(() =>
-        //    { _database.SaveChanges(); });
+        //    { _database.UserConspects.Add(new UserConspectsModel(user_id, conspect_id, access_type)); });
         //}
         public void DeleteConspect(int id)
         {

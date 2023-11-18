@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting.Internal;
 using NOTEA.Exceptions;
 using NOTEA.Extentions;
 using NOTEA.Models.UserModels;
-using NOTEA.Services.UserServices;
+using NOTEA.Repositories.UserRepositories;
 
 namespace NOTEA.Controllers
 {
