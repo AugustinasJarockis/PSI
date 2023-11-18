@@ -5,26 +5,23 @@ using NOTEA.Models.ExceptionModels;
 using NOTEA.Services.FileServices;
 using NOTEA.Services.LogServices;
 using NOTEA.Database;
-using NOTEA.Models.Utilities;
-using NOTEA.Services.ListManipulation;
+using Newtonsoft.Json;
+using NOTEA.Utilities.ListManipulation;
 
 namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
         IGenericRepository<ConspectModel> _repository;
-        //private readonly IGenericRepository _fileService;
         private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
-        private readonly IListManipulationService _listManipulationService;
         public readonly IHttpContextAccessor _contextAccessor;
-        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, DatabaseContext context, IListManipulationService listManipulationService)
+        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, DatabaseContext context)
         {
             _repository = repository;
             _context = context; 
             _logsService = logsService;
             _contextAccessor = contextAccessor;
-            _listManipulationService = listManipulationService;
         }
         public IActionResult CreateConspects()
         {
@@ -115,152 +112,56 @@ namespace NOTEA.Controllers
             return View();
         }
 
-        //static bool buvo = false;
         [HttpGet]
-        public IActionResult ConspectList(/*string searchBy, string searchValue*/)
+        public IActionResult ConspectList()
         {
-            //    if (ListManipulationUtilities.selectionExists == false)
-            //    {
-            //        ListManipulationUtilities.searchBy = searchBy;
-            //        ListManipulationUtilities.searchValue = searchValue;
-            //    }
-            //ConspectListModel<ConspectModel> conspectListModel = null;
-            //BasicListManipulator _listManipulator;
-            //if (!buvo)
-            //{
-                //_listManipulator = new BasicListManipulator();
-                //_contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(_listManipulator));
-                //TempData["ListManipulator"] = _listManipulationService;
-             //   buvo = true;
-            //}
-            // /*BasicListManipulator*/ _listManipulator = JsonConvert.DeserializeObject<BasicListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator"));
-            //BasicListManipulator _listManipulator = (BasicListManipulator)TempData["ListManipulator"];
-            ListManipulator = JSON(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default)
-
+            ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
             ConspectListModel<ConspectModel> conspectListModel = 
                 _repository.LoadConspects(
                     _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
-                    ListManipulator.ListManipulatorDictionary[_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default].GetSelection()
+                    listManip.GetSelection()
                     );
             if(conspectListModel?.Conspects.Count() == 0)
             {
-                if(ListManipulator.ListManipulatorDictionary[_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default].FilterExists)
+                if(listManip.FilterExists)
                     TempData["ErrorMessage"] = "No noteas match your search";
                 else
                     TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
             }
-            //if (searchValue.IsNullOrEmpty())
-            //{
-            //    if(ListManipulationUtilities.selectionExists)
-            //    {
-            //        conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, ListManipulationUtilities.selection);
-            //        ListManipulationUtilities.selectionExists = false;
-            //    }
-            //    else
-            //        conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
-            //    //if (conspectListModel?.Conspects.Count() == 0)
-            //    //{
-            //    //    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
-            //    //}
-            //}
-            //else 
-            //{
-                //if (searchValue.Length > 80)
-                //{
-                //    TempData["ErrorMessage"] = "Search query can't be longer than 80 characters";
-                //}
-                //else
-                //{
-                //    if (searchBy.ToLower() == "name")
-                //    {
-                //        conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower())).ToList());
-                //    }
-                //    else if (searchBy.ToLower() == "conspectsemester")
-                //    {
-                //        conspectListModel = _repository.LoadConspects(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, list => list.Where((Func<ConspectModel, bool>)(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower()))).ToList());
-                //    }
-                //}
-                //if (conspectListModel?.Conspects.Count() == 0)
-                //{
-                    
-                //}
-            //}
-            ViewData["SortStatus"] = ListManipulator.ListManipulatorDictionary[_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default].SortStatus;
+            ViewData["SortStatus"] = listManip.SortStatus;
+            if (listManip.FilterExists)
+                ViewData["SearchValue"] = listManip.SearchValue;
+            ViewData["SearchBy"] = listManip.SearchBy;
             return View(conspectListModel);
+        }
+        public IActionResult CancelSearch()
+        {
+            ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
+            listManip.ClearFilter();
+            _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(listManip));
+            return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]
         public IActionResult FilterConspect(string searchBy, string searchValue)
         {
-            //BasicListManipulator _listManipulator = JsonConvert.DeserializeObject<BasicListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator"));
             if (searchValue.Length > 80)
             {
                 TempData["ErrorMessage"] = "Search query can't be longer than 80 characters";
             }
             else
             {
-                ListManipulator.ListManipulatorDictionary[_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default].UpdateFilter(searchBy, searchValue);
+                ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
+                listManip.UpdateFilter(searchBy, searchValue);
+                _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(listManip));
             }
-            //_contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(_listManipulator));
-            //TempData["ListManipulator"] = _listManipulationService;
             return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]
         public IActionResult SortConspect(SortCollumn collumn)
         {
-            //_contextAccessor.HttpContext.Session.Set("ListManipulator", _listManipulationService);
-            //BasicListManipulator _listManipulator = JsonConvert.DeserializeObject<BasicListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator"));
-            //_listManipulationService.UpdateSort(collumn);
-            ListManipulator.ListManipulatorDictionary[_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default].UpdateSort(collumn);
-            //TempData["ListManipulator"] = _listManipulationService;
-            //_contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(_listManipulator));
-            //JsonConvert.DeserializeObject<ConspectType>(text);
-            //ListManipulationUtilities.collumnOrderValues[(int)collumn]++;0
-            //if ((int)ListManipulationUtilities.collumnOrderValues[(int)collumn] == 3)
-            //    ListManipulationUtilities.collumnOrderValues[(int)collumn] = SortPhase.None;
-
-            //ListManipulationUtilities.collumnOrderValues[((int)collumn + 1) % 3] = SortPhase.None;
-            //ListManipulationUtilities.collumnOrderValues[((int)collumn + 2) % 3] = SortPhase.None;
-
-            //Func<ConspectModel, bool> filter = null;
-            //if(ListManipulationUtilities.searchBy?.ToLower() == "name")
-            //{
-            //    string searchValue = ListManipulationUtilities.searchValue;
-            //    filter = c => c.Name.ToLower().Contains(searchValue.ToLower());
-            //}
-            //else if(ListManipulationUtilities.searchBy?.ToLower() == "conspectsemester")
-            //{
-            //    string searchValue = ListManipulationUtilities.searchValue;
-            //    filter = c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower());
-            //}
-
-            //Func<IQueryable<ConspectModel>, List<ConspectModel>> selection = null;
-            //switch(collumn + 3 * (int)ListManipulationUtilities.collumnOrderValues[(int)collumn])
-            //{
-            //    case SortCollumn.Name + 3 * (int)SortPhase.Ascending:
-            //        selection = SelectionBuilder.Build<string>(filter, c => c.Name);
-            //        break;
-            //    case SortCollumn.Name + 3 * (int)SortPhase.Descending:
-            //        selection = SelectionBuilder.Build<string>(filter : filter, order : c => c.Name, orderDescending : true);
-            //        break;
-            //    case SortCollumn.Semester + 3 * (int)SortPhase.Ascending:
-            //        selection = SelectionBuilder.Build<int>(filter: filter, order: c => (int)c.ConspectSemester);
-            //        break;
-            //    case SortCollumn.Semester + 3 * (int)SortPhase.Descending:
-            //        selection = SelectionBuilder.Build<int>(filter: filter, order: c => (int)c.ConspectSemester, orderDescending: true);
-            //        break;
-            //    case SortCollumn.Date + 3 * (int)SortPhase.Ascending:
-            //        selection = SelectionBuilder.Build<DateTime>(filter: filter, order: c => c.Date);
-            //        break;
-            //    case SortCollumn.Date + 3 * (int)SortPhase.Descending:
-            //        selection = SelectionBuilder.Build<DateTime>(filter: filter, order: c => c.Date, orderDescending: true);
-            //        break;
-            //}
-            //if(selection == null)
-            //{
-            //    selection = SelectionBuilder.Build<int>(filter: filter);
-            //}
-            //ListManipulationUtilities.selection = selection;
-            //ListManipulationUtilities.selectionExists = true;
+            ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
+            listManip.UpdateSort(collumn);
+            _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(listManip));
             return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]

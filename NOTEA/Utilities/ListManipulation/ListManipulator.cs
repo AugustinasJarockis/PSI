@@ -1,26 +1,37 @@
-﻿using NOTEA.Models.Utilities;
-using NOTEA.Models.ConspectModels;
+﻿using NOTEA.Models.ConspectModels;
 using NOTEA.Extentions;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
-namespace NOTEA.Services.ListManipulation
+namespace NOTEA.Utilities.ListManipulation
 {
-    public class ListManipulator : IListManipulationService
+    public class ListManipulator
     {
+        [JsonProperty]
         private bool _filterExists = false;
-        private string? searchBy = null, searchValue = null;
+        [JsonProperty]
+        private string? searchBy = "name", searchValue = null;
+        public string? SearchBy { get { return searchBy; } }
+        public string? SearchValue { get { return searchValue; } }
         public bool FilterExists { get { return _filterExists; } }
+        [JsonProperty]
         private SortCollumn? currentSortCollumn = null;
         public SortPhase[] SortStatus { get { return collumnOrderValues; } }
-
-        //private Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> whereStatement = null;
-        //private Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> orderStatement = null;
-
         public static SortPhase[] collumnOrderValues = { SortPhase.None, SortPhase.None, SortPhase.None };
+
         public Func<IQueryable<ConspectModel>, List<ConspectModel>> GetSelection()
         {
             Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> temp = null;
-            temp += GenerateFilter(searchBy, searchValue) + GenerateSort(currentSortCollumn);
+            Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> tempFilter = GenerateFilter(searchBy, searchValue);
+            Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> tempSort = GenerateSort(currentSortCollumn);
+            if (tempFilter != null && tempSort != null)
+            {
+                temp = list => tempSort(tempFilter(list));
+            }
+            else
+            {
+                temp += tempFilter + tempSort;
+            }
             return temp == null ? null : list => temp(list).ToList();
         }
 
@@ -36,7 +47,7 @@ namespace NOTEA.Services.ListManipulation
             }
             else if (searchBy.ToLower() == "conspectsemester")
             {
-                return list => list.Where((Func<ConspectModel, bool>)(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower())));
+                return list => list.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower()));
             }
             return null;
         }
@@ -45,10 +56,12 @@ namespace NOTEA.Services.ListManipulation
             if (searchBy.IsNullOrEmpty())
             {
                 _filterExists = false;
-                this.searchBy = searchBy;
+                this.searchBy = "name";
                 this.searchValue = searchValue;
                 return;
             }
+            this.searchBy = searchBy;
+            this.searchValue = searchValue;
             _filterExists = true;
         }
 
@@ -56,7 +69,7 @@ namespace NOTEA.Services.ListManipulation
         {
             if (collumn == null)
                 return null;
-            Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>>  orderStatement = null;
+            Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> orderStatement = null;
             switch (collumn + 3 * (int)collumnOrderValues[(int)collumn])
             {
                 case SortCollumn.Name + 3 * (int)SortPhase.Ascending:
@@ -95,7 +108,7 @@ namespace NOTEA.Services.ListManipulation
         public void ClearFilter()
         {
             _filterExists = false;
-            searchBy = null;
+            searchBy = "name";
             searchValue = null;
         }
 
@@ -106,32 +119,5 @@ namespace NOTEA.Services.ListManipulation
             collumnOrderValues[2] = SortPhase.None;
             currentSortCollumn = null;
         }
-
-        //public void AddItselfToDict(long userId)
-        //{
-        //    bool AddSuccesful;
-        //    do
-        //    {
-        //        AddSuccesful = true;
-        //        if (!ListManipulatorDictionary.ContainsKey(userId))
-        //        {
-        //            AddSuccesful = ListManipulatorDictionary.TryAdd(userId, this);
-        //        }
-        //    } while (!AddSuccesful);
-        //}
-
-        //public static void RemoveUserManipulator(long userId)
-        //{
-        //    bool RemoveSuccesful;
-        //    IListManipulationService temp;
-        //    do
-        //    {
-        //        RemoveSuccesful = true;
-        //        if (ListManipulatorDictionary.ContainsKey(userId))
-        //        {
-        //            RemoveSuccesful = ListManipulatorDictionary.TryRemove(userId, out temp);
-        //        }
-        //    } while (!RemoveSuccesful);
-        //}
     }
 }

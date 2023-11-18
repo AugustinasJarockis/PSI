@@ -3,6 +3,8 @@ using NOTEA.Exceptions;
 using NOTEA.Extentions;
 using NOTEA.Models.UserModels;
 using NOTEA.Services.UserServices;
+using NOTEA.Utilities.ListManipulation;
+using Newtonsoft.Json;
 
 namespace NOTEA.Controllers
 {
@@ -68,6 +70,7 @@ namespace NOTEA.Controllers
             if (username.IsValidName() && password.IsValidName() && _userService.CheckLogIn(user))
             {
                 _contextAccessor.HttpContext.Session.SetString("User", user.Username);
+                _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(new ListManipulator()));
                 user.Id = _userService.GetUserId(username);
                 _contextAccessor.HttpContext.Session.SetInt32("Id", user.Id);
                 return RedirectToAction("Index", "Home");

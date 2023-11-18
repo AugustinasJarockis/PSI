@@ -2,7 +2,7 @@
 @using NOTEA.Extentions;
 ﻿@using Newtonsoft.Json;
 @using NOTEA.Models.ConspectModels;
-@using NOTEA.Models.Utilities;
+@using NOTEA.Utilities.ListManipulation;
 @model ConspectListModel<ConspectModel>
 
 @{
@@ -53,15 +53,15 @@
             <tr>
                 <td>
                     <span><b>Search by:</b></span>
-                    @Html.RadioButton("searchBy", "name", true)
+                    @Html.RadioButton("searchBy", "name", ((string)ViewData["SearchBy"])?.ToLower() == "name")
                     <text> Conspect name </text>
-                    @Html.RadioButton("searchBy", "ConspectSemester", false)
+                    @Html.RadioButton("searchBy", "ConspectSemester", ((string)ViewData["SearchBy"])?.ToLower() == "conspectsemester")
                     <text> Semester </text>
                 </td>
             </tr>
             <tr>
                 <td>
-                    @Html.TextBox("searchValue", null, new {Class = "form-control", required = true})
+                    @Html.TextBox("searchValue", (string)ViewData["SearchValue"], new {Class = "form-control", required = true})
                     @Html.ValidationMessage("Field can't be empty")
                 </td>
                 <td>
@@ -72,6 +72,10 @@
                 </td>
             </tr>
         </table>
+    }
+    @if (ViewData["SearchValue"] != null)
+    {
+        <input type="submit" onclick="location.href='@Url.Action("CancelSearch","Conspect")'" value="Clear" class="btn btn-success" />
     }
 </div>
 <p></p>
@@ -139,6 +143,15 @@
         });
     </script>
 }
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#cancelSearch").click(function (e) {
+            e.preventDefault();
+            GetInfo1();
+        });
+    });
+</script>
 
 <script>
     function showHideInput(checkboxId, panInputId, buttonId) {
