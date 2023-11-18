@@ -1,4 +1,4 @@
-﻿namespace NOTEA.Models.Utilities
+﻿namespace NOTEA.Utilities.ListManipulation
 {
     public enum SortCollumn
     {

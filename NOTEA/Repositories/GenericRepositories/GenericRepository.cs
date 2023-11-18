@@ -30,7 +30,7 @@ namespace NOTEA.Repositories.GenericRepositories
             var conspects = Select == null ? _database.UserConspects.Where(uc => uc.User_Id == user_id)
                                                                     .Join(_conspectTypes, uc => uc.Conspect_Id, c => c.Id, (uc, c) => c).ToList()
                                            : Select(_database.UserConspects.Where(uc => uc.User_Id == user_id)
-                                                                    .Join(_conspectTypes, uc => uc.Conspect_Id, c => c.Id, (uc, c) => c).ToList().AsQueryable());
+                                                                    .Join(_conspectTypes, uc => uc.Conspect_Id, c => c.Id, (uc, c) => c)/*.ToList().AsQueryable()*/);
             return new ConspectListModel<ConspectType>(conspects);
         }
         public void SaveConspect(ConspectType conspect, int id)
