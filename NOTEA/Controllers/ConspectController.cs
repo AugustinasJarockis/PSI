@@ -40,7 +40,6 @@ namespace NOTEA.Controllers
             {
                 if (conspectModel.Name.IsValidName())
                 {
-                   // ConspectModel conspectModel = new ConspectModel(name: conspect.Name, conspectSemester: conspectSemester, conspectText: conspectText);
                     _repository.SaveConspect(conspectModel, conspectModel.Id);
                     _repository.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";

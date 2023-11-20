@@ -24,7 +24,7 @@ namespace NOTEA.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SignInAsync(SignInUserModel user/*string username, string password, string passwordCheck, string email*/) //Make return UserModel
+        public async Task<IActionResult> SignInAsync(SignInUserModel user)
         {
             if (user.Username.IsValidName() && user.Password.IsValidName() && user.PasswordCheck.IsValidName() && user.Email.IsValidEmail())
             {
@@ -32,7 +32,6 @@ namespace NOTEA.Controllers
                 {
                     if (user.Password == user.PasswordCheck)
                     {
-                      //  UserModel user = new UserModel(username, password, email);//_mapper.Map<UserModel>(SignInModel)
                         await _userRepository.SaveUserAsync(user);
                         TempData["SuccessMessage"] = "Your registration has been successful!";
                         return RedirectToAction("LogIn", "User");
@@ -64,9 +63,8 @@ namespace NOTEA.Controllers
         }
 
         [HttpPost]
-        public IActionResult LogIn(UserModel user /*string username, string password*/)
+        public IActionResult LogIn(UserModel user)
         {
-           // UserModel user = new UserModel(username, password);
             if (user.Username.IsValidName() && user.Password.IsValidName() && _userRepository.CheckLogIn(user))
             {
                 user.Id = _userRepository.GetUserId(user.Username);
