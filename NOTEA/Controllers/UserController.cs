@@ -24,15 +24,15 @@ namespace NOTEA.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SignInAsync(string username, string password, string passwordCheck, string email) //Make return UserModel
+        public async Task<IActionResult> SignInAsync(SignInUserModel user/*string username, string password, string passwordCheck, string email*/) //Make return UserModel
         {
-            if (username.IsValidName() && password.IsValidName() && passwordCheck.IsValidName() && email.IsValidEmail())
+            if (user.Username.IsValidName() && user.Password.IsValidName() && user.PasswordCheck.IsValidName() && user.Email.IsValidEmail())
             {
                 try
                 {
-                    if (password == passwordCheck)
+                    if (user.Password == user.PasswordCheck)
                     {
-                        UserModel user = new UserModel(username, password, email);//_mapper.Map<UserModel>(SignInModel)
+                      //  UserModel user = new UserModel(username, password, email);//_mapper.Map<UserModel>(SignInModel)
                         await _userRepository.SaveUserAsync(user);
                         TempData["SuccessMessage"] = "Your registration has been successful!";
                         return RedirectToAction("LogIn", "User");
@@ -47,7 +47,7 @@ namespace NOTEA.Controllers
                     TempData["ErrorMessage"] = "This username is already taken";
                 }
             }
-            else if (!email.IsValidEmail())
+            else if (!user.Email.IsValidEmail())
             {
                 TempData["ErrorMessage"] = "Your email is not valid. It should follow the \"user\\@example.com\" pattern";
 
@@ -64,12 +64,12 @@ namespace NOTEA.Controllers
         }
 
         [HttpPost]
-        public IActionResult LogIn(string username, string password)
+        public IActionResult LogIn(UserModel user /*string username, string password*/)
         {
-            UserModel user = new UserModel(username, password);
-            if (username.IsValidName() && password.IsValidName() && _userRepository.CheckLogIn(user))
+           // UserModel user = new UserModel(username, password);
+            if (user.Username.IsValidName() && user.Password.IsValidName() && _userRepository.CheckLogIn(user))
             {
-                user.Id = _userRepository.GetUserId(username);
+                user.Id = _userRepository.GetUserId(user.Username);
                 bool addSuccess = OnlineUserList.onlineUsers.TryAdd(user.Id, user);
                 if (!addSuccess)
                 {

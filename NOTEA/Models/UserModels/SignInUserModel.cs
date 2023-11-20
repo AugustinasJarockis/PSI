@@ -2,6 +2,6 @@
 {
     public class SignInUserModel : UserModel
     {
-        public string? PasswordCheck; 
+        public string? PasswordCheck { get; set; } 
     }
 }
