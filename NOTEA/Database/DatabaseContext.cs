@@ -4,12 +4,12 @@ using NOTEA.Models.UserModels;
 
 namespace NOTEA.Database
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : IDatabaseContext
     {
         public DbSet<ConspectModel> Conspects { get; set; }
         public DbSet<UserModel> Users { get; set; }     
         public DbSet<UserConspectsModel> UserConspects { get; set; }
-        public DatabaseContext(DbContextOptions options) : base(options)
+        public DatabaseContext(DbContextOptions<IDatabaseContext> options) : base(options)
         {
 
         }

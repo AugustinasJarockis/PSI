@@ -1,3 +1,4 @@
+using FluentAssertions.Common;
 using Microsoft.EntityFrameworkCore;
 using NOTEA.Database;
 using NOTEA.Repositories.GenericRepositories;
@@ -14,7 +15,7 @@ builder.Services.AddScoped<ILogsService, LogsService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddDbContext<DatabaseContext>(options =>
+builder.Services.AddDbContext<IDatabaseContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 });

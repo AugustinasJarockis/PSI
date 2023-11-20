@@ -17,10 +17,10 @@ namespace NOTEA.Controllers
     {
         IGenericRepository<ConspectModel> _repository;
         private readonly IUserRepository _userRepository;
-        private readonly DatabaseContext _context;
+        private readonly IDatabaseContext _context;
         private readonly ILogsService _logsService;
         public readonly IHttpContextAccessor _contextAccessor;
-        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, DatabaseContext context, IUserRepository userRepository)
+        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, IDatabaseContext context, IUserRepository userRepository)
         {
             _repository = repository;
             _context = context; 
