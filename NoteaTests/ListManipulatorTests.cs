@@ -58,6 +58,58 @@ namespace NoteaTests
             Assert.Single(filteredList);
             Assert.Equal("Example", filteredList.First().Name);
         }
+        [Fact]
+        public void GetSelection_ShouldReturnNullFunction_WhenFilterDoesNotExist()
+        {
+            var listManipulator = new ListManipulator();
+            var result = listManipulator.GetSelection();
+            Assert.Null(result);
+        }
+        [Fact]
+        public void GenerateFilter_ShouldReturnNullFunction_WhenSearchValueIsNullOrEmpty()
+        {
+            var listManipulator = new ListManipulator();
+            string searchBy = "name";
+            string searchValue = null;  // or an empty string
+            var filterFunction = listManipulator.GenerateFilter(searchBy, searchValue);
+            Assert.Null(filterFunction);
+        }
+        [Fact]
+        public void GenerateFilter_ShouldReturnNullFunction_WhenSearchByIsInvalid()
+        {
+            var listManipulator = new ListManipulator();
+            string searchBy = "invalidField";
+            string searchValue = "example";
+            var filterFunction = listManipulator.GenerateFilter(searchBy, searchValue);
+            Assert.Null(filterFunction);
+        }
+
+        [Fact]
+        public void UpdateSort_ShouldUpdateSortStatus_WhenValidSortColumnIsProvided()
+        {
+            var listManipulator = new ListManipulator();
+            var initialSortStatus = listManipulator.SortStatus.ToArray();
+
+            listManipulator.UpdateSort(SortCollumn.Semester);
+
+            Assert.NotEqual(initialSortStatus, listManipulator.SortStatus);
+            Assert.Equal(SortPhase.Ascending, listManipulator.SortStatus[(int)SortCollumn.Semester]);
+            Assert.Equal(SortPhase.None, listManipulator.SortStatus[(int)SortCollumn.Name]);
+            Assert.Equal(SortPhase.None, listManipulator.SortStatus[(int)SortCollumn.Date]);
+        }
+
+        [Fact]
+        public void ClearFilter_ShouldResetFilterProperties()
+        {
+            var listManipulator = new ListManipulator();
+            listManipulator.UpdateFilter("customField", "searchValue");
+
+            listManipulator.ClearFilter();
+
+            Assert.False(listManipulator.FilterExists);
+            Assert.Equal("name", listManipulator.SearchBy);
+            Assert.Null(listManipulator.SearchValue);
+        }
 
     }
 }

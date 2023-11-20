@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoFixture;
+using AutoFixture.AutoMoq;
+using AutoFixture.Kernel;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using NOTEA.Database;
 using NOTEA.Models.ConspectModels;
 using NOTEA.Models.UserModels;
 using NOTEA.Repositories.GenericRepositories;
+using NOTEA.Repositories.UserRepositories;
 using NOTEA.Services.LogServices;
 using System;
 using System.Collections.Generic;
@@ -50,22 +54,73 @@ namespace NoteaTests
             dbContextMock.Verify(db => db.SaveChanges(), Times.Once);
         }
         [Fact]
-        public void AssignToUser_ShouldAddUserConspectsModelAndSaveChanges()
+        public void CheckLogIn_ShouldReturnTrue_WhenUserExists()
         {
-            var logsServiceMock = new Mock<ILogsService>();
-            var options = new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase("TestDatabase").Options;
-            var dbContextMock = new Mock<DatabaseContext>(options);
-            var conspectTypesSetMock = new Mock<DbSet<ConspectModel>>();
-            var userConspectsSetMock = new Mock<DbSet<UserConspectsModel>>();
-            dbContextMock.Setup(db => db.Set<ConspectModel>()).Returns(conspectTypesSetMock.Object);
-            dbContextMock.Setup(db => db.UserConspects).Returns(userConspectsSetMock.Object);
+            var options = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseInMemoryDatabase(databaseName: "CheckLogIn_ShouldReturnTrue_WhenUserExists")
+                .Options;
 
-            var repository = new GenericRepository<ConspectModel>(logsServiceMock.Object, dbContextMock.Object);
+            using (var context = new DatabaseContext(options))
+            {
+                var logsServiceMock = new Mock<ILogsService>();
+                var userRepository = new UserRepository(logsServiceMock.Object, context);
 
-            repository.AssignToUser(1, 2, 'a');
+                var userModel = new UserModel { Username = "existingUser", Password = "password", Email = "test@example.com" };
+                context.Users.Add(userModel);
+                context.SaveChanges();
 
-            userConspectsSetMock.Verify(set => set.Add(It.IsAny<UserConspectsModel>()), Times.Once);
-            dbContextMock.Verify(db => db.SaveChanges(), Times.Once);
+                var result = userRepository.CheckLogIn(userModel);
+
+                Assert.True(result);
+            }
         }
+
+
+        [Fact]
+        public void CheckLogIn_ShouldReturnFalse_WhenUserDoesNotExist()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseInMemoryDatabase(databaseName: "CheckLogIn_ShouldReturnFalse_WhenUserDoesNotExist")
+                .Options;
+
+            using (var context = new DatabaseContext(options))
+            {
+                var logsServiceMock = new Mock<ILogsService>();
+                var userRepository = new UserRepository(logsServiceMock.Object, context);
+
+                var userModel = new UserModel { Username = "nonexistentUser", Password = "password" };
+
+                // Act
+                var result = userRepository.CheckLogIn(userModel);
+
+                // Assert
+                Assert.False(result);
+            }
+        }
+
+        [Fact]
+        public async Task SaveUserAsync_ShouldAddUserToDatabase_WhenNoExceptions()
+        {
+            var options = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseInMemoryDatabase(databaseName: "SaveUserAsync_ShouldAddUserToDatabase_WhenNoExceptions")
+                .Options;
+
+            using (var context = new DatabaseContext(options))
+            {
+                var logsServiceMock = new Mock<ILogsService>();
+                var userRepository = new UserRepository(logsServiceMock.Object, context);
+
+                await userRepository.SaveUserAsync(new UserModel { Username = "newUser", Password = "password", Email = "test@example.com" });
+
+                Assert.Equal(1, context.Users.Count());
+                Assert.Equal("newUser", context.Users.Single().Username);
+                Assert.Equal("password", context.Users.Single().Password);
+                Assert.Equal("test@example.com", context.Users.Single().Email);
+            }
+        }
+
+
+
     }
 }

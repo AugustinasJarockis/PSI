@@ -10,7 +10,7 @@ using NOTEA.Database;
 
 namespace NOTEA.Migrations
 {
-    [DbContext(typeof(IDatabaseContext))]
+    [DbContext(typeof(DatabaseContext))]
     partial class DatabaseContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

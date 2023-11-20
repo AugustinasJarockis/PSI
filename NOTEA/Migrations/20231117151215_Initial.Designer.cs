@@ -11,7 +11,7 @@ using NOTEA.Database;
 
 namespace NOTEA.Migrations
 {
-    [DbContext(typeof(IDatabaseContext))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20231117151215_Initial")]
     partial class Initial
     {
