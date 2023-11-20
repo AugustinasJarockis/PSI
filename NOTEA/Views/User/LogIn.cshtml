@@ -21,7 +21,7 @@
         <form asp-controller="User" asp-action="LogIn">
             <div class="form-group">
                 <label asp-for="Username" class="control-label">Username</label><br />
-                <input id="username" name="username" type="text" value="" /><br />
+                <input id="Username" name="Username" type="text" value="" /><br />
                 <label asp-for="Password" class="control-label">Password</label><br />
                 <input id="Password" name="Password" type="password" value="" /><br />
             </div>
@@ -90,7 +90,7 @@
 
     <script type="text/javascript" language="javascript">
         function JavascriptFunction() {
-            var url = '@Url.Action("LogIn", "User")';
+            var url = '@Url.Action("Index", "Home")';
             $("#divLoading").show();
             $.post(url, null,
                 function (data) {
