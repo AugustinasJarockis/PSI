@@ -73,6 +73,12 @@ namespace NOTEA.Controllers
                 _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(new ListManipulator()));
                 user.Id = _userRepository.GetUserId(username);
                 _contextAccessor.HttpContext.Session.SetInt32("Id", user.Id);
+                bool addSuccess = OnlineUserList.onlineUsers.TryAdd(user.Id, user);
+                if (!addSuccess)
+                {
+                    TempData["ErrorMessage"] = "User already online";
+                    return View();
+                }
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -83,8 +89,19 @@ namespace NOTEA.Controllers
         }
         public IActionResult LogOut()
         {
+            UserModel temp = null;
+            bool removeSuccess = OnlineUserList.onlineUsers.TryRemove((int)_contextAccessor.HttpContext.Session.GetInt32("Id"), out temp);
+            if (!removeSuccess)
+            {
+                throw new Exception();
+            }
             _contextAccessor.HttpContext.Session.Clear();
             return RedirectToAction("LogIn", "User");
+        }
+
+        public IActionResult UserList()
+        {
+            return View();
         }
     }
 }

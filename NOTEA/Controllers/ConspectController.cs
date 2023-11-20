@@ -10,6 +10,7 @@ using NOTEA.Utilities.ListManipulation;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using NOTEA.Services.UserServices;
+using NOTEA.Models.UserModels;
 
 namespace NOTEA.Controllers
 {
