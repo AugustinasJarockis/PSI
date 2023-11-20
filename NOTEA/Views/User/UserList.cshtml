@@ -1,0 +1,37 @@
+@inject IHttpContextAccessor context
+@using NOTEA.Extentions;
+﻿@using Newtonsoft.Json;
+@using NOTEA.Models.ConspectModels;
+@using NOTEA.Utilities.ListManipulation;
+@using NOTEA.Models.UserModels;
+
+@{
+    ViewData["Title"] = "User list";
+    if (context.HttpContext.Session.GetString("User") == null)
+    {
+        context.HttpContext.Response.Redirect("/User/LogIn");
+    }
+}
+
+<h1>The list of users</h1>
+<br />
+<p></p>
+<table class="table">
+    <tbody>
+        <tr>
+            <th>
+                Username
+            </th>
+        </tr>
+        @foreach  (KeyValuePair<int, UserModel> user in OnlineUserList.onlineUsers)
+        {
+            <tr>
+                <td>
+                    @user.Value.Username
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br />
+<input type="submit" onclick="location.href='@Url.Action("Index","Home")'" class="btn btn-primary" value="Return" /> 
