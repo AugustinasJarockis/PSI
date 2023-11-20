@@ -1,1 +1,0 @@
-{"Date":"2023-10-18T17:32:54.9566987+03:00","ConspectSemester":0,"Name":"sociologija2","ConspectText":"Pirmasis Niutono dėsnis: egzistuoja tokios atskaitos sistemos, kuriose kūnas yra rimties būsenos arba juda tolygiai ir tiesiaeigiškai, jei jį veikiančių jėgų dedamoji lygi nuliui.","ConspectRecords":[]}

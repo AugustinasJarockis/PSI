@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using NOTEA.Database;
-using NOTEA.Services.FileServices;
+using NOTEA.Repositories.GenericRepositories;
+using NOTEA.Repositories.UserRepositories;
 using NOTEA.Services.LogServices;
-using NOTEA.Services.UserServices;
 
 
 var builder = WebApplication.CreateBuilder(args);

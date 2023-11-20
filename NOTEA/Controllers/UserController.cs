@@ -2,9 +2,9 @@
 using NOTEA.Exceptions;
 using NOTEA.Extentions;
 using NOTEA.Models.UserModels;
-using NOTEA.Services.UserServices;
 using NOTEA.Utilities.ListManipulation;
 using Newtonsoft.Json;
+using NOTEA.Repositories.UserRepositories;
 
 namespace NOTEA.Controllers
 {

@@ -5,9 +5,8 @@ using NOTEA.Services.LogServices;
 using NOTEA.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
-namespace NOTEA.Services.UserServices
+namespace NOTEA.Repositories.UserRepositories
 {
     public class UserRepository : IUserRepository
     {

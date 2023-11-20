@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NOTEA.Models.ConspectModels;
 
-namespace NOTEA.Services.FileServices
+namespace NOTEA.Repositories.GenericRepositories
 {
     public interface IGenericRepository<ConspectType> where ConspectType : class
     {

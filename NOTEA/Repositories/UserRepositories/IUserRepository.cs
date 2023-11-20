@@ -1,6 +1,6 @@
 ﻿using NOTEA.Models.UserModels;
 
-namespace NOTEA.Services.UserServices
+namespace NOTEA.Repositories.UserRepositories
 {
     public interface IUserRepository
     {
