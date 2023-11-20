@@ -69,17 +69,20 @@ namespace NOTEA.Controllers
             UserModel user = new UserModel(username, password);
             if (username.IsValidName() && password.IsValidName() && _userRepository.CheckLogIn(user))
             {
-                _contextAccessor.HttpContext.Session.SetString("User", user.Username);
-                _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(new ListManipulator()));
                 user.Id = _userRepository.GetUserId(username);
-                _contextAccessor.HttpContext.Session.SetInt32("Id", user.Id);
                 bool addSuccess = OnlineUserList.onlineUsers.TryAdd(user.Id, user);
                 if (!addSuccess)
                 {
-                    TempData["ErrorMessage"] = "User already online";
+                    TempData["ErrorMessage"] = "You are already online on another device";
                     return View();
                 }
-                return RedirectToAction("Index", "Home");
+                else
+                {
+                    _contextAccessor.HttpContext.Session.SetString("User", user.Username);
+                    _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(new ListManipulator()));
+                    _contextAccessor.HttpContext.Session.SetInt32("Id", user.Id);
+                    return RedirectToAction("Index", "Home");
+                }
             }
             else
             {
