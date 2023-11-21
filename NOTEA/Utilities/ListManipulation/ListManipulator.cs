@@ -34,7 +34,7 @@ namespace NOTEA.Utilities.ListManipulation
             }
             return temp == null ? null : list => temp(list).ToList();
         }
-        private Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> GenerateFilter(string searchBy, string searchValue)
+        public Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> GenerateFilter(string searchBy, string searchValue)
         {
             if (searchValue.IsNullOrEmpty())
             {

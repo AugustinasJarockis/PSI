@@ -1,3 +1,4 @@
+using FluentAssertions.Common;
 using Microsoft.EntityFrameworkCore;
 using NOTEA.Database;
 using NOTEA.Repositories.GenericRepositories;
