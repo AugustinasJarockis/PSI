@@ -11,8 +11,8 @@ namespace NOTEA.Repositories.UserRepositories
     public class UserRepository : IUserRepository
     {
         private readonly ILogsService _logsService;
-        private readonly DatabaseContext _database;
-        public UserRepository(ILogsService logsService, DatabaseContext database)
+        private readonly IDatabaseContext _database;
+        public UserRepository(ILogsService logsService, IDatabaseContext database)
         {
             _logsService = logsService;
             _database = database;

@@ -16,7 +16,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IOnlineUserList, OnlineUserList>();
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddDbContext<DatabaseContext>(options =>
+builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 });
