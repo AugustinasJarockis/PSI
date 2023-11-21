@@ -189,8 +189,15 @@ namespace NOTEA.Controllers
                 if (username != _contextAccessor.HttpContext.Session.GetString("User"))
                 {
                     int user_id = _userRepository.GetUserId(username);
-                    _repository.AssignToUser(model.Id, user_id, 'e');
-                    TempData["SuccessMessage"] = "Your notea has been shared successfully!";
+                    if (!_context.UserConspects.Any(x => x.User_Id.Equals(user_id) && x.Conspect_Id.Equals(model.Id)))
+                    {
+                        _repository.AssignToUser(model.Id, user_id, 'e');
+                        TempData["SuccessMessage"] = "Your notea has been shared successfully!";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Conspect is already shared with this user";
+                    }
                 }
                 else 
                 {
