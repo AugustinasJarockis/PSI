@@ -2,8 +2,8 @@
 
 namespace NOTEA.Models.UserModels
 {
-    public static class OnlineUserList
+    public class OnlineUserList : IOnlineUserList
     {
-        public static ConcurrentDictionary<int, UserModel> onlineUsers = new ConcurrentDictionary<int, UserModel>();
+        public ConcurrentDictionary<int, UserModel> OnlineUsers { get; set; } = new ConcurrentDictionary<int, UserModel>();
     }
 }

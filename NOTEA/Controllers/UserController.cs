@@ -12,10 +12,12 @@ namespace NOTEA.Controllers
     {
         public readonly IHttpContextAccessor _contextAccessor;
         private readonly IUserRepository _userRepository;
-        public UserController(IHttpContextAccessor contextAccessor, IUserRepository userRepository)
+        private readonly IOnlineUserList _onlineUserList;
+        public UserController(IHttpContextAccessor contextAccessor, IUserRepository userRepository, IOnlineUserList onlineUserList)
         {
             _contextAccessor = contextAccessor;
             _userRepository = userRepository;
+            _onlineUserList = onlineUserList;
         }
 
         public IActionResult SignIn()
@@ -68,7 +70,7 @@ namespace NOTEA.Controllers
             if (user.Username.IsValidName() && user.Password.IsValidName() && _userRepository.CheckLogIn(user))
             {
                 user.Id = _userRepository.GetUserId(user.Username);
-                bool addSuccess = OnlineUserList.onlineUsers.TryAdd(user.Id, user);
+                bool addSuccess = _onlineUserList.OnlineUsers.TryAdd(user.Id, user);
                 if (!addSuccess)
                 {
                     TempData["ErrorMessage"] = "You are already online on another device";
@@ -91,7 +93,7 @@ namespace NOTEA.Controllers
         public IActionResult LogOut()
         {
             UserModel temp = null;
-            bool removeSuccess = OnlineUserList.onlineUsers.TryRemove((int)_contextAccessor.HttpContext.Session.GetInt32("Id"), out temp);
+            bool removeSuccess = _onlineUserList.OnlineUsers.TryRemove((int)_contextAccessor.HttpContext.Session.GetInt32("Id"), out temp);
             if (!removeSuccess)
             {
                 throw new Exception();
@@ -102,7 +104,7 @@ namespace NOTEA.Controllers
 
         public IActionResult UserList()
         {
-            return View();
+            return View(_onlineUserList);
         }
     }
 }
