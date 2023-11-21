@@ -17,7 +17,7 @@ namespace NOTEA.Utilities.ListManipulation
         [JsonProperty]
         private SortCollumn? currentSortCollumn = null;
         public SortPhase[] SortStatus { get { return collumnOrderValues; } }
-        public static SortPhase[] collumnOrderValues = { SortPhase.None, SortPhase.None, SortPhase.None };
+        private static SortPhase[] collumnOrderValues = { SortPhase.None, SortPhase.None, SortPhase.None };
 
         public Func<IQueryable<ConspectModel>, List<ConspectModel>> GetSelection()
         {
@@ -34,7 +34,6 @@ namespace NOTEA.Utilities.ListManipulation
             }
             return temp == null ? null : list => temp(list).ToList();
         }
-
         private Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> GenerateFilter(string searchBy, string searchValue)
         {
             if (searchValue.IsNullOrEmpty())
@@ -64,7 +63,6 @@ namespace NOTEA.Utilities.ListManipulation
             this.searchValue = searchValue;
             _filterExists = true;
         }
-
         private Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> GenerateSort(SortCollumn? collumn)
         {
             if (collumn == null)
@@ -104,14 +102,12 @@ namespace NOTEA.Utilities.ListManipulation
             collumnOrderValues[((int)collumn + 1) % 3] = SortPhase.None;
             collumnOrderValues[((int)collumn + 2) % 3] = SortPhase.None;
         }
-
         public void ClearFilter()
         {
             _filterExists = false;
             searchBy = "name";
             searchValue = null;
         }
-
         public void ClearSort()
         {
             collumnOrderValues[0] = SortPhase.None;

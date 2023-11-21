@@ -1,5 +1,4 @@
-﻿using System.Collections;
-
+﻿
 namespace NOTEA.Models.ConspectModels
 {
     public class ConspectListModel<ConspectType>

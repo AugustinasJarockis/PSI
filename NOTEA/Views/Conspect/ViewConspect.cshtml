@@ -31,8 +31,8 @@ div .text-wrapping{
 <input type="submit" onclick="location.href='@Url.Action("DeleteConspect","Conspect", new {Id = Model.Id })'" value="Delete" class="btn btn-primary" />
 
 
-<button class="btn btn-primary" onclick="showDiv()">Share conspect </button
-<p></p>
+<button class="btn btn-primary" onclick="showDiv()">Share conspect </button>
+<br />
 <div id="formElement" style="display: none;">
     @using (Html.BeginForm("ShareConspect", "Conspect", new { Id = Model.Id, Name = Model.Name, Date = Model.Date }, FormMethod.Post))
     {

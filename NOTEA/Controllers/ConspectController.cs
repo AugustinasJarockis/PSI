@@ -6,8 +6,6 @@ using NOTEA.Services.LogServices;
 using NOTEA.Database;
 using Newtonsoft.Json;
 using NOTEA.Utilities.ListManipulation;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore;
 using NOTEA.Repositories.GenericRepositories;
 using NOTEA.Repositories.UserRepositories;
 
@@ -43,7 +41,7 @@ namespace NOTEA.Controllers
                     _repository.SaveConspect(conspectModel, conspectModel.Id);
                     _repository.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
-                    return RedirectToAction(nameof(CreateConspects));
+                    return RedirectToAction("ViewConspect", "Conspect", new {id = conspectModel.Id});
                 }
                 else
                 {
@@ -75,7 +73,6 @@ namespace NOTEA.Controllers
                 {
                     throw new ArgumentNullException("file", "File is null");
                 }
-
                 if (file.ContentType == "text/plain")
                 {
                     string text;
@@ -107,7 +104,6 @@ namespace NOTEA.Controllers
             {
                 _logsService.SaveExceptionInfo(new ExceptionModel(ex));
             }
-
             return View();
         }
 
@@ -181,14 +177,13 @@ namespace NOTEA.Controllers
         }
         public IActionResult DeleteConspect(int id)
         {
-            _repository.DeleteConspect(id);
+            _repository.DeleteConspect(id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
             return RedirectToAction("ConspectList", "Conspect");
         }
 
         [HttpPost]
         public IActionResult ShareConspect(ConspectModel model, string username)
         {
-
             if (_context.Users.Any(x => x.Username.Equals(username)))
             {
                 if (username != _contextAccessor.HttpContext.Session.GetString("User"))
