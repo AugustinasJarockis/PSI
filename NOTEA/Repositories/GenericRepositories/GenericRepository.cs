@@ -30,7 +30,7 @@ namespace NOTEA.Repositories.GenericRepositories
             var conspects = Select == null ? _database.UserConspects.Where(uc => uc.User_Id == user_id)
                                                                     .Join(_conspectTypes, uc => uc.Conspect_Id, c => c.Id, (uc, c) => c).ToList()
                                            : Select(_database.UserConspects.Where(uc => uc.User_Id == user_id)
-                                                                    .Join(_conspectTypes, uc => uc.Conspect_Id, c => c.Id, (uc, c) => c)/*.ToList().AsQueryable()*/);
+                                                                    .Join(_conspectTypes, uc => uc.Conspect_Id, c => c.Id, (uc, c) => c));
             return new ConspectListModel<ConspectType>(conspects);
         }
         public void SaveConspect(ConspectType conspect, int id)
@@ -64,11 +64,21 @@ namespace NOTEA.Repositories.GenericRepositories
                 _logsService.SaveExceptionInfo(new ExceptionModel(ex));
              }
         }
-        public void DeleteConspect(int id)
+        public void DeleteConspect(int id, int user_id)
         {
-            _conspectTypes.Remove(_conspectTypes.Find(id));
-            _database.UserConspects.Remove(_database.UserConspects.Find(id));
-            _database.SaveChanges();
+            if (_database.UserConspects.Where(a => a.Conspect_Id == id).Count() > 1)
+            {
+                _database.UserConspects.Remove(_database.UserConspects.Where(a => a.Conspect_Id == id && a.User_Id == user_id).Single());
+                _database.SaveChanges();
+                _database.UserConspects.Where(a => a.Conspect_Id == id).First().Access_Type = 'a';
+                _database.SaveChanges();
+            }
+            else 
+            {
+                _conspectTypes.Remove(_conspectTypes.Find(id));
+                _database.UserConspects.Remove(_database.UserConspects.Where(a => a.Conspect_Id == id && a.User_Id == user_id).Single());
+                _database.SaveChanges();
+            }
         }
     }
 }

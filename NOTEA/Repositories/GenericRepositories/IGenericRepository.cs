@@ -9,6 +9,6 @@ namespace NOTEA.Repositories.GenericRepositories
         public ConspectType LoadConspect(int id);
         public ConspectListModel<ConspectType> LoadConspects(int user_id, Func<IQueryable<ConspectType>, List<ConspectType>> Select = null);
         public void AssignToUser(int conspect_id, int user_id, char access_type = 'a');
-        public void DeleteConspect (int id);
+        public void DeleteConspect (int id, int user_id);
     }
 }

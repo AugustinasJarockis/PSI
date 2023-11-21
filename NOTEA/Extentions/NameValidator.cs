@@ -15,6 +15,7 @@ namespace NOTEA.Extentions
         }
         public static bool IsValidEmail (this string email)
         {
+            if (email == null || email.Length == 0) return false;
             Regex validateEmailRegex = new Regex("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
             if (validateEmailRegex.IsMatch(email))
               return true; 
