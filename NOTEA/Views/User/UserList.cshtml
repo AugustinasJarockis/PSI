@@ -4,6 +4,7 @@
 @using NOTEA.Models.ConspectModels;
 @using NOTEA.Utilities.ListManipulation;
 @using NOTEA.Models.UserModels;
+@model IOnlineUserList;
 
 @{
     ViewData["Title"] = "User list";
@@ -23,7 +24,7 @@
                 Username
             </th>
         </tr>
-        @foreach  (KeyValuePair<int, UserModel> user in OnlineUserList.onlineUsers)
+        @foreach  (KeyValuePair<int, UserModel> user in Model.OnlineUsers)
         {
             <tr>
                 <td>

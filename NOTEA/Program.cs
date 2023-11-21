@@ -3,7 +3,7 @@ using NOTEA.Database;
 using NOTEA.Repositories.GenericRepositories;
 using NOTEA.Repositories.UserRepositories;
 using NOTEA.Services.LogServices;
-
+using NOTEA.Models.UserModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +13,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<ILogsService, LogsService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IOnlineUserList, OnlineUserList>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
