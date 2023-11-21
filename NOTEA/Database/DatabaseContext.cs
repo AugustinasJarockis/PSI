@@ -4,7 +4,7 @@ using NOTEA.Models.UserModels;
 
 namespace NOTEA.Database
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : DbContext, IDatabaseContext
     {
         public DbSet<ConspectModel> Conspects { get; set; }
         public DbSet<UserModel> Users { get; set; }

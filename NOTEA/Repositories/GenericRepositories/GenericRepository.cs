@@ -3,8 +3,6 @@ using NOTEA.Models.UserModels;
 using NOTEA.Services.LogServices;
 using NOTEA.Models.ExceptionModels;
 using NOTEA.Database;
-using System.Configuration;
-using System.Collections;
 using Microsoft.EntityFrameworkCore;
 
 namespace NOTEA.Repositories.GenericRepositories
@@ -12,9 +10,9 @@ namespace NOTEA.Repositories.GenericRepositories
     public class GenericRepository<ConspectType> : IGenericRepository<ConspectType> where ConspectType : class, IConspectModel
     {
         private readonly ILogsService _logsService;
-        private readonly DatabaseContext _database;
+        private readonly IDatabaseContext _database;
         private DbSet<ConspectType> _conspectTypes;
-        public GenericRepository(ILogsService logsService, DatabaseContext database)
+        public GenericRepository(ILogsService logsService, IDatabaseContext database)
         {
             _logsService = logsService;
             _database = database;
