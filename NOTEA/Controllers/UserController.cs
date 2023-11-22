@@ -5,15 +5,16 @@ using NOTEA.Models.UserModels;
 using NOTEA.Utilities.ListManipulation;
 using Newtonsoft.Json;
 using NOTEA.Repositories.UserRepositories;
+using NOTEA.Models.OnlineUserListModels;
 
 namespace NOTEA.Controllers
 {
     public class UserController : Controller
     {
         public readonly IHttpContextAccessor _contextAccessor;
-        private readonly IUserRepository _userRepository;
+        private readonly IUserRepository<UserModel> _userRepository;
         private readonly IOnlineUserList _onlineUserList;
-        public UserController(IHttpContextAccessor contextAccessor, IUserRepository userRepository, IOnlineUserList onlineUserList)
+        public UserController(IHttpContextAccessor contextAccessor, IUserRepository<UserModel> userRepository, IOnlineUserList onlineUserList)
         {
             _contextAccessor = contextAccessor;
             _userRepository = userRepository;

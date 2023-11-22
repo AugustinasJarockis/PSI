@@ -8,17 +8,18 @@ using Newtonsoft.Json;
 using NOTEA.Utilities.ListManipulation;
 using NOTEA.Repositories.GenericRepositories;
 using NOTEA.Repositories.UserRepositories;
+using NOTEA.Models.UserModels;
 
 namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
         IGenericRepository<ConspectModel> _repository;
-        private readonly IUserRepository _userRepository;
+        private readonly IUserRepository<UserModel> _userRepository;
         private readonly IDatabaseContext _context;
         private readonly ILogsService _logsService;
         public readonly IHttpContextAccessor _contextAccessor;
-        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, IDatabaseContext context, IUserRepository userRepository)
+        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, IDatabaseContext context, IUserRepository<UserModel> userRepository)
         {
             _repository = repository;
             _context = context; 
