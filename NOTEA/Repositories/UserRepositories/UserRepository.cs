@@ -8,26 +8,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace NOTEA.Repositories.UserRepositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository<UserType> : IUserRepository<UserType> where UserType : class, IUserModel
     {
         private readonly ILogsService _logsService;
         private readonly IDatabaseContext _database;
+        private DbSet<UserType> _userTypes;
         public UserRepository(ILogsService logsService, IDatabaseContext database)
         {
             _logsService = logsService;
             _database = database;
+            _userTypes = _database.Set<UserType>();
         }
-        public bool CheckLogIn(UserModel user)
+        public bool CheckLogIn(UserType user)
         {
-            return _database.Users.Where(u =>
+            return _userTypes.Where(u =>
                 u.Username.Equals(user.Username) && u.Password.Equals(user.Password)
                 ).ToList().Count() == 1;
         }
-        public async Task SaveUserAsync(UserModel user)
+        public async Task SaveUserAsync(UserType user)
         {
             try
             {
-                _database.Users.Add(user);
+                _userTypes.Add(user);
                 await _database.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
@@ -46,7 +48,7 @@ namespace NOTEA.Repositories.UserRepositories
         }
         public int GetUserId(string username)
         {
-            return _database.Users.Where(u => u.Username.Equals(username)).First().Id;
+            return _userTypes.Where(u => u.Username.Equals(username)).First().Id;
         }
     }
 }
