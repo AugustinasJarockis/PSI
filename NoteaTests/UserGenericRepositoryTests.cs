@@ -29,7 +29,7 @@ namespace NoteaTests
             using (var context = new DatabaseContext(options))
             {
                 var logsServiceMock = new Mock<ILogsService>();
-                var userRepository = new UserRepository(logsServiceMock.Object, context);
+                var userRepository = new UserRepository<UserModel>(logsServiceMock.Object, context);
 
                 var userModel = new UserModel { Username = "existingUser", Password = "password", Email = "test@example.com" };
                 context.Users.Add(userModel);
@@ -52,7 +52,7 @@ namespace NoteaTests
             using (var context = new DatabaseContext(options))
             {
                 var logsServiceMock = new Mock<ILogsService>();
-                var userRepository = new UserRepository(logsServiceMock.Object, context);
+                var userRepository = new UserRepository<UserModel>(logsServiceMock.Object, context);
 
                 var userModel = new UserModel { Username = "nonexistentUser", Password = "password" };
 
@@ -73,7 +73,7 @@ namespace NoteaTests
             using (var context = new DatabaseContext(options))
             {
                 var logsServiceMock = new Mock<ILogsService>();
-                var userRepository = new UserRepository(logsServiceMock.Object, context);
+                var userRepository = new UserRepository<UserModel>(logsServiceMock.Object, context);
 
                 await userRepository.SaveUserAsync(new UserModel { Username = "newUser", Password = "password", Email = "test@example.com" });
 
