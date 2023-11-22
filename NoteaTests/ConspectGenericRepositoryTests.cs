@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace NoteaTests
 {
-    public class GenericRepositoryTests
+    public class ConspectGenericRepositoryTests
     {
         [Fact]
         public void LoadConspect_ShouldCall_FindMethod()

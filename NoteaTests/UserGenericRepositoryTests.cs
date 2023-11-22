@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace NoteaTests
 {
-    public class UserRepositoryTests
+    public class UserGenericRepositoryTests
     {
         [Fact]
         public void CheckLogIn_ShouldReturnTrue_WhenUserExists()
