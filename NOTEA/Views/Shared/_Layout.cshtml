@@ -43,6 +43,8 @@
                                 <b>@context.HttpContext.Session.GetString("User")</b>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" asp-controller="User" asp-action="AccountSettings">Settings</a></li>
+                                        <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" asp-controller="User" asp-action="UserList">User list</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" asp-controller="User" asp-action="LogOut">Log out</a></li>

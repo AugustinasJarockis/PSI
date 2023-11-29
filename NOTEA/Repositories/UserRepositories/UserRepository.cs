@@ -46,6 +46,33 @@ namespace NOTEA.Repositories.UserRepositories
                 _logsService.SaveExceptionInfo(info);
             }
         }
+        public UserType GetUser (int user_id)
+        { 
+            return _userTypes.Where(u => u.Id == user_id).First();
+        }
+        public void UpdateUser(int user_id, String username, String email)
+        { 
+            try
+            {
+                var user = _userTypes.Where(u => u.Id == user_id).FirstOrDefault();
+                user.Email = email;
+                user.Username = username;
+                _database.SaveChanges();
+            }
+            catch (DbUpdateException ex) 
+            {
+                if (ex.InnerException.GetType() == typeof(SqlException) && ((SqlException)ex.InnerException).Number == 2601)
+                {
+                    throw new UsernameTakenException();
+                }
+                else throw;
+            }
+            catch (Exception ex)
+            {
+                ExceptionModel info = new ExceptionModel(ex);
+                _logsService.SaveExceptionInfo(info);
+            }
+        }
         public int GetUserId(string username)
         {
             return _userTypes.Where(u => u.Username.Equals(username)).First().Id;
