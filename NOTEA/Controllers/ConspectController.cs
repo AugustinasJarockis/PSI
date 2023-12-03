@@ -111,24 +111,31 @@ namespace NOTEA.Controllers
         [HttpGet]
         public IActionResult ConspectList()
         {
-            ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
-            ConspectListModel<ConspectModel> conspectListModel = 
-                _repository.LoadConspects(
-                    _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
-                    listManip.GetSelection()
-                    );
-            if(conspectListModel?.Conspects.Count() == 0)
+            if (_contextAccessor.HttpContext.Session.GetString("User") == null)
             {
-                if(listManip.FilterExists)
-                    TempData["ErrorMessage"] = "No noteas match your search";
-                else
-                    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
+                return RedirectToAction("LogIn", "User");
             }
-            ViewData["SortStatus"] = listManip.SortStatus;
-            if (listManip.FilterExists)
-                ViewData["SearchValue"] = listManip.SearchValue;
-            ViewData["SearchBy"] = listManip.SearchBy;
-            return View(conspectListModel);
+            else
+            {
+                ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
+                ConspectListModel<ConspectModel> conspectListModel =
+                    _repository.LoadConspects(
+                        _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
+                        listManip.GetSelection()
+                        );
+                if (conspectListModel?.Conspects.Count() == 0)
+                {
+                    if (listManip.FilterExists)
+                        TempData["ErrorMessage"] = "No noteas match your search";
+                    else
+                        TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
+                }
+                ViewData["SortStatus"] = listManip.SortStatus;
+                if (listManip.FilterExists)
+                    ViewData["SearchValue"] = listManip.SearchValue;
+                ViewData["SearchBy"] = listManip.SearchBy;
+                return View(conspectListModel);
+            }
         }
         public IActionResult CancelSearch()
         {
