@@ -60,6 +60,7 @@ namespace NOTEA.Controllers
             }
             return View();
         }
+        [HttpGet]
         public IActionResult LogIn()
         {
             return View();
@@ -90,6 +91,36 @@ namespace NOTEA.Controllers
                 TempData["ErrorMessage"] = "Your username or password is wrong";
             }
             return View();
+        }
+        public IActionResult AccountSettings()
+        {
+            return View(_userRepository.GetUser(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default));
+        }
+        [HttpGet]
+        public IActionResult UpdateUser(String username, String email)
+        {
+            if (username.IsValidName() && email.IsValidEmail())
+            {
+                try
+                {
+                    _userRepository.UpdateUser(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, username, email);
+                    _contextAccessor.HttpContext.Session.SetString("User", username);
+                }
+                catch (UsernameTakenException)
+                {
+                    TempData["ErrorMessage"] = "This username is already taken";
+                }
+            }
+            else if (!email.IsValidEmail())
+            {
+                TempData["ErrorMessage"] = "Your email is not valid. It should follow the \"user\\@example.com\" pattern";
+
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Your username or password is invalid! It can't be empty, longer than 80 symbols or contain any of the following characters:\n \\\\ / : * . ? \" < > | ";
+            }
+            return RedirectToAction("AccountSettings", "User");
         }
         public IActionResult LogOut()
         {

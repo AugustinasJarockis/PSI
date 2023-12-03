@@ -1,0 +1,83 @@
+﻿@inject IHttpContextAccessor context
+@using NOTEA.Models.UserModels;
+
+@{
+    ViewData["Title"] = "Account settings";
+    if (context.HttpContext.Session.GetString("User") == null)
+    {
+        context.HttpContext.Response.Redirect("/User/LogIn");
+    }
+}
+<h1>Account settings</h1>
+<hr />
+<div class="row">
+    @using (Html.BeginForm("UpdateUser", "User", FormMethod.Get))
+    {
+        <table>
+            <tr>
+                <td>
+                    <p>Update username:</p>
+                    @Html.TextBox("Username", (string)ViewData["Username"], new {Class = "form-control"})
+                </td>
+                <td>
+                    <p>Update email:</p>
+                    @Html.TextBox("Email", (string)ViewData["Email"], new {Class = "form-control"})
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    <input type="submit" value="Update" class="btn btn-success" />
+                </td>
+            </tr>
+        </table>
+    }
+</div>
+
+<!-- Error Message Modal -->
+<div class="modal fade" id="myModalError" tabindex="-1" role="dialog" aria-labelledby="myModalErrorLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ff6b6b; color: black;">
+                <h5 class="modal-title" id="myModalErrorLabel">Oops...</h5>
+            </div>
+            <div class="modal-body">
+                <div id="MyModalErrorAlertBody">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        function openSuccessModal(strMessage) {
+            var myDiv = document.getElementById("MyModalSuccessAlertBody");
+            myDiv.innerHTML = strMessage;
+            $('#myModalSuccess').modal('show');
+        }
+        $(document).ready(function () {
+            var msg = "@TempData["SuccessMessage"]";
+            if (msg)
+                openSuccessModal(msg);
+        });
+    </script>
+
+    <script type="text/javascript">
+        function openErrorModal(errorMessage) {
+            var errorDiv = document.getElementById("MyModalErrorAlertBody");
+            errorDiv.innerHTML = errorMessage;
+            $('#myModalError').modal('show');
+        }
+
+        $(document).ready(function () {
+            var errorMsg = "@TempData["ErrorMessage"]";
+            if (errorMsg)
+                openErrorModal(errorMsg);
+        });
+    </script>
+}
