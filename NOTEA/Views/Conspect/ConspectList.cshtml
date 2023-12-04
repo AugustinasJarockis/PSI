@@ -48,6 +48,10 @@
         border: 1px solid transparent;
         font:300;
     }
+
+    .toolButton:hover {
+        background: #BBBBBBDD;
+    }
 </style>
 
 <h1>The list of conspects</h1>
@@ -146,7 +150,7 @@
                 <td>
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"/>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" onclick="location.href='@Url.Action("DeleteFolder","Conspect", new { id = folder.Id })'">Delete</a></li>
+                        <a class="dropdown-item" onclick="location.href='@Url.Action("DeleteFolder","Conspect", new { id = folder.Id })'">Delete</a>
                     </ul>
                 </td>
             </tr>
