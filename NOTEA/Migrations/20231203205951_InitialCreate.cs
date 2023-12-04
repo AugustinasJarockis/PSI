@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NOTEA.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,6 +25,34 @@ namespace NOTEA.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Conspects", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FileStructure",
+                columns: table => new
+                {
+                    UnderlyingId = table.Column<int>(type: "int", nullable: false),
+                    NodeType = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<int>(type: "int", nullable: false),
+                    FolderID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileStructure", x => new { x.UserID, x.UnderlyingId, x.NodeType });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Folders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Folders", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,6 +119,12 @@ namespace NOTEA.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "FileStructure");
+
+            migrationBuilder.DropTable(
+                name: "Folders");
+
             migrationBuilder.DropTable(
                 name: "RecordModel");
 

@@ -1,14 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NOTEA.Models.ConspectModels;
+using NOTEA.Models.FileTree;
 using NOTEA.Models.UserModels;
 
 namespace NOTEA.Database
 {
-    public class DatabaseContext : DbContext, IDatabaseContext
+    public class DatabaseContext : DbContext
     {
         public DbSet<ConspectModel> Conspects { get; set; }
         public DbSet<UserModel> Users { get; set; }
         public DbSet<UserConspectsModel> UserConspects { get; set; }
+        public DbSet<TreeNodeModel> FileStructure { get; set; }
+        public DbSet<FolderModel> Folders { get; set; }
         public DatabaseContext(DbContextOptions options) : base(options)
         {
 

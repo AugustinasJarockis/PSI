@@ -5,6 +5,7 @@ using NOTEA.Repositories.GenericRepositories;
 using NOTEA.Repositories.UserRepositories;
 using NOTEA.Services.LogServices;
 using NOTEA.Models.OnlineUserListModels;
+using NOTEA.Services.FolderService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ILogsService, LogsService>();
+builder.Services.AddScoped<IFolderService, FolderService>();
 builder.Services.AddScoped(typeof(IUserRepository<>), typeof(UserRepository<>));
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IOnlineUserList, OnlineUserList>();
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+builder.Services.AddDbContext<DatabaseContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 });

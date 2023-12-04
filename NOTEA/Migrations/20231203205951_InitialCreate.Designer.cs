@@ -12,8 +12,8 @@ using NOTEA.Database;
 namespace NOTEA.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231117151215_Initial")]
-    partial class Initial
+    [Migration("20231203205951_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,45 @@ namespace NOTEA.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Conspects");
+                });
+
+            modelBuilder.Entity("NOTEA.Models.FileTree.FolderModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Folders");
+                });
+
+            modelBuilder.Entity("NOTEA.Models.FileTree.TreeNodeModel", b =>
+                {
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UnderlyingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NodeType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FolderID")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserID", "UnderlyingId", "NodeType");
+
+                    b.ToTable("FileStructure");
                 });
 
             modelBuilder.Entity("NOTEA.Models.RecordModels.RecordModel", b =>
