@@ -95,7 +95,14 @@ namespace NOTEA.Controllers
         }
         public IActionResult AccountSettings()
         {
-            return View(_userRepository.GetUser(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default));
+            if (_contextAccessor.HttpContext.Session.GetString("User") != null)
+            {
+                return View(_userRepository.GetUser(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default));
+            }
+            else 
+            { 
+                return View(); 
+            }
         }
         [HttpGet]
         public IActionResult UpdateUser(String username, String email)

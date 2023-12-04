@@ -9,11 +9,11 @@
 @model CombinedNoteaAndFolderListModel;
 
 @{
-    ViewData["Title"] = "Conspect list";
     if (context.HttpContext.Session.GetString("User") == null)
     {
         context.HttpContext.Response.Redirect("/User/LogIn");
     }
+    ViewData["Title"] = "Conspect list";
 }
 @{
     string[] sortSymbols = { "", " ↑", " ↓" };
