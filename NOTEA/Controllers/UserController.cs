@@ -83,6 +83,7 @@ namespace NOTEA.Controllers
                     _contextAccessor.HttpContext.Session.SetString("User", user.Username);
                     _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(new ListManipulator()));
                     _contextAccessor.HttpContext.Session.SetInt32("Id", user.Id);
+                    _contextAccessor.HttpContext.Session.SetInt32("CurrentFolderID", 0);
                     return RedirectToAction("Index", "Home");
                 }
             }

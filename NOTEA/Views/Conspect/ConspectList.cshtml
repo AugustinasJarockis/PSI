@@ -3,7 +3,10 @@
 ﻿@using Newtonsoft.Json;
 @using NOTEA.Models.ConspectModels;
 @using NOTEA.Utilities.ListManipulation;
-@model ConspectListModel<ConspectModel>
+@using NOTEA.Models.PurelyViewModels;
+@using NOTEA.Models.FileTree;
+@* @model ConspectListModel<ConspectModel> *@
+@model CombinedNoteaAndFolderListModel;
 
 @{
     if (context.HttpContext.Session.GetString("User") == null)
@@ -36,9 +39,18 @@
         background: transparent;
         border: 1px solid transparent;
     }
-
     .conspectName:hover {
             background: #BBBBBB44;
+    }
+
+    .toolButton {
+        background : #BBBBBB99;
+        border: 1px solid transparent;
+        font:300;
+    }
+
+    .toolButton:hover {
+        background: #BBBBBBDD;
     }
 </style>
 
@@ -78,6 +90,38 @@
         <input type="submit" onclick="location.href='@Url.Action("CancelSearch","Conspect")'" value="Clear" class="btn btn-success" />
     }
 </div>
+
+<br/>
+
+<div>
+    <table>
+        <tr>
+            <td>
+                <input type="submit" onclick="location.href='@Url.Action("GoBack","Conspect")'" value="Go back" class="toolButton" />
+            </td>
+            @using (Html.BeginForm("AddFolder", "Conspect", FormMethod.Get))
+            {
+                <td>
+                    <input type="submit" value="Add folder" class="toolButton" />
+                </td>
+                <td>
+                    @Html.TextBox("foldername", null, new {Class = "form-control", required = true})
+                    @Html.ValidationMessage("Field can't be empty")
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            }
+            <td>
+                <input type="submit" onclick="location.href='@Url.Action("CreateConspects","Conspect")'" value="Create new conspect" class="toolButton" />
+            </td>
+            <td>
+                <input type="submit" onclick="location.href='@Url.Action("UploadConspect","Conspect")'" value="Upload conspect" class="toolButton" />
+            </td>
+        </tr>
+    </table>
+</div>
+
 <p></p>
 <table class="table">
     <tbody>
@@ -92,7 +136,26 @@
                 <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", new { Collumn = SortCollumn.Date })'" value="@DateCollumnName" />
             </th>
         </tr>
-        @foreach  (ConspectModel conspectModel in Model.Conspects)
+        @foreach (FolderModel folder in Model.Folders)
+        {
+            <tr>
+                <td>
+                    <input type="submit" class="conspectName" onclick="location.href='@Url.Action("OpenFolder","Conspect", new {Id = folder.Id })'" value="📁 @folder.Name">
+                </td>
+                <td>
+                </td>
+                <td>
+                    @folder.Date.ToLongDateString()
+                </td>
+                <td>
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"/>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" onclick="location.href='@Url.Action("DeleteFolder","Conspect", new { id = folder.Id })'">Delete</a>
+                    </ul>
+                </td>
+            </tr>
+        }
+        @foreach  (ConspectModel conspectModel in Model.Noteas)
         {
             <tr>
                 <td>

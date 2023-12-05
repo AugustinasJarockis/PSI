@@ -2,7 +2,7 @@
 
 namespace NOTEA.Models.ConspectModels
 {
-    public class ConspectModel : IComparable<ConspectModel>, IConspectModel
+    public class ConspectModel : IConspectModel
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
@@ -30,12 +30,6 @@ namespace NOTEA.Models.ConspectModels
             Name = name;
             ConspectSemester = conspectSemester;
             ConspectText = conspectText;
-        }
-        public int CompareTo(ConspectModel other)
-        {
-            if (Date.CompareTo(other.Date) != 0)
-                return Date.CompareTo(other.Date);
-            return Name.CompareTo(other.Name);
         }
     }
 

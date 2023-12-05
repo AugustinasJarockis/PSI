@@ -9,6 +9,9 @@ using NOTEA.Utilities.ListManipulation;
 using NOTEA.Repositories.GenericRepositories;
 using NOTEA.Repositories.UserRepositories;
 using NOTEA.Models.UserModels;
+using NOTEA.Models.FileTree;
+using NOTEA.Services.FolderService;
+using NOTEA.Models.PurelyViewModels;
 
 namespace NOTEA.Controllers
 {
@@ -16,14 +19,16 @@ namespace NOTEA.Controllers
     {
         IGenericRepository<ConspectModel> _repository;
         private readonly IUserRepository<UserModel> _userRepository;
-        private readonly IDatabaseContext _context;
+        private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
+        private readonly IFolderService _folderService;
         public readonly IHttpContextAccessor _contextAccessor;
-        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, IDatabaseContext context, IUserRepository<UserModel> userRepository)
+        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, IFolderService folderService, DatabaseContext context, IUserRepository<UserModel> userRepository)
         {
             _repository = repository;
             _context = context; 
             _logsService = logsService;
+            _folderService = folderService;
             _contextAccessor = contextAccessor;
             _userRepository = userRepository;
         }
@@ -41,6 +46,11 @@ namespace NOTEA.Controllers
                 {
                     _repository.SaveConspect(conspectModel, conspectModel.Id);
                     _repository.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
+                    _repository.AssignToFolder(new TreeNodeModel(
+                        NodeType.File,
+                        conspectModel.Id,
+                        _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
+                        _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default));
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                     return RedirectToAction("ViewConspect", "Conspect", new {id = conspectModel.Id});
                 }
@@ -83,6 +93,11 @@ namespace NOTEA.Controllers
                     }
                     var conspectModel = new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName), conspectText: text);
                     _repository.SaveConspect(conspectModel, conspectModel.Id);
+                    _repository.AssignToFolder(new TreeNodeModel(
+                        NodeType.File,
+                        conspectModel.Id,
+                        _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
+                        _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default));
                     _repository.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
                 }
@@ -118,23 +133,29 @@ namespace NOTEA.Controllers
             else
             {
                 ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
-                ConspectListModel<ConspectModel> conspectListModel =
+                ConspectListModel<ConspectModel> conspectListModel = 
                     _repository.LoadConspects(
                         _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
-                        listManip.GetSelection()
+                        listManip.GetSelection(),
+                        _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default
                         );
-                if (conspectListModel?.Conspects.Count() == 0)
+                List<FolderModel> folders = _folderService.GetFolderList(
+                    _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
+                    _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default,
+                    listManip.GetFolderSelection()
+                    );
+                if(conspectListModel?.Conspects.Count + folders.Count == 0)
                 {
-                    if (listManip.FilterExists)
+                    if(listManip.FilterExists)
                         TempData["ErrorMessage"] = "No noteas match your search";
-                    else
+                    else if(_contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") == 0)
                         TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
                 }
                 ViewData["SortStatus"] = listManip.SortStatus;
                 if (listManip.FilterExists)
                     ViewData["SearchValue"] = listManip.SearchValue;
                 ViewData["SearchBy"] = listManip.SearchBy;
-                return View(conspectListModel);
+                return View(new CombinedNoteaAndFolderListModel(folders, conspectListModel.Conspects));
             }
         }
         public IActionResult CancelSearch()
@@ -168,6 +189,36 @@ namespace NOTEA.Controllers
             return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]
+        public IActionResult AddFolder(string foldername)
+        {
+            int currentFolder = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
+            int currentUser = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+            int id = _folderService.AddFolder(foldername);
+            _repository.AssignToFolder(new TreeNodeModel(NodeType.Folder, id, currentUser, currentFolder));
+            return RedirectToAction(nameof(ConspectList));
+        }
+
+        public IActionResult OpenFolder(int id)
+        {
+            _contextAccessor.HttpContext.Session.SetInt32("CurrentFolderID", id);
+            return RedirectToAction(nameof(ConspectList));
+        }
+
+        public IActionResult DeleteFolder(int id)
+        {
+            _folderService.DeleteFolder(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, id);
+            return RedirectToAction(nameof(ConspectList));
+        }
+
+        public IActionResult GoBack()
+        {
+            int currentFolder = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
+            int currentUser = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+            _contextAccessor.HttpContext.Session.SetInt32("CurrentFolderID", _folderService.GetPreviousFolderID(currentUser, currentFolder)); 
+            return RedirectToAction(nameof(ConspectList));
+        }
+
+        [HttpGet]
         public IActionResult ViewConspect(int id)
         {
             return View(_repository.LoadConspect(id));
@@ -200,6 +251,8 @@ namespace NOTEA.Controllers
                     if (!_context.UserConspects.Any(x => x.User_Id.Equals(user_id) && x.Conspect_Id.Equals(model.Id)))
                     {
                         _repository.AssignToUser(model.Id, user_id, 'e');
+                        //Add maybe share folder later
+                        _repository.AssignToFolder(new TreeNodeModel(NodeType.File, model.Id, user_id));
                         TempData["SuccessMessage"] = "Your notea has been shared successfully!";
                     }
                     else
