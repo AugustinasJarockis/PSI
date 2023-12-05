@@ -5,6 +5,7 @@ using NOTEA.Repositories.GenericRepositories;
 using NOTEA.Repositories.UserRepositories;
 using NOTEA.Services.LogServices;
 using NOTEA.Models.OnlineUserListModels;
+using NOTEA.CustomMiddlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +37,6 @@ app.UseStaticFiles();
 app.UseSession();
 
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(

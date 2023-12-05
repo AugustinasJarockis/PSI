@@ -8,19 +8,21 @@ using NOTEA.Repositories.UserRepositories;
 using NOTEA.Models.OnlineUserListModels;
 using Microsoft.AspNetCore.Identity;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace NOTEA.Controllers
 {
     public class UserController : Controller
     {
-        public readonly IHttpContextAccessor _contextAccessor;
         private readonly IUserRepository<UserModel> _userRepository;
         private readonly IOnlineUserList _onlineUserList;
+        private readonly IHttpContextAccessor _contextAccessor;
+
         public UserController(IHttpContextAccessor contextAccessor, IUserRepository<UserModel> userRepository, IOnlineUserList onlineUserList)
         {
-            _contextAccessor = contextAccessor;
             _userRepository = userRepository;
             _onlineUserList = onlineUserList;
+            _contextAccessor = contextAccessor;
         }
 
         public IActionResult SignIn()
@@ -72,10 +74,17 @@ namespace NOTEA.Controllers
             {
                 user.Email = "";
                 client.BaseAddress = new Uri("http://localhost:5063/");
-                var response = await client.PostAsJsonAsync("api/User/login", user);
-
+                var requestContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("api/User/login", requestContent);
+                
                 if (response.IsSuccessStatusCode)
                 {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var userModel = JsonConvert.DeserializeObject<UserModel>(responseContent);
+                    _contextAccessor.HttpContext.Session.SetString("User", userModel.Username);
+                    _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(new ListManipulator()));
+                    _contextAccessor.HttpContext.Session.SetInt32("Id", userModel.Id);
+                    _contextAccessor.HttpContext.Session.SetInt32("CurrentFolderID", 0);
                     return RedirectToAction("Index", "Home");
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
@@ -102,40 +111,14 @@ namespace NOTEA.Controllers
                 return View();
             }
         }
-
-        //[HttpPost]
-        //public async Task<IActionResult> LogIn(UserModel user)
-        //{
-        //    if (user.Username.IsValidName() && user.Password.IsValidName() && _userRepository.CheckLogIn(user))
-        //    {
-        //        user.Id = _userRepository.GetUserId(user.Username);
-        //        bool addSuccess = _onlineUserList.OnlineUsers.TryAdd(user.Id, user);
-        //        if (!addSuccess)
-        //        {
-        //            TempData["ErrorMessage"] = "You are already online on another device";
-        //            return View();
-        //        }
-        //        else
-        //        {
-        //            _contextAccessor.HttpContext.Session.SetString("User", user.Username);
-        //            _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(new ListManipulator()));
-        //            _contextAccessor.HttpContext.Session.SetInt32("Id", user.Id);
-        //            return RedirectToAction("Index", "Home");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        TempData["ErrorMessage"] = "Your username or password is wrong";
-        //    }
-        //    return View();
-        //}
         [HttpGet]
         public async Task<IActionResult> AccountSettings()
         {
             using (var client = new HttpClient())
             {
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
                 client.BaseAddress = new Uri("http://localhost:5063/");
-                var response = await client.GetAsync("api/User/getuser");
+                var response = await client.GetAsync($"api/User/getuser/{id}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -145,7 +128,7 @@ namespace NOTEA.Controllers
                 }
                 else
                 {
-                    return View("Error");
+                    return View("Error", "Home");
                 }
             }
         }
@@ -155,15 +138,17 @@ namespace NOTEA.Controllers
 
             using (var client = new HttpClient())
             {
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
                 UserModel user = new UserModel(username, "", email);
                 client.BaseAddress = new Uri("http://localhost:5063/");
-                var response = await client.PostAsJsonAsync("api/User/getuser", user);
+                var response = await client.PostAsJsonAsync($"api/User/updateuser/{id}", user);
 
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
                     var userModel = JsonConvert.DeserializeObject<UserModel>(responseContent);
-                    return View(userModel);
+                    _contextAccessor.HttpContext.Session.SetString("User", userModel.Username);
+                    return RedirectToAction("AccountSettings", "User", userModel);
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
                 {
@@ -182,38 +167,29 @@ namespace NOTEA.Controllers
                         TempData["ErrorMessage"] = "An error occurred while processing your request";
                     }
                 }
-                return RedirectToAction("User", "AccountSettings");
+                return RedirectToAction("AccountSettings", "User");
             }
         }
         public async Task<IActionResult> LogOut()
         {
             using (var client = new HttpClient())
             {
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
                 client.BaseAddress = new Uri("http://localhost:5063/");
-                var response = await client.GetAsync("api/User/logout");
+                var response = await client.GetAsync($"api/User/logout/{id}");
 
                 if(response.IsSuccessStatusCode) 
                 {
+                    _contextAccessor.HttpContext.Session.Clear();
                     return RedirectToAction("LogIn", "User");
                 }
                 else 
                 {
                     TempData["ErrorMessage"] = "An error occurred while processing your request";
-                    return RedirectToAction("Home", "Index");
+                    return RedirectToAction("Index", "Home");
                 }
             }
         }
-        //public IActionResult LogOut()
-        //{
-        //    UserModel temp = null;
-        //    bool removeSuccess = _onlineUserList.OnlineUsers.TryRemove((int)_contextAccessor.HttpContext.Session.GetInt32("Id"), out temp);
-        //    if (!removeSuccess)
-        //    {
-        //        throw new Exception();
-        //    }
-        //    _contextAccessor.HttpContext.Session.Clear();
-        //    return RedirectToAction("LogIn", "User");
-        //}
         public async Task<IActionResult> UserList()
         {
             using (var client = new HttpClient())
@@ -225,10 +201,6 @@ namespace NOTEA.Controllers
                 return View(userList);
             }
         }
-        //public IActionResult UserList()
-        //{
-        //    return View(_onlineUserList);
-        //}
     }
 }
 
