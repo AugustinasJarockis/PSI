@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using NOTEA.Models.ConspectModels;
-using NOTEA.Models.UserModels;
+using NoteaAPI.Models.ConspectModels;
+using NoteaAPI.Models.UserModels;
 
-namespace NOTEA.Database
+namespace NoteaAPI.Database
 {
     public interface IDatabaseContext
     {

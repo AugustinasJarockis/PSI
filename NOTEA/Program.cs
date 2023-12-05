@@ -1,6 +1,6 @@
 using FluentAssertions.Common;
 using Microsoft.EntityFrameworkCore;
-using NOTEA.Database;
+//using NOTEA.Database;
 using NOTEA.Repositories.GenericRepositories;
 using NOTEA.Repositories.UserRepositories;
 using NOTEA.Services.LogServices;
@@ -16,10 +16,10 @@ builder.Services.AddScoped(typeof(IUserRepository<>), typeof(UserRepository<>));
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IOnlineUserList, OnlineUserList>();
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
-});
+//builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
+//});
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(120);
@@ -41,7 +41,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=User}/{action=LogIn}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
 

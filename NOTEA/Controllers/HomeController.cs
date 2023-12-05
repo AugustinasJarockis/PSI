@@ -6,22 +6,26 @@ namespace NOTEA.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        public HomeController(ILogger<HomeController> logger)
+        public async Task<IActionResult> Index()
         {
-            _logger = logger;
+            var httpClient = new HttpClient();
+            var response = (await httpClient.GetAsync("http://localhost:5063/index"));
+            if (response.IsSuccessStatusCode)
+            {
+                return View();
+            }
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        public IActionResult Index()
+        public async Task<IActionResult> Privacy()
         {
-            return View();
+            var httpClient = new HttpClient();
+            var response = (await httpClient.GetAsync("http://localhost:5063/privacy"));
+            if (response.IsSuccessStatusCode)
+            {
+                return View();
+            }
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-    
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

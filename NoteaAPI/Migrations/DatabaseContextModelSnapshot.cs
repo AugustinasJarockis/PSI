@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NOTEA.Database;
+using NoteaAPI.Database;
 
 #nullable disable
 
-namespace NOTEA.Migrations
+namespace NoteaAPI.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     partial class DatabaseContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace NOTEA.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("NOTEA.Models.ConspectModels.ConspectModel", b =>
+            modelBuilder.Entity("NoteaAPI.Models.ConspectModels.ConspectModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,7 +49,7 @@ namespace NOTEA.Migrations
                     b.ToTable("Conspects");
                 });
 
-            modelBuilder.Entity("NOTEA.Models.RecordModels.RecordModel", b =>
+            modelBuilder.Entity("NoteaAPI.Models.RecordModels.RecordModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,7 +70,7 @@ namespace NOTEA.Migrations
                     b.ToTable("RecordModel");
                 });
 
-            modelBuilder.Entity("NOTEA.Models.UserModels.UserConspectsModel", b =>
+            modelBuilder.Entity("NoteaAPI.Models.UserModels.UserConspectsModel", b =>
                 {
                     b.Property<int>("No")
                         .ValueGeneratedOnAdd()
@@ -93,7 +93,7 @@ namespace NOTEA.Migrations
                     b.ToTable("UserConspects");
                 });
 
-            modelBuilder.Entity("NOTEA.Models.UserModels.UserModel", b =>
+            modelBuilder.Entity("NoteaAPI.Models.UserModels.UserModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,14 +121,14 @@ namespace NOTEA.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("NOTEA.Models.RecordModels.RecordModel", b =>
+            modelBuilder.Entity("NoteaAPI.Models.RecordModels.RecordModel", b =>
                 {
-                    b.HasOne("NOTEA.Models.ConspectModels.ConspectModel", null)
+                    b.HasOne("NoteaAPI.Models.ConspectModels.ConspectModel", null)
                         .WithMany("ConspectRecords")
                         .HasForeignKey("ConspectModelId");
                 });
 
-            modelBuilder.Entity("NOTEA.Models.ConspectModels.ConspectModel", b =>
+            modelBuilder.Entity("NoteaAPI.Models.ConspectModels.ConspectModel", b =>
                 {
                     b.Navigation("ConspectRecords");
                 });
