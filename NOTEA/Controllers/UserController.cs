@@ -70,6 +70,7 @@ namespace NOTEA.Controllers
         {
             using (var client = new HttpClient())
             {
+                user.Email = "";
                 client.BaseAddress = new Uri("http://localhost:5063/");
                 var response = await client.PostAsJsonAsync("api/User/login", user);
 
