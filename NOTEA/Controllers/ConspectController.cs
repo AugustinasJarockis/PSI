@@ -8,125 +8,152 @@ using NOTEA.Utilities.ListManipulation;
 using NOTEA.Repositories.GenericRepositories;
 using NOTEA.Repositories.UserRepositories;
 using NOTEA.Models.UserModels;
+using System.Text;
+using NuGet.Protocol.Core.Types;
 
 namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
-        //IGenericRepository<ConspectModel> _repository;
-        //private readonly IUserRepository<UserModel> _userRepository;
-        //private readonly ILogsService _logsService;
-        //public readonly IHttpContextAccessor _contextAccessor;
-        //public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, IUserRepository<UserModel> userRepository)
-        //{
-        //    _repository = repository;
-        //    _logsService = logsService;
-        //    _contextAccessor = contextAccessor;
-        //    _userRepository = userRepository;
-        //}
-        //public IActionResult CreateConspects()
-        //{
-        //    return View();
-        //}
+        private readonly IHttpContextAccessor _contextAccessor;
+        public ConspectController(IHttpContextAccessor contextAccessor)
+        {
+            _contextAccessor = contextAccessor;
+        }
+        public IActionResult CreateConspects()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateConspects(ConspectModel conspectModel)
+        {
+            using(var client = new HttpClient()) 
+            {
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.PostAsJsonAsync($"api/Conspect/create/{id}", conspectModel);
 
-        //    [HttpPost]
-        //    public IActionResult CreateConspects(ConspectModel conspectModel)
-        //    {
-        //        try
-        //        {
-        //            if (conspectModel.Name.IsValidName())
-        //            {
-        //                _repository.SaveConspect(conspectModel, conspectModel.Id);
-        //                _repository.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
-        //                TempData["SuccessMessage"] = "Your notea has been saved successfully!";
-        //                return RedirectToAction("ViewConspect", "Conspect", new {id = conspectModel.Id});
-        //            }
-        //            else
-        //            {
-        //                TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty, longer than 80 symbols or contain the following characters: \\\\ / : * . ? \" < > | ";
-        //                throw new ArgumentNullException("file name", "File name is not valid");
-        //            }
-        //        }
-        //        catch (ArgumentNullException ex)
-        //        {
-        //            _logsService.SaveExceptionInfo(new ExceptionModel(ex));
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            _logsService.SaveExceptionInfo(new ExceptionModel(ex));
-        //        }
-        //        return View();
-        //    }
-        //    public IActionResult UploadConspect()
-        //    {
-        //        return View();
-        //    }
+                if (response.IsSuccessStatusCode) 
+                {
+                    TempData["SuccessMessage"] = "Your notea has been saved successfully!";
+                    return RedirectToAction("ViewConspect", "Conspect", new {id = conspectModel.Id});
+                }
+                else if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                {
+                    TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty, longer than 80 symbols or contain the following characters: \\\\ / : * . ? \" < > | ";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
+                }
+                return View();
+            }
+        }
+        public IActionResult UploadConspect()
+        {
+            return View();
+        }
 
-        //    [HttpPost]
-        //    public IActionResult UploadConspect(IFormFile file)
-        //    {
-        //        try
-        //        {
-        //            if (file == null)
-        //            {
-        //                throw new ArgumentNullException("file", "File is null");
-        //            }
-        //            if (file.ContentType == "text/plain")
-        //            {
-        //                string text;
-        //                using (StreamReader sr = new StreamReader(file.OpenReadStream()))
-        //                {
-        //                    text = sr.ReadToEnd();
-        //                }
-        //                var conspectModel = new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName), conspectText: text);
-        //                _repository.SaveConspect(conspectModel, conspectModel.Id);
-        //                _repository.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
-        //                TempData["SuccessMessage"] = "Your notea has been saved successfully!";
-        //            }
-        //            else
-        //            {
-        //                TempData["ErrorMessage"] = "Wrong type of file specified.";
-        //                throw new InvalidOperationException("Wrong type of file specified");
-        //            }
-        //        }
-        //        catch (ArgumentNullException ex)
-        //        {
-        //            _logsService.SaveExceptionInfo(new ExceptionModel(ex));
+        [HttpPost]
+        public async Task <IActionResult> UploadConspect(IFormFile file)
+        {
+            using (var client = new HttpClient())
+            {
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
 
-        //        }
-        //        catch (InvalidOperationException ex)
-        //        {
-        //            _logsService.SaveExceptionInfo(new ExceptionModel(ex));
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            _logsService.SaveExceptionInfo(new ExceptionModel(ex));
-        //        }
-        //        return View();
-        //    }
+                if (file == null)
+                {
+                    throw new ArgumentNullException("file", "File is null");
+                }
+                if (file.ContentType == "text/plain")
+                {
+                    string text;
+                    using (StreamReader sr = new StreamReader(file.OpenReadStream()))
+                    {
+                        text = sr.ReadToEnd();
+                    }
+                    var conspectModel = new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName), conspectText: text);
 
-        //    [HttpGet]
-        //    public IActionResult ConspectList()
-        //    {
-        //        ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
-        //        ConspectListModel<ConspectModel> conspectListModel = 
-        //            _repository.LoadConspects(
-        //                _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
-        //                listManip.GetSelection()
-        //                );
-        //        if(conspectListModel?.Conspects.Count() == 0)
-        //        {
-        //            if(listManip.FilterExists)
-        //                TempData["ErrorMessage"] = "No noteas match your search";
-        //            else
-        //                TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
-        //        }
-        //        ViewData["SortStatus"] = listManip.SortStatus;
-        //        if (listManip.FilterExists)
-        //            ViewData["SearchValue"] = listManip.SearchValue;
-        //        ViewData["SearchBy"] = listManip.SearchBy;
-        //        return View(conspectListModel);
-        //    }
+                    client.BaseAddress = new Uri("http://localhost:5063/");
+                    var response = await client.PostAsJsonAsync($"api/Conspect/upload/{id}", conspectModel);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        TempData["SuccessMessage"] = "Your notea has been saved successfully!";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "An error occurred while processing your request";
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException("Wrong type of file specified");
+                }
+                return View();
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> ConspectList()
+        {
+            using (var client = new HttpClient()) 
+            {
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var requestContent = new StringContent(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync($"api/Conspect/list/{id}", requestContent);
+                if(response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var conspectListModel = JsonConvert.DeserializeObject<ConspectListModel<ConspectModel>>(responseContent);
+                    ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
+                    ViewData["SortStatus"] = listManip.SortStatus;
+                    if (listManip.FilterExists)
+                        ViewData["SearchValue"] = listManip.SearchValue;
+                    ViewData["SearchBy"] = listManip.SearchBy;
+                    return View(conspectListModel);
+                }
+                else if(response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+
+                    if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        TempData["ErrorMessage"] = errorMessage;
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "An error occurred while processing your request";
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
+                }
+                return RedirectToAction("Error", "Home");
+            }
+        }
+        public async Task <IActionResult> CancelSearch()
+        {
+            using (var client = new HttpClient())
+            {
+                ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.PostAsJsonAsync("api/Conspect/cancel", listManip);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    _contextAccessor.HttpContext.Session.SetString("ListManipulator", responseContent);
+                    return RedirectToAction(nameof(ConspectList));
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
+                }
+                return RedirectToAction(nameof(ConspectList));
+            }
+        }
         //    public IActionResult CancelSearch()
         //    {
         //        ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
@@ -162,22 +189,56 @@ namespace NOTEA.Controllers
         //    {
         //        return View(_repository.LoadConspect(id));
         //    }
-        //    [HttpPost]
-        //    public IActionResult ViewConspect(ConspectModel model)
-        //    {
-        //        _repository.SaveConspect(model, model.Id);
-        //        return View(model);
-        //    }
-        //    [HttpGet]
-        //    public IActionResult EditConspect(int id)
-        //    {
-        //        return View(_repository.LoadConspect(id));
-        //    }
-        //    public IActionResult DeleteConspect(int id)
-        //    {
-        //        _repository.DeleteConspect(id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
-        //        return RedirectToAction("ConspectList", "Conspect");
-        //    }
+        [HttpGet]
+        public async Task <IActionResult> ViewConspect(int id)
+        {
+            using(var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/Conspect/view/{id}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return View(JsonConvert.DeserializeObject<ConspectModel>(responseContent));
+            }
+        }
+        [HttpPost]
+        public async Task <IActionResult> ViewConspect(ConspectModel model)
+        {
+            using(var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.PostAsJsonAsync($"api/Conspect/save", model);
+                if(response.IsSuccessStatusCode)
+                {
+                    return View(model);
+                }
+                return RedirectToAction("Error", "Home");
+            }
+        }
+        [HttpGet]
+        public async Task <IActionResult> EditConspect(int id)
+        {
+            using(var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/Conspect/view/{id}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return View(JsonConvert.DeserializeObject<ConspectModel>(responseContent));
+            }
+        }
+        public async Task <IActionResult> DeleteConspect(int id)
+        {
+            using( var client = new HttpClient())
+            {
+                int uid = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/Conspect/delete/{uid}/{id}");
+                if(response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("ConspectList", "Conspect");
+                }
+                return RedirectToAction("Error", "Home");
+            }
+        }
 
         //    //[HttpPost]
         //    //public IActionResult ShareConspect(ConspectModel model, string username)

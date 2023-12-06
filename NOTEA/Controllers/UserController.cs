@@ -14,14 +14,10 @@ namespace NOTEA.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IUserRepository<UserModel> _userRepository;
-        private readonly IOnlineUserList _onlineUserList;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public UserController(IHttpContextAccessor contextAccessor, IUserRepository<UserModel> userRepository, IOnlineUserList onlineUserList)
+        public UserController(IHttpContextAccessor contextAccessor)
         {
-            _userRepository = userRepository;
-            _onlineUserList = onlineUserList;
             _contextAccessor = contextAccessor;
         }
 
