@@ -9,6 +9,9 @@ using NoteaAPI.Repositories.GenericRepositories;
 using NoteaAPI.Repositories.UserRepositories;
 using NoteaAPI.Models.UserModels;
 using NoteaAPI.Database;
+using NoteaAPI.Models.FileTree;
+using NoteaAPI.Services.FolderService;
+using NoteaAPI.Models.ViewModels;
 
 namespace NoteaAPI.Controllers
 {
@@ -20,12 +23,14 @@ namespace NoteaAPI.Controllers
         private readonly IUserRepository<UserModel> _userRepository;
         private readonly ILogsService _logsService;
         private readonly IDatabaseContext _database;
+        private readonly IFolderService _folderService;
 
-        public ConspectController(IGenericRepository<ConspectModel> repository, ILogsService logsService, IUserRepository<UserModel> userRepository, IDatabaseContext database)
+        public ConspectController(IGenericRepository<ConspectModel> repository, ILogsService logsService, IFolderService folderService, IUserRepository<UserModel> userRepository, IDatabaseContext database)
         {
             _repository = repository;
             _logsService = logsService;
             _userRepository = userRepository;
+            _folderService = folderService;
             _database = database;
         }
         
@@ -38,6 +43,11 @@ namespace NoteaAPI.Controllers
                 if (conspectModel.Name.IsValidName())
                 {
                     _repository.SaveConspect(conspectModel, conspectModel.Id);
+                    //_repository.AssignToFolder(new TreeNodeModel(
+                        //NodeType.File,
+                        //conspectModel.Id,
+                        //_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
+                        //_contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default));
                     _repository.AssignToUser(conspectModel.Id, id);
                     return Ok(conspectModel.Id);
                 }

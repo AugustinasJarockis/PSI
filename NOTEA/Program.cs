@@ -1,26 +1,20 @@
-using FluentAssertions.Common;
-using Microsoft.EntityFrameworkCore;
-//using NOTEA.Database;
-using NOTEA.Repositories.GenericRepositories;
-using NOTEA.Repositories.UserRepositories;
 using NOTEA.Services.LogServices;
 using NOTEA.Models.OnlineUserListModels;
-using NOTEA.CustomMiddlewares;
+//======= Move to API
+//using NOTEA.Services.FolderService;
+//>>>>>>> main
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-//builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ILogsService, LogsService>();
-//builder.Services.AddScoped(typeof(IUserRepository<>), typeof(UserRepository<>));
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IOnlineUserList, OnlineUserList>();
 builder.Services.AddDistributedMemoryCache();
-//builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
-//{
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
-//});
+//=======//Move to API
+//builder.Services.AddScoped<IFolderService, FolderService>();
+//>>>>>>> main
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(120);

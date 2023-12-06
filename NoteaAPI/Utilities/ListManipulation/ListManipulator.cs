@@ -2,6 +2,7 @@
 using NoteaAPI.Extentions;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using NoteaAPI.Models.FileTree;
 
 namespace NoteaAPI.Utilities.ListManipulation
 {
@@ -34,6 +35,21 @@ namespace NoteaAPI.Utilities.ListManipulation
             }
             return temp == null ? null : list => temp(list).ToList();
         }
+        public Func<IQueryable<FolderModel>, List<FolderModel>> GetFolderSelection()
+        {
+            Func<IEnumerable<FolderModel>, IEnumerable<FolderModel>> temp = null;
+            Func<IEnumerable<FolderModel>, IEnumerable<FolderModel>> tempFilter = GenerateFolderFilter(searchBy, searchValue);
+            Func<IEnumerable<FolderModel>, IEnumerable<FolderModel>> tempSort = GenerateFolderSort(currentSortCollumn);
+            if (tempFilter != null && tempSort != null)
+            {
+                temp = list => tempSort(tempFilter(list));
+            }
+            else
+            {
+                temp += tempFilter + tempSort;
+            }
+            return temp == null ? null : list => temp(list).ToList();
+        }
         public Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> GenerateFilter(string searchBy, string searchValue)
         {
             if (searchValue.IsNullOrEmpty())
@@ -47,6 +63,18 @@ namespace NoteaAPI.Utilities.ListManipulation
             else if (searchBy.ToLower() == "conspectsemester")
             {
                 return list => list.Where(c => c.ConspectSemester.GetDisplayName().ToLower().Contains(searchValue.ToLower()));
+            }
+            return null;
+        }
+        public Func<IEnumerable<FolderModel>, IEnumerable<FolderModel>> GenerateFolderFilter(string searchBy, string searchValue)
+        {
+            if (searchValue.IsNullOrEmpty())
+            {
+                return null;
+            }
+            if (searchBy.ToLower() == "name")
+            {
+                return list => list.Where(c => c.Name.ToLower().Contains(searchValue.ToLower()));
             }
             return null;
         }
@@ -81,6 +109,28 @@ namespace NoteaAPI.Utilities.ListManipulation
                     break;
                 case SortCollumn.Semester + 3 * (int)SortPhase.Descending:
                     orderStatement = list => list.OrderByDescending(c => (int)c.ConspectSemester);
+                    break;
+                case SortCollumn.Date + 3 * (int)SortPhase.Ascending:
+                    orderStatement = list => list.OrderBy(c => c.Date);
+                    break;
+                case SortCollumn.Date + 3 * (int)SortPhase.Descending:
+                    orderStatement = list => list.OrderByDescending(c => c.Date);
+                    break;
+            }
+            return orderStatement;
+        }
+        private Func<IEnumerable<FolderModel>, IEnumerable<FolderModel>> GenerateFolderSort(SortCollumn? collumn)
+        {
+            if (collumn == null)
+                return null;
+            Func<IEnumerable<FolderModel>, IEnumerable<FolderModel>> orderStatement = null;
+            switch (collumn + 3 * (int)collumnOrderValues[(int)collumn])
+            {
+                case SortCollumn.Name + 3 * (int)SortPhase.Ascending:
+                    orderStatement = list => list.OrderBy(c => c.Name);
+                    break;
+                case SortCollumn.Name + 3 * (int)SortPhase.Descending:
+                    orderStatement = list => list.OrderByDescending(c => c.Name);
                     break;
                 case SortCollumn.Date + 3 * (int)SortPhase.Ascending:
                     orderStatement = list => list.OrderBy(c => c.Date);

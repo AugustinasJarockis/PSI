@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NoteaAPI.Models.ConspectModels;
 using NoteaAPI.Models.UserModels;
+using NoteaAPI.Models.FileTree;
 
 namespace NoteaAPI.Database
 { 
@@ -9,7 +10,9 @@ namespace NoteaAPI.Database
             public DbSet<ConspectModel> Conspects { get; set; }
             public DbSet<UserModel> Users { get; set; }
             public DbSet<UserConspectsModel> UserConspects { get; set; }
-            public DatabaseContext(DbContextOptions options) : base(options)
+            public DbSet<TreeNodeModel> FileStructure { get; set; }
+            public DbSet<FolderModel> Folders { get; set; }
+        public DatabaseContext(DbContextOptions options) : base(options)
             {
 
             }
