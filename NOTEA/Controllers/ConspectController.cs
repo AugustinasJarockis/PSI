@@ -15,10 +15,14 @@ namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
-        private readonly IHttpContextAccessor _contextAccessor;
-        public ConspectController(IHttpContextAccessor contextAccessor)
+        private readonly ILogsService _logsService;
+        public readonly IHttpContextAccessor _contextAccessor;
+        public ConspectController(IHttpContextAccessor contextAccessor, ILogsService logsService)
         {
+            _logsService = logsService;
             _contextAccessor = contextAccessor;
+        }
+
         }
         public IActionResult CreateConspects()
         {
@@ -154,13 +158,6 @@ namespace NOTEA.Controllers
                 return RedirectToAction(nameof(ConspectList));
             }
         }
-        //    public IActionResult CancelSearch()
-        //    {
-        //        ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
-        //        listManip.ClearFilter();
-        //        _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(listManip));
-        //        return RedirectToAction(nameof(ConspectList));
-        //    }
         //    [HttpGet]
         //    public IActionResult FilterConspect(string searchBy, string searchValue)
         //    {
@@ -183,11 +180,6 @@ namespace NOTEA.Controllers
         //        listManip.UpdateSort(collumn);
         //        _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(listManip));
         //        return RedirectToAction(nameof(ConspectList));
-        //    }
-        //    [HttpGet]
-        //    public IActionResult ViewConspect(int id)
-        //    {
-        //        return View(_repository.LoadConspect(id));
         //    }
         [HttpGet]
         public async Task <IActionResult> ViewConspect(int id)
@@ -239,36 +231,105 @@ namespace NOTEA.Controllers
                 return RedirectToAction("Error", "Home");
             }
         }
+//         [HttpGet]
+//         public async Task<IActionResult> ViewConspect(int id)
+//         {
+//             using (var client = new HttpClient())
+//             {
+//                 client.BaseAddress = new Uri("http://localhost:5063/");
+//                 var response = await client.GetAsync($"api/Conspect/view/{id}");
 
-        //    //[HttpPost]
-        //    //public IActionResult ShareConspect(ConspectModel model, string username)
-        //    //{
-        //    //    if (_context.Users.Any(x => x.Username.Equals(username)))
-        //    //    {
-        //    //        if (username != _contextAccessor.HttpContext.Session.GetString("User"))
-        //    //        {
-        //    //            int user_id = _userRepository.GetUserId(username);
-        //    //            if (!_context.UserConspects.Any(x => x.User_Id.Equals(user_id) && x.Conspect_Id.Equals(model.Id)))
-        //    //            {
-        //    //                _repository.AssignToUser(model.Id, user_id, 'e');
-        //    //                TempData["SuccessMessage"] = "Your notea has been shared successfully!";
-        //    //            }
-        //    //            else
-        //    //            {
-        //    //                TempData["ErrorMessage"] = "Conspect is already shared with this user";
-        //    //            }
-        //    //        }
-        //    //        else 
-        //    //        {
-        //    //            TempData["ErrorMessage"] = "You can not share conspect with yourself";
-        //    //        }
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        TempData["ErrorMessage"] = "The username you entered does not exist";
-        //    //    }
-        //    //    return RedirectToAction("ViewConspect", "Conspect", new { ID = model.Id, Name = model.Name, Date = model.Date });
-        //    //}
-        //}
+//                 if (response.IsSuccessStatusCode)
+//                 {
+//                     var responseContent = await response.Content.ReadAsStringAsync();
+//                     var conspectModel = JsonConvert.DeserializeObject<ConspectModel>(responseContent);
+//                     return View(conspectModel);
+//                 }
+//                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+//                 {
+//                     TempData["ErrorMessage"] = "You do not have access to this conspect";
+//                 }
+//                 else
+//                 {
+//                     TempData["ErrorMessage"] = "An error occurred while processing your request";
+//                 }
+//                 return RedirectToAction("ConspectList", "Conspect");
+//             }
+//         }
+//         [HttpPost]
+//         public async Task<IActionResult> ViewConspect(ConspectModel model)
+//         {
+//             using (var client = new HttpClient())
+//             {
+//                 client.BaseAddress = new Uri("http://localhost:5063/");
+//                 var response = await client.PostAsJsonAsync("api/Conspect/view", model);
+//                 if (response.IsSuccessStatusCode)
+//                 {
+//                     TempData["SuccessMessage"] = "Conspect saved successfully";            
+//                 }
+//                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+//                 {
+//                     TempData["ErrorMessage"] = "You do not have access to this conspect";
+//                 }
+//                 else
+//                 {
+//                     TempData["ErrorMessage"] = "An error occurred while processing your request";
+//                 }
+//                 return View(model);
+//             };
+//         }
+        [HttpPost]
+        public async Task<IActionResult> ShareConspect(ConspectModel model, string username)
+        {
+            using (var client = new HttpClient())
+            {
+                string currentUsername = _contextAccessor.HttpContext.Session.GetString("User") ?? default;
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var requestContent = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync($"api/Conspect/share/{currentUsername}/{username}", requestContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Your notea has been shared successfully!";
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+
+                    if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        if(errorMessage.Contains("already shared"))
+                        {
+                            TempData["ErrorMessage"] = "Conspect is already shared with this user";
+                        }
+                        else if(errorMessage.Contains("yourself"))
+                        {
+                            TempData["ErrorMessage"] = "You can not share conspect with yourself";
+                        }
+                        else if(errorMessage.Contains("does not exist"))
+                        {
+                            TempData["ErrorMessage"] = "The username you entered does not exist";
+                        }
+                        else
+                        {
+                            TempData["ErrorMessage"] = "An error occurred while processing your request";
+                        }
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "An error occurred while processing your request";
+                    }
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    TempData["ErrorMessage"] = "Your do not have permission to execute this action";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
+                }
+                return RedirectToAction("ViewConspect", "Conspect", new { ID = model.Id, Name = model.Name, Date = model.Date }); 
+            }
+        }
     }
 }

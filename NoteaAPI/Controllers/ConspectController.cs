@@ -1,4 +1,3 @@
-﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NoteaAPI.Extentions;
 using NoteaAPI.Models.ConspectModels;
@@ -9,7 +8,7 @@ using NoteaAPI.Utilities.ListManipulation;
 using NoteaAPI.Repositories.GenericRepositories;
 using NoteaAPI.Repositories.UserRepositories;
 using NoteaAPI.Models.UserModels;
-using Azure;
+using NoteaAPI.Database;
 
 namespace NoteaAPI.Controllers
 {
@@ -20,13 +19,16 @@ namespace NoteaAPI.Controllers
         IGenericRepository<ConspectModel> _repository;
         private readonly IUserRepository<UserModel> _userRepository;
         private readonly ILogsService _logsService;
-        public ConspectController(IGenericRepository<ConspectModel> repository, ILogsService logsService, IUserRepository<UserModel> userRepository)
+        private readonly IDatabaseContext _database;
+
+        public ConspectController(IGenericRepository<ConspectModel> repository, ILogsService logsService, IUserRepository<UserModel> userRepository, IDatabaseContext database)
         {
             _repository = repository;
             _logsService = logsService;
             _userRepository = userRepository;
+            _database = database;
         }
-
+        
         [HttpPost]
         [Route("create/{id}")]
         public IActionResult CreateConspects(int id, [FromForm] ConspectModel conspectModel)
@@ -52,6 +54,16 @@ namespace NoteaAPI.Controllers
             catch (Exception ex)
             {
                 _logsService.SaveExceptionInfo(new ExceptionModel(ex));
+//         [HttpGet]
+//         [Route("view/{id}")]
+//         public IActionResult ViewConspect(int id)
+//         {
+//             return Ok(_repository.LoadConspect(id));
+//         }
+//         [HttpPost]
+//         [Route("view")]
+//         public IActionResult ViewConspect(ConspectModel model)
+// =======
                 return BadRequest();
             }
         }
@@ -99,9 +111,38 @@ namespace NoteaAPI.Controllers
             _repository.SaveConspect(model, model.Id);
             return Ok();
         }
+        [HttpPost]
+        [Route("share/{current_username}/{username}")]
+        public IActionResult ShareConspect(string current_username, string username, ConspectModel model)
+        {
+            if (_database.Users.Any(x => x.Username.Equals(username)))
+            {
+                if (username != current_username)
+                {
+                    int user_id = _userRepository.GetUserId(username);
+                    if (!_database.UserConspects.Any(x => x.User_Id.Equals(user_id) && x.Conspect_Id.Equals(model.Id)))
+                    {
+                        _repository.AssignToUser(model.Id, user_id, 'e');
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest("Conspect is already shared with this user");
+                    }
+                }
+                else
+                {
+                    return BadRequest("You can not share conspect with yourself");
+                }
+            }
+            else
+            {
+               return BadRequest("The username you entered does not exist");
+            }
+        }
         [HttpGet]
         [Route("delete/{uid}/{id}")]
-        public IActionResult SaveConspect(int uid, int id)
+        public IActionResult DeleteConspect(int uid, int id)
         {
             _repository.DeleteConspect(id, uid);
             return Ok();
