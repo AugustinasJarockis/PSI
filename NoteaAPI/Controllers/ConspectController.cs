@@ -31,7 +31,7 @@ namespace NoteaAPI.Controllers
         
         [HttpPost]
         [Route("create/{id}")]
-        public IActionResult CreateConspects(int id, [FromForm] ConspectModel conspectModel)
+        public IActionResult CreateConspects(int id, [FromBody] ConspectModel conspectModel)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace NoteaAPI.Controllers
                 {
                     _repository.SaveConspect(conspectModel, conspectModel.Id);
                     _repository.AssignToUser(conspectModel.Id, id);
-                    return Ok();
+                    return Ok(conspectModel.Id);
                 }
                 else
                 {
@@ -54,16 +54,6 @@ namespace NoteaAPI.Controllers
             catch (Exception ex)
             {
                 _logsService.SaveExceptionInfo(new ExceptionModel(ex));
-//         [HttpGet]
-//         [Route("view/{id}")]
-//         public IActionResult ViewConspect(int id)
-//         {
-//             return Ok(_repository.LoadConspect(id));
-//         }
-//         [HttpPost]
-//         [Route("view")]
-//         public IActionResult ViewConspect(ConspectModel model)
-// =======
                 return BadRequest();
             }
         }

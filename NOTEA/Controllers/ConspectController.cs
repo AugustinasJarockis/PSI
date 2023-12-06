@@ -39,8 +39,9 @@ namespace NOTEA.Controllers
 
             if (response.IsSuccessStatusCode)
             {
+                var responseContent = await response.Content.ReadAsStringAsync();
                 TempData["SuccessMessage"] = "Your notea has been saved successfully!";
-                return RedirectToAction("ViewConspect", "Conspect", new { id = conspectModel.Id });
+                return RedirectToAction("ViewConspect", "Conspect", new { id = responseContent });
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
             {
