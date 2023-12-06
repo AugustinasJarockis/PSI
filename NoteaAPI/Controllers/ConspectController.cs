@@ -35,19 +35,15 @@ namespace NoteaAPI.Controllers
         }
         
         [HttpPost]
-        [Route("create/{id}")]
-        public IActionResult CreateConspects(int id, [FromBody] ConspectModel conspectModel)
+        [Route("create/{folder_id}/{id}")]
+        public IActionResult CreateConspects(int folder_id, int id, [FromBody] ConspectModel conspectModel)
         {
             try
             {
                 if (conspectModel.Name.IsValidName())
                 {
                     _repository.SaveConspect(conspectModel, conspectModel.Id);
-                    //_repository.AssignToFolder(new TreeNodeModel(
-                        //NodeType.File,
-                        //conspectModel.Id,
-                        //_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
-                        //_contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default));
+                    _repository.AssignToFolder(new TreeNodeModel(NodeType.File, conspectModel.Id, id, folder_id));
                     _repository.AssignToUser(conspectModel.Id, id);
                     return Ok(conspectModel.Id);
                 }
@@ -68,28 +64,28 @@ namespace NoteaAPI.Controllers
             }
         }
         [HttpPost]
-        [Route("upload/{id}")]
-        public IActionResult UploadConspect(int id, [FromBody] ConspectModel conspectModel)
+        [Route("upload/{folder_id}/{id}")]
+        public IActionResult UploadConspect(int folder_id, int id, [FromBody] ConspectModel conspectModel)
         {
-
             _repository.SaveConspect(conspectModel, conspectModel.Id);
+            _repository.AssignToFolder(new TreeNodeModel(NodeType.File, conspectModel.Id, id, folder_id));
             _repository.AssignToUser(conspectModel.Id, id);
             return Ok();
         }
         [HttpPost]
-        [Route("list/{id}")]
-        public IActionResult ConspectList(int id, [FromBody] ListManipulator listManip)
+        [Route("list/{folder_id}/{id}")]
+        public IActionResult ConspectList(int folder_id, int id, [FromBody] ListManipulator listManip)
         {
-            ConspectListModel<ConspectModel> conspectListModel = _repository.LoadConspects(id, listManip.GetSelection());
-
-            if (conspectListModel?.Conspects.Count() == 0)
+            ConspectListModel<ConspectModel> conspectListModel = _repository.LoadConspects(id, listManip.GetSelection(), folder_id);
+            List<FolderModel> folders = _folderService.GetFolderList(id, folder_id, listManip.GetFolderSelection()); 
+            if (conspectListModel.Conspects.Count() + folders.Count == 0)
             {
                 if (listManip.FilterExists)
                     return BadRequest("No noteas match your search");
-                else
+                else if(folder_id == 0)
                     return BadRequest("There are 0 noteas. Write one!");
             }
-            return Ok(JsonConvert.SerializeObject(conspectListModel));
+            return Ok(JsonConvert.SerializeObject(new CombinedNoteaAndFolderListModel(folders, conspectListModel.Conspects)));
         }
         [HttpPost]
         [Route("cancel")]
@@ -111,6 +107,15 @@ namespace NoteaAPI.Controllers
             _repository.SaveConspect(model, model.Id);
             return Ok();
         }
+
+        [HttpGet]
+        [Route("delete/{uid}/{id}")]
+        public IActionResult DeleteConspect(int uid, int id)
+        {
+            _repository.DeleteConspect(id, uid);
+            return Ok();
+        }
+
         [HttpPost]
         [Route("share/{current_username}/{username}")]
         public IActionResult ShareConspect(string current_username, string username, ConspectModel model)
@@ -123,6 +128,7 @@ namespace NoteaAPI.Controllers
                     if (!_database.UserConspects.Any(x => x.User_Id.Equals(user_id) && x.Conspect_Id.Equals(model.Id)))
                     {
                         _repository.AssignToUser(model.Id, user_id, 'e');
+                        _repository.AssignToFolder(new TreeNodeModel(NodeType.File, model.Id, user_id));
                         return Ok();
                     }
                     else
@@ -140,12 +146,27 @@ namespace NoteaAPI.Controllers
                return BadRequest("The username you entered does not exist");
             }
         }
+
         [HttpGet]
-        [Route("delete/{uid}/{id}")]
-        public IActionResult DeleteConspect(int uid, int id)
+        [Route("folder/add/{folder_id}/{user_id}/{foldername}")]
+        public IActionResult AddFolder(int folder_id, int user_id, string foldername)
         {
-            _repository.DeleteConspect(id, uid);
+            int id = _folderService.AddFolder(foldername);
+            _repository.AssignToFolder(new TreeNodeModel(NodeType.Folder, id, user_id, folder_id));
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("folder/delete/{uid}/{folder_id}")]
+        public IActionResult DeleteFolder(int user_id, int folder_id)
+        {
+            _folderService.DeleteFolder(user_id, folder_id);
+            return Ok();
+        }
+        [Route("folder/back/{user_id}/{folder_id}")]
+        public IActionResult GoBack(int user_id, int folder_id)
+        {
+            return Ok(_folderService.GetPreviousFolderID(user_id, folder_id));
         }
     }
 }

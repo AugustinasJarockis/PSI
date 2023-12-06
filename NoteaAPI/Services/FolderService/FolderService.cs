@@ -42,10 +42,10 @@ namespace NoteaAPI.Services.FolderService
         }
         public List<FolderModel> GetFolderList(int user_id, int folder_id, Func<IQueryable<FolderModel>, List<FolderModel>> selection = null)
         {
-            return selection == null ? _database.FileStructure.Where(fs => fs.UserID == user_id && fs.FolderID == folder_id)
+            return selection == null ? _database.FileStructure.Where(fs => fs.UserID == user_id && fs.FolderID == folder_id && fs.NodeType == NodeType.Folder)
                                           .Join(_database.Folders, fs => fs.UnderlyingId, f => f.Id, (fs, f) => f)
                                           .ToList()
-                                     : selection(_database.FileStructure.Where(fs => fs.UserID == user_id && fs.FolderID == folder_id)
+                                     : selection(_database.FileStructure.Where(fs => fs.UserID == user_id && fs.FolderID == folder_id && fs.NodeType == NodeType.Folder)
                                           .Join(_database.Folders, fs => fs.UnderlyingId, f => f.Id, (fs, f) => f));
         }
         public int GetPreviousFolderID(int user_id, int current_folder_id)

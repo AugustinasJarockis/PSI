@@ -3,9 +3,9 @@
 ﻿@using Newtonsoft.Json;
 @using NOTEA.Models.ConspectModels;
 @using NOTEA.Utilities.ListManipulation;
-@using NOTEA.Models.PurelyViewModels;
+@using NOTEA.Models.ViewModels;
 @using NOTEA.Models.FileTree;
-@model CombinedNoteaAndFolderListModel;
+@model NoteaAndFolderListModel;
 
 @{
     if (context.HttpContext.Session.GetString("User") == null)

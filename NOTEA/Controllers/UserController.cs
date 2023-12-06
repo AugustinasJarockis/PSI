@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NOTEA.Exceptions;
-using NOTEA.Extentions;
 using NOTEA.Models.UserModels;
 using NOTEA.Utilities.ListManipulation;
 using Newtonsoft.Json;
-using NOTEA.Repositories.UserRepositories;
 using NOTEA.Models.OnlineUserListModels;
-using Microsoft.AspNetCore.Identity;
-using System.Net.Http.Json;
 using System.Text;
 
 namespace NOTEA.Controllers

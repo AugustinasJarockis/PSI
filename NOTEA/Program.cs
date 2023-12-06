@@ -1,8 +1,5 @@
 using NOTEA.Services.LogServices;
 using NOTEA.Models.OnlineUserListModels;
-//======= Move to API
-//using NOTEA.Services.FolderService;
-//>>>>>>> main
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +9,7 @@ builder.Services.AddScoped<ILogsService, LogsService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IOnlineUserList, OnlineUserList>();
 builder.Services.AddDistributedMemoryCache();
-//=======//Move to API
-//builder.Services.AddScoped<IFolderService, FolderService>();
-//>>>>>>> main
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(120);
