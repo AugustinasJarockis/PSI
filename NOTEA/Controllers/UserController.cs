@@ -1,24 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NOTEA.Exceptions;
-using NOTEA.Extentions;
 using NOTEA.Models.UserModels;
 using NOTEA.Utilities.ListManipulation;
 using Newtonsoft.Json;
-using NOTEA.Repositories.UserRepositories;
 using NOTEA.Models.OnlineUserListModels;
+using System.Text;
 
 namespace NOTEA.Controllers
 {
     public class UserController : Controller
     {
-        public readonly IHttpContextAccessor _contextAccessor;
-        private readonly IUserRepository<UserModel> _userRepository;
-        private readonly IOnlineUserList _onlineUserList;
-        public UserController(IHttpContextAccessor contextAccessor, IUserRepository<UserModel> userRepository, IOnlineUserList onlineUserList)
+        private readonly IHttpContextAccessor _contextAccessor;
+
+        public UserController(IHttpContextAccessor contextAccessor)
         {
             _contextAccessor = contextAccessor;
-            _userRepository = userRepository;
-            _onlineUserList = onlineUserList;
         }
 
         public IActionResult SignIn()
@@ -29,122 +24,173 @@ namespace NOTEA.Controllers
         [HttpPost]
         public async Task<IActionResult> SignInAsync(SignInUserModel user)
         {
-            if (user.Username.IsValidName() && user.Password.IsValidName() && user.PasswordCheck.IsValidName() && user.Email.IsValidEmail())
+            using (var client = new HttpClient())
             {
-                try
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.PostAsJsonAsync("api/User/signin", user);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    if (user.Password == user.PasswordCheck)
-                    {
-                        await _userRepository.SaveUserAsync(user);
-                        TempData["SuccessMessage"] = "Your registration has been successful!";
-                        return RedirectToAction("LogIn", "User");
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "The passwords you entered do not match!";
-                    }
+                    TempData["SuccessMessage"] = "Your registration has been successful!";
+                    return RedirectToAction("LogIn", "User");
                 }
-                catch (UsernameTakenException)
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    TempData["ErrorMessage"] = "The passwords you entered do not match!";
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
                 {
                     TempData["ErrorMessage"] = "This username is already taken";
                 }
-            }
-            else if (!user.Email.IsValidEmail())
-            {
-                TempData["ErrorMessage"] = "Your email is not valid. It should follow the \"user\\@example.com\" pattern";
+                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    TempData["ErrorMessage"] = "Invalid username or email";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
+                }
 
+                return View();
             }
-            else
-            {
-                TempData["ErrorMessage"] = "Your username or password is invalid! It can't be empty, longer than 80 symbols or contain any of the following characters:\n \\\\ / : * . ? \" < > | ";
-            }
-            return View();
         }
-        [HttpGet]
         public IActionResult LogIn()
         {
             return View();
         }
-
         [HttpPost]
-        public IActionResult LogIn(UserModel user)
+        public async Task<IActionResult> LogInAsync(UserModel user)
         {
-            if (user.Username.IsValidName() && user.Password.IsValidName() && _userRepository.CheckLogIn(user))
+            using (var client = new HttpClient())
             {
-                user.Id = _userRepository.GetUserId(user.Username);
-                bool addSuccess = _onlineUserList.OnlineUsers.TryAdd(user.Id, user);
-                if (!addSuccess)
+                user.Email = "";
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var requestContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("api/User/login", requestContent);
+                
+                if (response.IsSuccessStatusCode)
                 {
-                    TempData["ErrorMessage"] = "You are already online on another device";
-                    return View();
-                }
-                else
-                {
-                    _contextAccessor.HttpContext.Session.SetString("User", user.Username);
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var userModel = JsonConvert.DeserializeObject<UserModel>(responseContent);
+                    _contextAccessor.HttpContext.Session.SetString("User", userModel.Username);
                     _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(new ListManipulator()));
-                    _contextAccessor.HttpContext.Session.SetInt32("Id", user.Id);
+                    _contextAccessor.HttpContext.Session.SetInt32("Id", userModel.Id);
                     _contextAccessor.HttpContext.Session.SetInt32("CurrentFolderID", 0);
                     return RedirectToAction("Index", "Home");
                 }
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Your username or password is wrong";
-            }
-            return View();
-        }
-        public IActionResult AccountSettings()
-        {
-            if (_contextAccessor.HttpContext.Session.GetString("User") != null)
-            {
-                return View(_userRepository.GetUser(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default));
-            }
-            else 
-            { 
-                return View(); 
+                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+
+                    if (!string.IsNullOrEmpty(errorMessage) && errorMessage.Contains("already online"))
+                    {
+                        TempData["ErrorMessage"] = "You are already online on another device";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "An error occurred while processing your request";
+                    }
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    TempData["ErrorMessage"] = "Your username or password is wrong";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
+                }
+                return View();
             }
         }
         [HttpGet]
-        public IActionResult UpdateUser(String username, String email)
+        public async Task<IActionResult> AccountSettings()
         {
-            if (username.IsValidName() && email.IsValidEmail())
+            using (var client = new HttpClient())
             {
-                try
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/User/getuser/{id}");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    _userRepository.UpdateUser(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, username, email);
-                    _contextAccessor.HttpContext.Session.SetString("User", username);
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var userModel = JsonConvert.DeserializeObject<UserModel>(responseContent);
+                    return View(userModel);
                 }
-                catch (UsernameTakenException)
+                else
+                {
+                    return View("Error", "Home");
+                }
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> UpdateUser (String username, String email)
+        {
+
+            using (var client = new HttpClient())
+            {
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                UserModel user = new UserModel(username, "", email);
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.PostAsJsonAsync($"api/User/updateuser/{id}", user);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var userModel = JsonConvert.DeserializeObject<UserModel>(responseContent);
+                    _contextAccessor.HttpContext.Session.SetString("User", userModel.Username);
+                    return RedirectToAction("AccountSettings", "User", userModel);
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
                 {
                     TempData["ErrorMessage"] = "This username is already taken";
                 }
-            }
-            else if (!email.IsValidEmail())
-            {
-                TempData["ErrorMessage"] = "Your email is not valid. It should follow the \"user\\@example.com\" pattern";
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
 
+                    if (!string.IsNullOrEmpty(errorMessage) && errorMessage.Contains("email"))
+                    {
+                        TempData["ErrorMessage"] = "Your provided email is invalid";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "An error occurred while processing your request";
+                    }
+                }
+                return RedirectToAction("AccountSettings", "User");
             }
-            else
-            {
-                TempData["ErrorMessage"] = "Your username or password is invalid! It can't be empty, longer than 80 symbols or contain any of the following characters:\n \\\\ / : * . ? \" < > | ";
-            }
-            return RedirectToAction("AccountSettings", "User");
         }
-        public IActionResult LogOut()
+        public async Task<IActionResult> LogOut()
         {
-            UserModel temp = null;
-            bool removeSuccess = _onlineUserList.OnlineUsers.TryRemove((int)_contextAccessor.HttpContext.Session.GetInt32("Id"), out temp);
-            if (!removeSuccess)
+            using (var client = new HttpClient())
             {
-                throw new Exception();
-            }
-            _contextAccessor.HttpContext.Session.Clear();
-            return RedirectToAction("LogIn", "User");
-        }
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/User/logout/{id}");
 
-        public IActionResult UserList()
+                if(response.IsSuccessStatusCode) 
+                {
+                    _contextAccessor.HttpContext.Session.Clear();
+                    return RedirectToAction("LogIn", "User");
+                }
+                else 
+                {
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+        }
+        public async Task<IActionResult> UserList()
         {
-            return View(_onlineUserList);
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync("api/User/users/online");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var userList = JsonConvert.DeserializeObject<OnlineUserList>(responseContent);
+                return View(userList);
+            }
         }
     }
 }

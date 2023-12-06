@@ -3,10 +3,9 @@
 ﻿@using Newtonsoft.Json;
 @using NOTEA.Models.ConspectModels;
 @using NOTEA.Utilities.ListManipulation;
-@using NOTEA.Models.PurelyViewModels;
+@using NOTEA.Models.ViewModels;
 @using NOTEA.Models.FileTree;
-@* @model ConspectListModel<ConspectModel> *@
-@model CombinedNoteaAndFolderListModel;
+@model NoteaAndFolderListModel;
 
 @{
     if (context.HttpContext.Session.GetString("User") == null)
@@ -40,7 +39,7 @@
         border: 1px solid transparent;
     }
     .conspectName:hover {
-            background: #BBBBBB44;
+        background: #BBBBBB44;
     }
 
     .toolButton {

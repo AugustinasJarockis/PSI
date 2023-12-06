@@ -1,84 +1,62 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NOTEA.Extentions;
 using NOTEA.Models.ConspectModels;
-using NOTEA.Models.ExceptionModels;
 using NOTEA.Services.LogServices;
-using NOTEA.Database;
 using Newtonsoft.Json;
 using NOTEA.Utilities.ListManipulation;
-using NOTEA.Repositories.GenericRepositories;
-using NOTEA.Repositories.UserRepositories;
-using NOTEA.Models.UserModels;
+using System.Text;
+using NOTEA.Models.ViewModels;
 using NOTEA.Models.FileTree;
-using NOTEA.Services.FolderService;
-using NOTEA.Models.PurelyViewModels;
+using NuGet.Protocol.Core.Types;
 
 namespace NOTEA.Controllers
 {
     public class ConspectController : Controller
     {
-        IGenericRepository<ConspectModel> _repository;
-        private readonly IUserRepository<UserModel> _userRepository;
-        private readonly DatabaseContext _context;
         private readonly ILogsService _logsService;
-        private readonly IFolderService _folderService;
         public readonly IHttpContextAccessor _contextAccessor;
-        public ConspectController(IHttpContextAccessor contextAccessor, IGenericRepository<ConspectModel> repository, ILogsService logsService, IFolderService folderService, DatabaseContext context, IUserRepository<UserModel> userRepository)
+        public ConspectController(IHttpContextAccessor contextAccessor, ILogsService logsService)
         {
-            _repository = repository;
-            _context = context; 
             _logsService = logsService;
-            _folderService = folderService;
             _contextAccessor = contextAccessor;
-            _userRepository = userRepository;
         }
         public IActionResult CreateConspects()
         {
             return View();
         }
-
         [HttpPost]
-        public IActionResult CreateConspects(ConspectModel conspectModel)
+        public async Task<IActionResult> CreateConspects(ConspectModel conspectModel)
         {
-            try
+            using (var client = new HttpClient())
             {
-                if (conspectModel.Name.IsValidName())
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                int current_folder_id = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.PostAsJsonAsync($"api/Conspect/create/{current_folder_id}/{id}", conspectModel);
+                if (response.IsSuccessStatusCode)
                 {
-                    _repository.SaveConspect(conspectModel, conspectModel.Id);
-                    _repository.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
-                    _repository.AssignToFolder(new TreeNodeModel(
-                        NodeType.File,
-                        conspectModel.Id,
-                        _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
-                        _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default));
+                    var responseContent = await response.Content.ReadAsStringAsync();
                     TempData["SuccessMessage"] = "Your notea has been saved successfully!";
-                    return RedirectToAction("ViewConspect", "Conspect", new {id = conspectModel.Id});
+                    return RedirectToAction("ViewConspect", "Conspect", new { id = responseContent });
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                {
+                    TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty, longer than 80 symbols or contain the following characters: \\\\ / : * . ? \" < > | ";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty, longer than 80 symbols or contain the following characters: \\\\ / : * . ? \" < > | ";
-                    throw new ArgumentNullException("file name", "File name is not valid");
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
                 }
+                return View();
             }
-            catch (ArgumentNullException ex)
-            {
-                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
-            }
-            catch (Exception ex)
-            {
-                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
-            }
-            return View();
         }
         public IActionResult UploadConspect()
         {
             return View();
         }
-
         [HttpPost]
-        public IActionResult UploadConspect(IFormFile file)
+        public async Task<IActionResult> UploadConspect(IFormFile file)
         {
-            try
+            using (var client = new HttpClient())
             {
                 if (file == null)
                 {
@@ -92,78 +70,90 @@ namespace NOTEA.Controllers
                         text = sr.ReadToEnd();
                     }
                     var conspectModel = new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName), conspectText: text);
-                    _repository.SaveConspect(conspectModel, conspectModel.Id);
-                    _repository.AssignToFolder(new TreeNodeModel(
-                        NodeType.File,
-                        conspectModel.Id,
-                        _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
-                        _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default));
-                    _repository.AssignToUser(conspectModel.Id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
-                    TempData["SuccessMessage"] = "Your notea has been saved successfully!";
+
+                    int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                    int folder_id = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
+
+                    client.BaseAddress = new Uri("http://localhost:5063/");
+                    var response = await client.PostAsJsonAsync($"api/Conspect/upload/{folder_id}/{id}", conspectModel);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        TempData["SuccessMessage"] = "Your notea has been saved successfully!";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "An error occurred while processing your request";
+                    }
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Wrong type of file specified.";
                     throw new InvalidOperationException("Wrong type of file specified");
                 }
+                return View();
             }
-            catch (ArgumentNullException ex)
-            {
-                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
-                
-            }
-            catch (InvalidOperationException ex)
-            {
-                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
-            }
-            catch (Exception ex)
-            {
-                _logsService.SaveExceptionInfo(new ExceptionModel(ex));
-            }
-            return View();
         }
-
         [HttpGet]
-        public IActionResult ConspectList()
+        public async Task<IActionResult> ConspectList()
         {
-            if (_contextAccessor.HttpContext.Session.GetString("User") == null)
+            using (var client = new HttpClient())
             {
-                return RedirectToAction("LogIn", "User");
+                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                int current_folder_id = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var requestContent = new StringContent(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync($"api/Conspect/list/{current_folder_id}/{id}", requestContent);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var noteaAndFolders = JsonConvert.DeserializeObject<NoteaAndFolderListModel>(responseContent);
+                    ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
+                    ViewData["SortStatus"] = listManip.SortStatus;
+                    if (listManip.FilterExists)
+                        ViewData["SearchValue"] = listManip.SearchValue;
+                    ViewData["SearchBy"] = listManip.SearchBy;
+                    return View(noteaAndFolders);
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+
+                    if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        TempData["ErrorMessage"] = errorMessage;
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "An error occurred while processing your request";
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
+                }
+                return RedirectToAction("Error", "Home");
             }
-            else
+        }
+        public async Task<IActionResult> CancelSearch()
+        {
+            using (var client = new HttpClient())
             {
                 ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
-                ConspectListModel<ConspectModel> conspectListModel = 
-                    _repository.LoadConspects(
-                        _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
-                        listManip.GetSelection(),
-                        _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default
-                        );
-                List<FolderModel> folders = _folderService.GetFolderList(
-                    _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default,
-                    _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default,
-                    listManip.GetFolderSelection()
-                    );
-                if(conspectListModel?.Conspects.Count + folders.Count == 0)
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.PostAsJsonAsync("api/Conspect/cancel", listManip);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    if(listManip.FilterExists)
-                        TempData["ErrorMessage"] = "No noteas match your search";
-                    else if(_contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") == 0)
-                        TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    _contextAccessor.HttpContext.Session.SetString("ListManipulator", responseContent);
+                    return RedirectToAction(nameof(ConspectList));
                 }
-                ViewData["SortStatus"] = listManip.SortStatus;
-                if (listManip.FilterExists)
-                    ViewData["SearchValue"] = listManip.SearchValue;
-                ViewData["SearchBy"] = listManip.SearchBy;
-                return View(new CombinedNoteaAndFolderListModel(folders, conspectListModel.Conspects));
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
+                }
+                return RedirectToAction(nameof(ConspectList));
             }
-        }
-        public IActionResult CancelSearch()
-        {
-            ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
-            listManip.ClearFilter();
-            _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(listManip));
-            return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]
         public IActionResult FilterConspect(string searchBy, string searchValue)
@@ -189,87 +179,209 @@ namespace NOTEA.Controllers
             return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]
-        public IActionResult AddFolder(string foldername)
+        public async Task<IActionResult> ViewConspect(int id)
         {
-            int currentFolder = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
-            int currentUser = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
-            int id = _folderService.AddFolder(foldername);
-            _repository.AssignToFolder(new TreeNodeModel(NodeType.Folder, id, currentUser, currentFolder));
-            return RedirectToAction(nameof(ConspectList));
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/Conspect/view/{id}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return View(JsonConvert.DeserializeObject<ConspectModel>(responseContent));
+            }
         }
+        [HttpPost]
+        public async Task<IActionResult> ViewConspect(ConspectModel model)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.PostAsJsonAsync($"api/Conspect/save", model);
+                if (response.IsSuccessStatusCode)
+                {
+                    return View(model);
+                }
+                return RedirectToAction("Error", "Home");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditConspect(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/Conspect/view/{id}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return View(JsonConvert.DeserializeObject<ConspectModel>(responseContent));
+            }
+        }
+        public async Task<IActionResult> DeleteConspect(int id)
+        {
+            using (var client = new HttpClient())
+            {
+                int uid = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/Conspect/delete/{uid}/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("ConspectList", "Conspect");
+                }
+                return RedirectToAction("Error", "Home");
+            }
+        }
+        //         [HttpGet]
+        //         public async Task<IActionResult> ViewConspect(int id)
+        //         {
+        //             using (var client = new HttpClient())
+        //             {
+        //                 client.BaseAddress = new Uri("http://localhost:5063/");
+        //                 var response = await client.GetAsync($"api/Conspect/view/{id}");
 
+        //                 if (response.IsSuccessStatusCode)
+        //                 {
+        //                     var responseContent = await response.Content.ReadAsStringAsync();
+        //                     var conspectModel = JsonConvert.DeserializeObject<ConspectModel>(responseContent);
+        //                     return View(conspectModel);
+        //                 }
+        //                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        //                 {
+        //                     TempData["ErrorMessage"] = "You do not have access to this conspect";
+        //                 }
+        //                 else
+        //                 {
+        //                     TempData["ErrorMessage"] = "An error occurred while processing your request";
+        //                 }
+        //                 return RedirectToAction("ConspectList", "Conspect");
+        //             }
+        //         }
+        //         [HttpPost]
+        //         public async Task<IActionResult> ViewConspect(ConspectModel model)
+        //         {
+        //             using (var client = new HttpClient())
+        //             {
+        //                 client.BaseAddress = new Uri("http://localhost:5063/");
+        //                 var response = await client.PostAsJsonAsync("api/Conspect/view", model);
+        //                 if (response.IsSuccessStatusCode)
+        //                 {
+        //                     TempData["SuccessMessage"] = "Conspect saved successfully";            
+        //                 }
+        //                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        //                 {
+        //                     TempData["ErrorMessage"] = "You do not have access to this conspect";
+        //                 }
+        //                 else
+        //                 {
+        //                     TempData["ErrorMessage"] = "An error occurred while processing your request";
+        //                 }
+        //                 return View(model);
+        //             };
+        //         }
+        [HttpPost]
+        public async Task<IActionResult> ShareConspect(ConspectModel model, string username)
+        {
+            using (var client = new HttpClient())
+            {
+                string currentUsername = _contextAccessor.HttpContext.Session.GetString("User") ?? default;
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var requestContent = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync($"api/Conspect/share/{currentUsername}/{username}", requestContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Your notea has been shared successfully!";
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+
+                    if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        if (errorMessage.Contains("already shared"))
+                        {
+                            TempData["ErrorMessage"] = "Conspect is already shared with this user";
+                        }
+                        else if (errorMessage.Contains("yourself"))
+                        {
+                            TempData["ErrorMessage"] = "You can not share conspect with yourself";
+                        }
+                        else if (errorMessage.Contains("does not exist"))
+                        {
+                            TempData["ErrorMessage"] = "The username you entered does not exist";
+                        }
+                        else
+                        {
+                            TempData["ErrorMessage"] = "An error occurred while processing your request";
+                        }
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "An error occurred while processing your request";
+                    }
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    TempData["ErrorMessage"] = "Your do not have permission to execute this action";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "An error occurred while processing your request";
+                }
+                return RedirectToAction("ViewConspect", "Conspect", new { ID = model.Id, Name = model.Name, Date = model.Date });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> AddFolder(string foldername)
+        {
+            using (var client = new HttpClient())
+            {
+                int currentFolder = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
+                int currentUser = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/Conspect/folder/add/{currentFolder}/{currentUser}/{foldername}");
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("ConspectList", "Conspect");
+                }
+                return RedirectToAction("Error", "Home");
+            }
+        }
         public IActionResult OpenFolder(int id)
         {
             _contextAccessor.HttpContext.Session.SetInt32("CurrentFolderID", id);
             return RedirectToAction(nameof(ConspectList));
         }
-
-        public IActionResult DeleteFolder(int id)
+        public async Task<IActionResult> DeleteFolder(int id)
         {
-            _folderService.DeleteFolder(_contextAccessor.HttpContext.Session.GetInt32("Id") ?? default, id);
-            return RedirectToAction(nameof(ConspectList));
-        }
-
-        public IActionResult GoBack()
-        {
-            int currentFolder = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
-            int currentUser = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
-            _contextAccessor.HttpContext.Session.SetInt32("CurrentFolderID", _folderService.GetPreviousFolderID(currentUser, currentFolder)); 
-            return RedirectToAction(nameof(ConspectList));
-        }
-
-        [HttpGet]
-        public IActionResult ViewConspect(int id)
-        {
-            return View(_repository.LoadConspect(id));
-        }
-        [HttpPost]
-        public IActionResult ViewConspect(ConspectModel model)
-        {
-            _repository.SaveConspect(model, model.Id);
-            return View(model);
-        }
-        [HttpGet]
-        public IActionResult EditConspect(int id)
-        {
-            return View(_repository.LoadConspect(id));
-        }
-        public IActionResult DeleteConspect(int id)
-        {
-            _repository.DeleteConspect(id, _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default);
-            return RedirectToAction("ConspectList", "Conspect");
-        }
-
-        [HttpPost]
-        public IActionResult ShareConspect(ConspectModel model, string username)
-        {
-            if (_context.Users.Any(x => x.Username.Equals(username)))
+            using (var client = new HttpClient())
             {
-                if (username != _contextAccessor.HttpContext.Session.GetString("User"))
+                int userId = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/Conspect/folder/delete/{userId}/{id}");
+                if (response.IsSuccessStatusCode)
                 {
-                    int user_id = _userRepository.GetUserId(username);
-                    if (!_context.UserConspects.Any(x => x.User_Id.Equals(user_id) && x.Conspect_Id.Equals(model.Id)))
-                    {
-                        _repository.AssignToUser(model.Id, user_id, 'e');
-                        //Add maybe share folder later
-                        _repository.AssignToFolder(new TreeNodeModel(NodeType.File, model.Id, user_id));
-                        TempData["SuccessMessage"] = "Your notea has been shared successfully!";
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "Conspect is already shared with this user";
-                    }
+                    return RedirectToAction("ConspectList", "Conspect");
                 }
-                else 
-                {
-                    TempData["ErrorMessage"] = "You can not share conspect with yourself";
-                }
+                return RedirectToAction("Error", "Home");
             }
-            else
+        }
+        public async Task<IActionResult> GoBack()
+        {
+            using (var client = new HttpClient())
             {
-                TempData["ErrorMessage"] = "The username you entered does not exist";
+                int currentFolder = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
+                int currentUser = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+
+                client.BaseAddress = new Uri("http://localhost:5063/");
+                var response = await client.GetAsync($"api/Conspect/folder/back/{currentUser}/{currentFolder}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    _contextAccessor.HttpContext.Session.SetInt32("CurrentFolderID", Int32.Parse(responseContent));
+                    return RedirectToAction("ConspectList", "Conspect");
+                }
+                return RedirectToAction("Error", "Home");
             }
-            return RedirectToAction("ViewConspect", "Conspect", new { ID = model.Id, Name = model.Name, Date = model.Date });
         }
     }
 }

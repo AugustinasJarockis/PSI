@@ -1,10 +1,12 @@
 ﻿
-namespace NOTEA.Models.ConspectModels
+namespace NoteaAPI.Models.ConspectModels
 {
     public class ConspectListModel<ConspectType>
     {
         public List<ConspectType> Conspects = new List<ConspectType>();
         public ConspectListModel() { }
         public ConspectListModel(List<ConspectType> conspects) { Conspects = conspects; }
+
     }
+
 }
