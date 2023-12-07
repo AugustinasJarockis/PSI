@@ -15,6 +15,42 @@
     .validation-error {
         color: red;
     }
+
+    div .text-wrapping {
+        word-wrap: normal;
+        white-space: pre;
+        white-space: pre-wrap;
+    }
+
+    .btn-primary,
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-primary:visited,
+    .btn-primary:focus {
+        background-color: #FFECE4;
+        border-color: #FFECE4;
+        color: black;
+    }
+
+    button[class="btn btn-primary"] {
+        background-color: #708471;
+        border: none;
+        color: white;
+        padding: 2px 5px;
+        text-decoration: none;
+        margin: 1px 1px;
+        cursor: pointer;
+    }
+
+    input[type=button], input[type=submit], input[type=reset] {
+        background-color: #708471;
+        border: none;
+        color: white;
+        padding: 2px 5px;
+        text-decoration: none;
+        margin: 1px 1px;
+        cursor: pointer;
+    }
 </style>
 
 <h1>Create a conspect</h1>
@@ -40,6 +76,9 @@
             </div>
         </form>
     </div>
+</div>
+<div>
+    <a asp-action="ConspectList" style="color: #708471">Back to List</a>
 </div>
 
 <!-- Error Message Modal -->
