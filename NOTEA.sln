@@ -5,7 +5,9 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NOTEA", "NOTEA\NOTEA.csproj", "{36BD744E-556C-4E4D-9E20-D1FCF1A3A100}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoteaTests", "NoteaTests\NoteaTests.csproj", "{554C28E9-DC12-4209-9C35-F6618FB375F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoteaTests", "NoteaTests\NoteaTests.csproj", "{554C28E9-DC12-4209-9C35-F6618FB375F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoteaAPI", "NoteaAPI\NoteaAPI.csproj", "{9CEC27F6-BCE5-42F2-B89E-A8A87A01944B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{554C28E9-DC12-4209-9C35-F6618FB375F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{554C28E9-DC12-4209-9C35-F6618FB375F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{554C28E9-DC12-4209-9C35-F6618FB375F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CEC27F6-BCE5-42F2-B89E-A8A87A01944B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CEC27F6-BCE5-42F2-B89E-A8A87A01944B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CEC27F6-BCE5-42F2-B89E-A8A87A01944B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CEC27F6-BCE5-42F2-B89E-A8A87A01944B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
