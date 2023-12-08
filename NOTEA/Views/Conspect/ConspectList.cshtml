@@ -32,7 +32,7 @@
         font-weight : bold;
     }
     .tableHeader:hover {
-        background: #BBBBBB55;
+        background: #00000055;
     }
     .conspectName {
         background: transparent;
@@ -42,14 +42,33 @@
         background: #BBBBBB44;
     }
 
-    .toolButton {
-        background : #BBBBBB99;
-        border: 1px solid transparent;
-        font:300;
+    .toolButton:hover {
+            background: #FFECE4;
     }
 
-    .toolButton:hover {
-        background: #BBBBBBDD;
+    div .text-wrapping {
+        word-wrap: normal;
+        white-space: pre;
+        white-space: pre-wrap;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-primary:visited,
+    .btn-primary:focus {
+        background-color: #FFECE4;
+        border-color: #FFECE4;
+        color: black;
+    }
+
+    .btn-primary {
+        background-color: #708471;
+        border: none;
+        color: white;
+        padding: 2px 5px;
+        text-decoration: none;
+        margin: 1px 1px;
+        cursor: pointer;
     }
 </style>
 
@@ -58,64 +77,61 @@
 <br />
 
 <div>
-    @using (Html.BeginForm("FilterConspect", "Conspect", FormMethod.Get))
-    {
-        <table>
-            <tr>
+    <table>
+        <tr>
+            @using (Html.BeginForm("FilterConspect", "Conspect", FormMethod.Get))
+            {
                 <td>
                     <span><b>Search by:</b></span>
                     @Html.RadioButton("searchBy", "name", ((string)ViewData["SearchBy"])?.ToLower() == "name")
                     <text> Conspect name </text>
                     @Html.RadioButton("searchBy", "ConspectSemester", ((string)ViewData["SearchBy"])?.ToLower() == "conspectsemester")
                     <text> Semester </text>
-                </td>
-            </tr>
-            <tr>
-                <td>
+                    <br>
+                @* </td>
+                <td> *@
                     @Html.TextBox("searchValue", (string)ViewData["SearchValue"], new {Class = "form-control", required = true})
                     @Html.ValidationMessage("Field can't be empty")
                 </td>
+
                 <td>
-                    &nbsp;
-                </td>
-                <td>
-                    <input type="submit" value="Search" class="btn btn-success" />
-                </td>
-            </tr>
-        </table>
-    }
-    @if (ViewData["SearchValue"] != null)
-    {
-        <input type="submit" onclick="location.href='@Url.Action("CancelSearch","Conspect")'" value="Clear" class="btn btn-success" />
-    }
+                    <br>
+                <input type="submit" value="🔍" class="btn btn-primary" title="Search" />
+            </td>
+            }
+            <td>
+                <br />
+                @if (ViewData["SearchValue"] != null)
+                {
+                    <input type="submit" onclick="location.href='@Url.Action("CancelSearch","Conspect")'" value="❌" class="btn btn-primary" title="Clear search" />
+                }
+            </td>
+        </tr>
+    </table>
 </div>
 
 <br/>
 
+
 <div>
-    <table>
+    <table border-collapse: collapse;>
         <tr>
             <td>
-                <input type="submit" onclick="location.href='@Url.Action("GoBack","Conspect")'" value="Go back" class="toolButton" />
+                <input type="submit" onclick="location.href='@Url.Action("GoBack","Conspect")'" value="🡄" class="btn btn-primary" title="Go back" />
+                <button class="btn btn-primary" onclick="showDiv()" title="Add folder" >🞦📁</button>
             </td>
-            @using (Html.BeginForm("AddFolder", "Conspect", FormMethod.Get))
-            {
-                <td>
-                    <input type="submit" value="Add folder" class="toolButton" />
-                </td>
-                <td>
-                    @Html.TextBox("foldername", null, new {Class = "form-control", required = true})
+            @using (Html.BeginForm("AddFolder", "Conspect", FormMethod.Get)){
+                <td class="formElement" style="display: none;">
+                    @Html.TextBox("foldername", null, new { @class = "form-control", style = "width:200px;", required = true})
                     @Html.ValidationMessage("Field can't be empty")
                 </td>
-                <td>
-                    &nbsp;
+                <td class="formElement" style="display: none;">
+                    <input type="submit" value="Add" class="btn btn-primary" />
                 </td>
             }
             <td>
-                <input type="submit" onclick="location.href='@Url.Action("CreateConspects","Conspect")'" value="Create new conspect" class="toolButton" />
-            </td>
-            <td>
-                <input type="submit" onclick="location.href='@Url.Action("UploadConspect","Conspect")'" value="Upload conspect" class="toolButton" />
+                <input type="submit" onclick="location.href='@Url.Action("CreateConspects","Conspect")'" value="🞦📄" class="btn btn-primary" title="Add notea" />
+                <input type="submit" onclick="location.href='@Url.Action("UploadConspect","Conspect")'" value="🡅📄" class="btn btn-primary" title="Upload notea" />
             </td>
         </tr>
     </table>
@@ -126,13 +142,13 @@
     <tbody>
         <tr>
             <th>
-                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", new { Collumn = SortCollumn.Name })'" value="@NameCollumnName" />
+                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", new { Collumn = SortCollumn.Name })'" value="@NameCollumnName"/>
             </th>
             <th>
-                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", new { Collumn = SortCollumn.Semester })'" value="@SemesterCollumnName" />
+                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", new { Collumn = SortCollumn.Semester })'" value="@SemesterCollumnName"/>
             </th>
             <th>
-                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", new { Collumn = SortCollumn.Date })'" value="@DateCollumnName" />
+                <input type="submit" class="tableHeader" onclick="location.href='@Url.Action("SortConspect","Conspect", new { Collumn = SortCollumn.Date })'" value="@DateCollumnName"/>
             </th>
         </tr>
         @foreach (FolderModel folder in Model.Folders)
@@ -147,10 +163,7 @@
                     @folder.Date.ToLongDateString()
                 </td>
                 <td>
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"/>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" onclick="location.href='@Url.Action("DeleteFolder","Conspect", new { id = folder.Id })'">Delete</a>
-                    </ul>
+                    <input type="submit" onclick="location.href='@Url.Action("DeleteFolder","Conspect", new {Id = folder.Id })'" value="🗑" class="btn btn-primary" title="Delete folder" />
                 </td>
             </tr>
         }
@@ -165,6 +178,10 @@
                 </td>
                 <td>
                     @conspectModel.Date.ToLongDateString()
+                </td>
+                <td>
+                    <input type="submit" onclick="location.href='@Url.Action("EditConspect","Conspect", new {Id =conspectModel.Id })'" value="📝" class="btn btn-primary" title="Edit notea" />
+                    <input type="submit" onclick="location.href='@Url.Action("DeleteConspect","Conspect", new {Id = conspectModel.Id })'" value="🗑" class="btn btn-primary" title="Delete notea" />
                 </td>
             </tr>
         }
@@ -186,6 +203,16 @@
         </div>
     </div>
 </div>
+
+
+<script type="text/javascript">
+    function showDiv() {
+        var formElements = document.getElementsByClassName('formElement');
+        for (var i = 0; i < formElements.length; i++) {
+            formElements[i].style.display = (formElements[i].style.display === 'none') ? 'table-cell' : 'none';
+        }
+    }
+</script>
 
 @section Scripts {
     @{
