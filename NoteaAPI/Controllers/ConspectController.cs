@@ -163,6 +163,7 @@ namespace NoteaAPI.Controllers
             _folderService.DeleteFolder(user_id, folder_id);
             return Ok();
         }
+        [HttpGet]
         [Route("folder/back/{user_id}/{folder_id}")]
         public IActionResult GoBack(int user_id, int folder_id)
         {
