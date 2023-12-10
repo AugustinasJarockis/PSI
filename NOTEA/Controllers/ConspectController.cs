@@ -309,14 +309,14 @@ namespace NOTEA.Controllers
             _contextAccessor.HttpContext.Session.SetInt32("CurrentFolderID", id);
             return RedirectToAction(nameof(ConspectList));
         }
-        public async Task<IActionResult> DeleteFolder(int id)
+        public async Task<IActionResult> DeleteFolder(int folder_id)
         {
             using (var client = new HttpClient())
             {
-                int userId = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                int user_id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
 
                 client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
-                var response = await client.GetAsync($"api/Conspect/folder/delete/{userId}/{id}");
+                var response = await client.GetAsync($"api/Conspect/folder/delete/{user_id}/{folder_id}");
                 if (response.IsSuccessStatusCode)
                 {
                     return RedirectToAction("ConspectList", "Conspect");
