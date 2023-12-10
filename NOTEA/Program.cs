@@ -1,5 +1,6 @@
 using NOTEA.Services.LogServices;
 using NOTEA.Models.OnlineUserListModels;
+using System.Security.Policy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(120);
 });
+
+var apiBaseAdress = builder.Configuration.GetValue<Uri>("BaseUri");
 
 var app = builder.Build();
 

@@ -10,10 +10,12 @@ namespace NOTEA.Controllers
     public class UserController : Controller
     {
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IConfiguration _configuration;
 
-        public UserController(IHttpContextAccessor contextAccessor)
+        public UserController(IConfiguration configuration, IHttpContextAccessor contextAccessor)
         {
             _contextAccessor = contextAccessor;
+            _configuration = configuration;
         }
 
         public IActionResult SignIn()
@@ -26,7 +28,7 @@ namespace NOTEA.Controllers
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.PostAsJsonAsync("api/User/signin", user);
 
                 if (response.IsSuccessStatusCode)
@@ -64,7 +66,7 @@ namespace NOTEA.Controllers
             using (var client = new HttpClient())
             {
                 user.Email = "";
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var requestContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
                 var response = await client.PostAsync("api/User/login", requestContent);
                 
@@ -108,7 +110,7 @@ namespace NOTEA.Controllers
             using (var client = new HttpClient())
             {
                 int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.GetAsync($"api/User/getuser/{id}");
 
                 if (response.IsSuccessStatusCode)
@@ -131,7 +133,7 @@ namespace NOTEA.Controllers
             {
                 int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
                 UserModel user = new UserModel(username, "", email);
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.PostAsJsonAsync($"api/User/updateuser/{id}", user);
 
                 if (response.IsSuccessStatusCode)
@@ -166,7 +168,7 @@ namespace NOTEA.Controllers
             using (var client = new HttpClient())
             {
                 int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.GetAsync($"api/User/logout/{id}");
 
                 if(response.IsSuccessStatusCode) 
@@ -185,7 +187,7 @@ namespace NOTEA.Controllers
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.GetAsync("api/User/users/online");
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var userList = JsonConvert.DeserializeObject<OnlineUserList>(responseContent);
