@@ -16,10 +16,12 @@ namespace NOTEA.Controllers
     {
         private readonly ILogsService _logsService;
         public readonly IHttpContextAccessor _contextAccessor;
-        public ConspectController(IHttpContextAccessor contextAccessor, ILogsService logsService)
+        private readonly IConfiguration _configuration;
+        public ConspectController(IConfiguration configuration, IHttpContextAccessor contextAccessor, ILogsService logsService)
         {
             _logsService = logsService;
             _contextAccessor = contextAccessor;
+            _configuration = configuration;
         }
         public IActionResult CreateConspects()
         {
@@ -32,7 +34,7 @@ namespace NOTEA.Controllers
             {
                 int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
                 int current_folder_id = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.PostAsJsonAsync($"api/Conspect/create/{current_folder_id}/{id}", conspectModel);
                 if (response.IsSuccessStatusCode)
                 {
@@ -76,7 +78,7 @@ namespace NOTEA.Controllers
                     int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
                     int folder_id = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
 
-                    client.BaseAddress = new Uri("http://localhost:5063/");
+                    client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                     var response = await client.PostAsJsonAsync($"api/Conspect/upload/{folder_id}/{id}", conspectModel);
 
                     if (response.IsSuccessStatusCode)
@@ -111,7 +113,7 @@ namespace NOTEA.Controllers
                     int folder_id = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
                     string manipulator = _contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default;
 
-                    client.BaseAddress = new Uri("http://localhost:5063/");
+                    client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
 
                     var response = await client.GetAsync($"api/Conspect/conspectlist/{folder_id}/{id}/{manipulator}");
 
@@ -187,7 +189,7 @@ namespace NOTEA.Controllers
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.GetAsync($"api/Conspect/view/{id}");
                 var responseContent = await response.Content.ReadAsStringAsync();
                 return View(JsonConvert.DeserializeObject<ConspectModel>(responseContent));
@@ -198,7 +200,7 @@ namespace NOTEA.Controllers
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.PostAsJsonAsync($"api/Conspect/save", model);
                 if (response.IsSuccessStatusCode)
                 {
@@ -212,7 +214,7 @@ namespace NOTEA.Controllers
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.GetAsync($"api/Conspect/view/{id}");
                 var responseContent = await response.Content.ReadAsStringAsync();
                 return View(JsonConvert.DeserializeObject<ConspectModel>(responseContent));
@@ -223,7 +225,7 @@ namespace NOTEA.Controllers
             using (var client = new HttpClient())
             {
                 int uid = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.GetAsync($"api/Conspect/delete/{uid}/{id}");
                 if (response.IsSuccessStatusCode)
                 {
@@ -238,7 +240,7 @@ namespace NOTEA.Controllers
             using (var client = new HttpClient())
             {
                 string currentUsername = _contextAccessor.HttpContext.Session.GetString("User") ?? default;
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var requestContent = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
                 var response = await client.PostAsync($"api/Conspect/share/{currentUsername}/{username}", requestContent);
 
@@ -292,8 +294,8 @@ namespace NOTEA.Controllers
             {
                 int currentFolder = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
                 int currentUser = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
-                
-                client.BaseAddress = new Uri("http://localhost:5063/");
+
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.GetAsync($"api/Conspect/folder/add/{currentFolder}/{currentUser}/{foldername}");
                 if (response.IsSuccessStatusCode)
                 {
@@ -313,7 +315,7 @@ namespace NOTEA.Controllers
             {
                 int userId = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
 
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.GetAsync($"api/Conspect/folder/delete/{userId}/{id}");
                 if (response.IsSuccessStatusCode)
                 {
@@ -329,7 +331,7 @@ namespace NOTEA.Controllers
                 int currentFolder = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
                 int currentUser = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
 
-                client.BaseAddress = new Uri("http://localhost:5063/");
+                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.GetAsync($"api/Conspect/folder/back/{currentUser}/{currentFolder}");
                 if (response.IsSuccessStatusCode)
                 {
