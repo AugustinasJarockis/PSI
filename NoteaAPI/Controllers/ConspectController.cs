@@ -149,7 +149,7 @@ namespace NoteaAPI.Controllers
         }
 
         [HttpGet]
-        [Route("folder/delete/{uid}/{folder_id}")]
+        [Route("folder/delete/{user_id}/{folder_id}")]
         public IActionResult DeleteFolder(int user_id, int folder_id)
         {
             _folderService.DeleteFolder(user_id, folder_id);
@@ -157,7 +157,6 @@ namespace NoteaAPI.Controllers
         }
         [HttpGet]
         [Route("folder/back/{user_id}/{folder_id}")]
-        [HttpGet]
         public IActionResult GoBack(int user_id, int folder_id)
         {
             return Ok(_folderService.GetPreviousFolderID(user_id, folder_id));

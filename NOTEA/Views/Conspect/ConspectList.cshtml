@@ -163,7 +163,7 @@
                     @folder.Date.ToLongDateString()
                 </td>
                 <td>
-                    <input type="submit" onclick="location.href='@Url.Action("DeleteFolder","Conspect", new {Id = folder.Id })'" value="🗑" class="btn btn-primary" title="Delete folder" />
+                    <input type="submit" onclick="location.href='@Url.Action("DeleteFolder","Conspect", new {folder_id = folder.Id })'" value="🗑" class="btn btn-primary" title="Delete folder" />
                 </td>
             </tr>
         }
