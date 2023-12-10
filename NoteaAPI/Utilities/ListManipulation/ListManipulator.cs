@@ -18,7 +18,8 @@ namespace NoteaAPI.Utilities.ListManipulation
         [JsonProperty]
         private SortCollumn? currentSortCollumn = null;
         public SortPhase[] SortStatus { get { return collumnOrderValues; } }
-        private static SortPhase[] collumnOrderValues = { SortPhase.None, SortPhase.None, SortPhase.None };
+        [JsonProperty]
+        private SortPhase[] collumnOrderValues = { SortPhase.None, SortPhase.None, SortPhase.None };
 
         public Func<IQueryable<ConspectModel>, List<ConspectModel>> GetSelection()
         {
