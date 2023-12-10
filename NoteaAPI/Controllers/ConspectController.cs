@@ -157,6 +157,7 @@ namespace NoteaAPI.Controllers
         }
         [HttpGet]
         [Route("folder/back/{user_id}/{folder_id}")]
+        [HttpGet]
         public IActionResult GoBack(int user_id, int folder_id)
         {
             return Ok(_folderService.GetPreviousFolderID(user_id, folder_id));
