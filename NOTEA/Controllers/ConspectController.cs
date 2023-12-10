@@ -173,6 +173,7 @@ namespace NOTEA.Controllers
             }
             return RedirectToAction(nameof(ConspectList));
         }
+
         [HttpGet]
         public IActionResult SortConspect(SortCollumn collumn)
         {

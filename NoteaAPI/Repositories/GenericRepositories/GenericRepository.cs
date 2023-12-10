@@ -28,8 +28,8 @@ namespace NoteaAPI.Repositories.GenericRepositories
 
             var conspects = Select == null ? _database.FileStructure.Where(uc => uc.UserID == user_id && uc.FolderID == folder_id && uc.NodeType == NodeType.File)
                                                                     .Join(_conspectTypes, c => c.UnderlyingId, c => c.Id, (uc, c) => c).ToList()
-                                           : Select(_database.UserConspects.Where(uc => uc.User_Id == user_id)
-                                                                    .Join(_conspectTypes, uc => uc.Conspect_Id, c => c.Id, (uc, c) => c));
+                                           : Select(_database.FileStructure.Where(uc => uc.UserID == user_id && uc.FolderID == folder_id && uc.NodeType == NodeType.File)
+                                                                    .Join(_conspectTypes, c => c.UnderlyingId, c => c.Id, (uc, c) => c));
             return new ConspectListModel<ConspectType>(conspects);
         }
 
