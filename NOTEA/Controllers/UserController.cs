@@ -119,7 +119,7 @@ namespace NOTEA.Controllers
                 }
                 else
                 {
-                    return View("Error", "Home");
+                    return RedirectToAction("Error", "Home");
                 }
             }
         }

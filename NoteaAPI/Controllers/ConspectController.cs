@@ -72,27 +72,19 @@ namespace NoteaAPI.Controllers
             _repository.AssignToUser(conspectModel.Id, id);
             return Ok();
         }
-        [HttpPost]
-        [Route("list/{folder_id}/{id}")]
-        public IActionResult ConspectList(int folder_id, int id, [FromBody] ListManipulator listManip)
+        [HttpGet]
+        [Route("conspectlist/{folder_id}/{id}/{manipulator}")]
+        public IActionResult GetConspectList(int folder_id, int id, string manipulator)
         {
-            ConspectListModel<ConspectModel> conspectListModel = _repository.LoadConspects(id, listManip.GetSelection(), folder_id);
-            List<FolderModel> folders = _folderService.GetFolderList(id, folder_id, listManip.GetFolderSelection()); 
-            if (conspectListModel.Conspects.Count() + folders.Count == 0)
-            {
-                if (listManip.FilterExists)
-                    return BadRequest("No noteas match your search");
-                else if(folder_id == 0)
-                    return BadRequest("There are 0 noteas. Write one!");
-            }
-            return Ok(JsonConvert.SerializeObject(new CombinedNoteaAndFolderListModel(folders, conspectListModel.Conspects)));
+            ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(manipulator);
+            return Ok(JsonConvert.SerializeObject(_repository.LoadConspects(id, listManip.GetSelection(), folder_id)));
         }
-        [HttpPost]
-        [Route("cancel")]
-        public IActionResult CancelSearch([FromBody] ListManipulator listManip)
+        [HttpGet]
+        [Route("folderlist/{folder_id}/{id}/{manipulator}")]
+        public IActionResult FolderList (int folder_id, int id, string manipulator)
         {
-            listManip.ClearFilter();
-            return Ok(JsonConvert.SerializeObject(listManip));
+            ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(manipulator);
+            return Ok(JsonConvert.SerializeObject(_folderService.GetFolderList(id, folder_id, listManip.GetFolderSelection())));
         }
         [HttpGet]
         [Route("view/{id}")]
@@ -163,6 +155,7 @@ namespace NoteaAPI.Controllers
             _folderService.DeleteFolder(user_id, folder_id);
             return Ok();
         }
+        [HttpGet]
         [Route("folder/back/{user_id}/{folder_id}")]
         public IActionResult GoBack(int user_id, int folder_id)
         {

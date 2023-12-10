@@ -7,6 +7,8 @@ using System.Text;
 using NOTEA.Models.ViewModels;
 using NOTEA.Models.FileTree;
 using NuGet.Protocol.Core.Types;
+using NOTEA.Models.UserModels;
+using Azure.Core;
 
 namespace NOTEA.Controllers
 {
@@ -96,64 +98,65 @@ namespace NOTEA.Controllers
         [HttpGet]
         public async Task<IActionResult> ConspectList()
         {
-            using (var client = new HttpClient())
+            if (_contextAccessor.HttpContext.Session.GetString("User") == null)
             {
-                int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
-                int current_folder_id = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
-                client.BaseAddress = new Uri("http://localhost:5063/");
-                var requestContent = new StringContent(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync($"api/Conspect/list/{current_folder_id}/{id}", requestContent);
-                if (response.IsSuccessStatusCode)
+                return RedirectToAction("LogIn", "User");
+            }
+            else
+            {
+                using (var client = new HttpClient())
                 {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    var noteaAndFolders = JsonConvert.DeserializeObject<NoteaAndFolderListModel>(responseContent);
                     ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
-                    ViewData["SortStatus"] = listManip.SortStatus;
-                    if (listManip.FilterExists)
-                        ViewData["SearchValue"] = listManip.SearchValue;
-                    ViewData["SearchBy"] = listManip.SearchBy;
-                    return View(noteaAndFolders);
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-                {
-                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                    int folder_id = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
+                    string manipulator = _contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default;
 
-                    if (!string.IsNullOrEmpty(errorMessage))
+                    client.BaseAddress = new Uri("http://localhost:5063/");
+
+                    var response = await client.GetAsync($"api/Conspect/conspectlist/{folder_id}/{id}/{manipulator}");
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        TempData["ErrorMessage"] = errorMessage;
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        ConspectListModel<ConspectModel> conspectList = JsonConvert.DeserializeObject<ConspectListModel<ConspectModel>>(responseContent);
+
+                        var response2 = await client.GetAsync($"api/Conspect/folderlist/{folder_id}/{id}/{manipulator}");
+
+                        if (response2.IsSuccessStatusCode)
+                        {
+                            var responseContent2 = await response2.Content.ReadAsStringAsync();
+                            List<FolderModel> folderModel = JsonConvert.DeserializeObject<List<FolderModel>>(responseContent2);
+
+                            if (conspectList?.Conspects.Count + folderModel.Count == 0)
+                            {
+                                if (listManip.FilterExists)
+                                    TempData["ErrorMessage"] = "No noteas match your search";
+                                else if (folder_id == 0)
+                                    TempData["ErrorMessage"] = "There are 0 noteas. Write one!";
+                            }
+                            ViewData["SortStatus"] = listManip.SortStatus;
+                            if (listManip.FilterExists)
+                                ViewData["SearchValue"] = listManip.SearchValue;
+                            ViewData["SearchBy"] = listManip.SearchBy;
+
+                            return View(new NoteaAndFolderListModel(folderModel, conspectList.Conspects));
+                        }
+                        return RedirectToAction("Error", "Home");
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "An error occurred while processing your request";
+                        return RedirectToAction("Error", "Home");
+                        
                     }
                 }
-                else
-                {
-                    TempData["ErrorMessage"] = "An error occurred while processing your request";
-                }
-                return RedirectToAction("Error", "Home");
             }
         }
-        public async Task<IActionResult> CancelSearch()
+        public IActionResult CancelSearch()
         {
-            using (var client = new HttpClient())
-            {
-                ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
-                client.BaseAddress = new Uri("http://localhost:5063/");
-                var response = await client.PostAsJsonAsync("api/Conspect/cancel", listManip);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    _contextAccessor.HttpContext.Session.SetString("ListManipulator", responseContent);
-                    return RedirectToAction(nameof(ConspectList));
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "An error occurred while processing your request";
-                }
-                return RedirectToAction(nameof(ConspectList));
-            }
+            ListManipulator listManip = JsonConvert.DeserializeObject<ListManipulator>(_contextAccessor.HttpContext.Session.GetString("ListManipulator") ?? default);
+            listManip.ClearFilter();
+            _contextAccessor.HttpContext.Session.SetString("ListManipulator", JsonConvert.SerializeObject(listManip));
+            return RedirectToAction(nameof(ConspectList));
         }
         [HttpGet]
         public IActionResult FilterConspect(string searchBy, string searchValue)
@@ -228,53 +231,6 @@ namespace NOTEA.Controllers
                 return RedirectToAction("Error", "Home");
             }
         }
-        //         [HttpGet]
-        //         public async Task<IActionResult> ViewConspect(int id)
-        //         {
-        //             using (var client = new HttpClient())
-        //             {
-        //                 client.BaseAddress = new Uri("http://localhost:5063/");
-        //                 var response = await client.GetAsync($"api/Conspect/view/{id}");
-
-        //                 if (response.IsSuccessStatusCode)
-        //                 {
-        //                     var responseContent = await response.Content.ReadAsStringAsync();
-        //                     var conspectModel = JsonConvert.DeserializeObject<ConspectModel>(responseContent);
-        //                     return View(conspectModel);
-        //                 }
-        //                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-        //                 {
-        //                     TempData["ErrorMessage"] = "You do not have access to this conspect";
-        //                 }
-        //                 else
-        //                 {
-        //                     TempData["ErrorMessage"] = "An error occurred while processing your request";
-        //                 }
-        //                 return RedirectToAction("ConspectList", "Conspect");
-        //             }
-        //         }
-        //         [HttpPost]
-        //         public async Task<IActionResult> ViewConspect(ConspectModel model)
-        //         {
-        //             using (var client = new HttpClient())
-        //             {
-        //                 client.BaseAddress = new Uri("http://localhost:5063/");
-        //                 var response = await client.PostAsJsonAsync("api/Conspect/view", model);
-        //                 if (response.IsSuccessStatusCode)
-        //                 {
-        //                     TempData["SuccessMessage"] = "Conspect saved successfully";            
-        //                 }
-        //                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-        //                 {
-        //                     TempData["ErrorMessage"] = "You do not have access to this conspect";
-        //                 }
-        //                 else
-        //                 {
-        //                     TempData["ErrorMessage"] = "An error occurred while processing your request";
-        //                 }
-        //                 return View(model);
-        //             };
-        //         }
         [HttpPost]
         public async Task<IActionResult> ShareConspect(ConspectModel model, string username)
         {
