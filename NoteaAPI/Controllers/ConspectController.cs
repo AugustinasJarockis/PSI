@@ -12,6 +12,8 @@ using NoteaAPI.Database;
 using NoteaAPI.Models.FileTree;
 using NoteaAPI.Services.FolderService;
 using NoteaAPI.Models.ViewModels;
+using static System.Net.Mime.MediaTypeNames;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace NoteaAPI.Controllers
 {
@@ -40,7 +42,7 @@ namespace NoteaAPI.Controllers
         {
             try
             {
-                if (conspectModel.Name.IsValidName())
+                if (conspectModel.Name != null && conspectModel.Name.Length <= 80)
                 {
                     _repository.SaveConspect(conspectModel, conspectModel.Id);
                     _repository.AssignToFolder(new TreeNodeModel(NodeType.File, conspectModel.Id, id, folder_id));
@@ -87,10 +89,26 @@ namespace NoteaAPI.Controllers
             return Ok(JsonConvert.SerializeObject(_folderService.GetFolderList(id, folder_id, listManip.GetFolderSelection())));
         }
         [HttpGet]
-        [Route("view/{id}")]
-        public ActionResult<ConspectModel> GetConspect (int id)
+        [Route("view/{id}/{user_id}")]
+        public ActionResult<ConspectModel> GetConspect (int id, int user_id)
         {
-            return _repository.LoadConspect(id);
+            List<int> ints = _database.UserConspects.Where(x => x.User_Id == user_id).Select(x => x.Conspect_Id).ToList();
+            int a = 0;
+            foreach (int conspects_id in ints)
+            {
+                if (id == conspects_id)
+                {
+                    a++;
+                }
+            }
+            if (a == 0)
+            {
+                return Unauthorized();
+            }
+            else 
+            {
+                return _repository.LoadConspect(id);
+            }
         }
         [HttpPost]
         [Route("save")]
@@ -104,8 +122,24 @@ namespace NoteaAPI.Controllers
         [Route("delete/{uid}/{id}")]
         public IActionResult DeleteConspect(int uid, int id)
         {
-            _repository.DeleteConspect(id, uid);
-            return Ok();
+            List<int> ints = _database.UserConspects.Where(x => x.User_Id == uid).Select(x => x.Conspect_Id).ToList();
+            int a = 0;
+            foreach (int conspects_id in ints)
+            {
+                if (id == conspects_id)
+                {
+                    a++;
+                }
+            }
+            if (a == 0)
+            {
+                return Unauthorized();
+            }
+            else
+            {
+                _repository.DeleteConspect(id, uid);
+                return Ok();
+            }
         }
 
         [HttpPost]

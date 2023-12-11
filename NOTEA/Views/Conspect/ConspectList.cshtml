@@ -72,7 +72,7 @@
     }
 </style>
 
-<h1>The list of conspects</h1>
+<h1>The list of Noteas</h1>
 
 <br />
 
@@ -84,7 +84,7 @@
                 <td>
                     <span><b>Search by:</b></span>
                     @Html.RadioButton("searchBy", "name", ((string)ViewData["SearchBy"])?.ToLower() == "name")
-                    <text> Conspect name </text>
+                    <text> Notea name </text>
                     @Html.RadioButton("searchBy", "ConspectSemester", ((string)ViewData["SearchBy"])?.ToLower() == "conspectsemester")
                     <text> Semester </text>
                     <br>
