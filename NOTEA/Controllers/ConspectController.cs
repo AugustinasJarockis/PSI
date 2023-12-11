@@ -9,6 +9,7 @@ using NOTEA.Models.FileTree;
 using NuGet.Protocol.Core.Types;
 using NOTEA.Models.UserModels;
 using Azure.Core;
+using NOTEA.Extentions;
 
 namespace NOTEA.Controllers
 {
@@ -315,13 +316,21 @@ namespace NOTEA.Controllers
         {
             using (var client = new HttpClient())
             {
-                int currentFolder = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
-                int currentUser = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
-
-                client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
-                var response = await client.GetAsync($"api/Conspect/folder/add/{currentFolder}/{currentUser}/{foldername}");
-                if (response.IsSuccessStatusCode)
+                if(foldername.IsValidName())
                 {
+                    int currentFolder = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
+                    int currentUser = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+
+                    client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
+                    var response = await client.GetAsync($"api/Conspect/folder/add/{currentFolder}/{currentUser}/{foldername}");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("ConspectList", "Conspect");
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Your folder name is invalid! It can't be empty, longer than 80 symbols or contain the following characters: \\\\ / : * . ? \" < > | ";
                     return RedirectToAction("ConspectList", "Conspect");
                 }
                 return RedirectToAction("Error", "Home");
