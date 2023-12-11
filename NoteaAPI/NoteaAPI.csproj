@@ -37,4 +37,8 @@
     <Folder Include="Logs\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="NoteaApiIntegrationTest" />
+  </ItemGroup>
+
 </Project>
