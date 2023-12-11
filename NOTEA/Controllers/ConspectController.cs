@@ -44,7 +44,7 @@ namespace NOTEA.Controllers
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
                 {
-                    TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty, longer than 80 symbols or contain the following characters: \\\\ / : * . ? \" < > | ";
+                    TempData["ErrorMessage"] = "Your conspect name is invalid! It can't be empty, longer than 80 symbols";
                 }
                 else
                 {
@@ -190,9 +190,17 @@ namespace NOTEA.Controllers
             using (var client = new HttpClient())
             {
                 client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
-                var response = await client.GetAsync($"api/Conspect/view/{id}");
+                int user_id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                var response = await client.GetAsync($"api/Conspect/view/{id}/{user_id}");
+                if(response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    return RedirectToAction("ConspectList", "Conspect");
+                }
+                else 
+                {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 return View(JsonConvert.DeserializeObject<ConspectModel>(responseContent));
+                }
             }
         }
         [HttpPost]
@@ -215,9 +223,17 @@ namespace NOTEA.Controllers
             using (var client = new HttpClient())
             {
                 client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
-                var response = await client.GetAsync($"api/Conspect/view/{id}");
-                var responseContent = await response.Content.ReadAsStringAsync();
-                return View(JsonConvert.DeserializeObject<ConspectModel>(responseContent));
+                int user_id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                var response = await client.GetAsync($"api/Conspect/view/{id}/{user_id}");
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    return RedirectToAction("ConspectList", "Conspect");
+                }
+                else
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    return View(JsonConvert.DeserializeObject<ConspectModel>(responseContent));
+                }
             }
         }
         public async Task<IActionResult> DeleteConspect(int id)
@@ -227,7 +243,11 @@ namespace NOTEA.Controllers
                 int uid = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
                 client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
                 var response = await client.GetAsync($"api/Conspect/delete/{uid}/{id}");
-                if (response.IsSuccessStatusCode)
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    return RedirectToAction("ConspectList", "Conspect");
+                }
+                else if (response.IsSuccessStatusCode)
                 {
                     return RedirectToAction("ConspectList", "Conspect");
                 }

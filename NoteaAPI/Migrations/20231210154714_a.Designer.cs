@@ -12,8 +12,8 @@ using NoteaAPI.Database;
 namespace NoteaAPI.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231207131948_initial")]
-    partial class initial
+    [Migration("20231210154714_a")]
+    partial class a
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
