@@ -7,12 +7,13 @@ using NoteaAPI.Services.LogServices;
 
 namespace NoteaApiTest
 {
-    public class UnitTest1
+    public class ConspectGenericRepositoryTests
     {
+        Mock<ILogsService> logsServiceMock = new Mock<ILogsService>();
         [Fact]
         public void LoadConspect_ShouldCall_FindMethod()
         {
-            var logsServiceMock = new Mock<ILogsService>();
+            
             var options = new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase("TestDatabase").Options;
             var dbContextMock = new Mock<DatabaseContext>(options);
             var conspectTypesSetMock = new Mock<DbSet<ConspectModel>>();
@@ -27,7 +28,6 @@ namespace NoteaApiTest
         [Fact]
         public void SaveConspect_ShouldAddOrUpdate_ConspectModel()
         {
-            var logsServiceMock = new Mock<ILogsService>();
             var options = new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase("TestDatabase").Options;
             var dbContextMock = new Mock<DatabaseContext>(options);
             var conspectTypesSetMock = new Mock<DbSet<ConspectModel>>();

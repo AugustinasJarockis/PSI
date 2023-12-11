@@ -11,9 +11,9 @@ namespace NoteaAPI.Repositories.UserRepositories
     public class UserRepository<UserType> : IUserRepository<UserType> where UserType : class, IUserModel
     {
         private readonly ILogsService _logsService;
-        private readonly IDatabaseContext _database;
+        private readonly DatabaseContext _database;
         private DbSet<UserType> _userTypes;
-        public UserRepository(ILogsService logsService, IDatabaseContext database)
+        public UserRepository(ILogsService logsService, DatabaseContext database)
         {
             _logsService = logsService;
             _database = database;

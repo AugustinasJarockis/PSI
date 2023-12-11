@@ -38,8 +38,7 @@ namespace NoteaApiTest
 
         [Fact]
         public void CheckLogIn_ShouldReturnFalse_WhenUserDoesNotExist()
-        {
-            // Arrange
+        { 
             var options = new DbContextOptionsBuilder<DatabaseContext>()
                 .UseInMemoryDatabase(databaseName: "CheckLogIn_ShouldReturnFalse_WhenUserDoesNotExist")
                 .Options;
@@ -51,10 +50,8 @@ namespace NoteaApiTest
 
                 var userModel = new UserModel { Username = "nonexistentUser", Password = "password" };
 
-                // Act
                 var result = userRepository.CheckLogIn(userModel);
 
-                // Assert
                 Assert.False(result);
             }
         }

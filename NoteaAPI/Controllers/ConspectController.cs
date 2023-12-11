@@ -22,10 +22,10 @@ namespace NoteaAPI.Controllers
         IGenericRepository<ConspectModel> _repository;
         private readonly IUserRepository<UserModel> _userRepository;
         private readonly ILogsService _logsService;
-        private readonly IDatabaseContext _database;
+        private readonly DatabaseContext _database;
         private readonly IFolderService _folderService;
 
-        public ConspectController(IGenericRepository<ConspectModel> repository, ILogsService logsService, IFolderService folderService, IUserRepository<UserModel> userRepository, IDatabaseContext database)
+        public ConspectController(IGenericRepository<ConspectModel> repository, ILogsService logsService, IFolderService folderService, IUserRepository<UserModel> userRepository, DatabaseContext database)
         {
             _repository = repository;
             _logsService = logsService;

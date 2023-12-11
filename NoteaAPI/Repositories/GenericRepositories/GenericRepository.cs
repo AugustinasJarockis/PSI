@@ -11,9 +11,9 @@ namespace NoteaAPI.Repositories.GenericRepositories
     public class GenericRepository<ConspectType> : IGenericRepository<ConspectType> where ConspectType : class, IConspectModel
     {
         private readonly ILogsService _logsService;
-        private readonly IDatabaseContext _database;
+        private readonly DatabaseContext _database;
         private DbSet<ConspectType> _conspectTypes;
-        public GenericRepository(ILogsService logsService, IDatabaseContext database)
+        public GenericRepository(ILogsService logsService, DatabaseContext database)
         {
             _logsService = logsService;
             _database = database;
