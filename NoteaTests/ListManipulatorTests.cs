@@ -14,10 +14,10 @@ namespace NoteaTests
 {
     public class ListManipulatorTests
     {
+        ListManipulator listManipulator = new ListManipulator();
         [Fact]
         public void UpdateFilter_WhenSearchByIsNullOrEmpty_ShouldSetDefaults()
         {
-            var listManipulator = new ListManipulator();
             listManipulator.UpdateFilter("", "searchValue");
             Assert.False(listManipulator.FilterExists);
             Assert.Equal("name", listManipulator.SearchBy);
@@ -27,7 +27,6 @@ namespace NoteaTests
         [Fact]
         public void UpdateFilter_WhenSearchByIsNotNullOrEmpty_ShouldSetValues()
         {
-            var listManipulator = new ListManipulator();
             listManipulator.UpdateFilter("customField", "searchValue");
 
             Assert.True(listManipulator.FilterExists);
@@ -37,7 +36,6 @@ namespace NoteaTests
         [Fact]
         public void GetSelection_ShouldReturnNonNullFunction_WhenTempIsNotNull()
         {
-            var listManipulator = new ListManipulator();
             listManipulator.UpdateFilter("name", "searchValue");
             var result = listManipulator.GetSelection();
             Assert.NotNull(result);
@@ -46,7 +44,6 @@ namespace NoteaTests
         [Fact]
         public void GenerateFilter_ShouldReturnFilterFunction_WhenSearchValueIsNotNullOrEmpty()
         {
-            var listManipulator = new ListManipulator();
             string searchBy = "name";
             string searchValue = "example";
             var list = new List<ConspectModel> { new ConspectModel { Name = "Example" } };
@@ -59,23 +56,20 @@ namespace NoteaTests
         [Fact]
         public void GetSelection_ShouldReturnNullFunction_WhenFilterDoesNotExist()
         {
-            var listManipulator = new ListManipulator();
             var result = listManipulator.GetSelection();
             Assert.Null(result);
         }
         [Fact]
         public void GenerateFilter_ShouldReturnNullFunction_WhenSearchValueIsNullOrEmpty()
         {
-            var listManipulator = new ListManipulator();
             string searchBy = "name";
-            string searchValue = null;  // or an empty string
+            string searchValue = null;
             var filterFunction = listManipulator.GenerateFilter(searchBy, searchValue);
             Assert.Null(filterFunction);
         }
         [Fact]
         public void GenerateFilter_ShouldReturnNullFunction_WhenSearchByIsInvalid()
         {
-            var listManipulator = new ListManipulator();
             string searchBy = "invalidField";
             string searchValue = "example";
             var filterFunction = listManipulator.GenerateFilter(searchBy, searchValue);
@@ -85,7 +79,6 @@ namespace NoteaTests
         [Fact]
         public void UpdateSort_ShouldUpdateSortStatus_WhenValidSortColumnIsProvided()
         {
-            var listManipulator = new ListManipulator();
             var initialSortStatus = listManipulator.SortStatus.ToArray();
 
             listManipulator.UpdateSort(SortCollumn.Semester);
@@ -99,7 +92,6 @@ namespace NoteaTests
         [Fact]
         public void ClearFilter_ShouldResetFilterProperties()
         {
-            var listManipulator = new ListManipulator();
             listManipulator.UpdateFilter("customField", "searchValue");
 
             listManipulator.ClearFilter();

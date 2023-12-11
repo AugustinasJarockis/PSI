@@ -5,7 +5,7 @@ using NoteaAPI.Models.FileTree;
 
 namespace NoteaAPI.Database
 { 
-        public class DatabaseContext : DbContext, IDatabaseContext
+        public class DatabaseContext : DbContext
         {
             public DbSet<ConspectModel> Conspects { get; set; }
             public DbSet<UserModel> Users { get; set; }
