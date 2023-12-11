@@ -64,7 +64,7 @@ namespace NOTEA.Controllers
             {
                 if (file == null)
                 {
-                    throw new ArgumentNullException("file", "File is null");
+                    return View();
                 }
                 if (file.ContentType == "text/plain")
                 {
@@ -75,19 +75,22 @@ namespace NOTEA.Controllers
                     }
                     var conspectModel = new ConspectModel(name: Path.GetFileNameWithoutExtension(file.FileName), conspectText: text);
 
-                    int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
-                    int folder_id = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
-
-                    client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
-                    var response = await client.PostAsJsonAsync($"api/Conspect/upload/{folder_id}/{id}", conspectModel);
-
-                    if (response.IsSuccessStatusCode)
+                    if (conspectModel != null)
                     {
-                        TempData["SuccessMessage"] = "Your notea has been saved successfully!";
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "An error occurred while processing your request";
+                        int id = _contextAccessor.HttpContext.Session.GetInt32("Id") ?? default;
+                        int folder_id = _contextAccessor.HttpContext.Session.GetInt32("CurrentFolderID") ?? default;
+
+                        client.BaseAddress = _configuration.GetValue<Uri>("BaseUri");
+                        var response = await client.PostAsJsonAsync($"api/Conspect/upload/{folder_id}/{id}", conspectModel);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            TempData["SuccessMessage"] = "Your notea has been saved successfully!";
+                        }
+                        else
+                        {
+                            TempData["ErrorMessage"] = "An error occurred while processing your request";
+                        }
                     }
                 }
                 else

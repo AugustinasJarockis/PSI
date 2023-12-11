@@ -22,7 +22,7 @@
             </dt>
             <dd>
                 <input asp-for="File" type="file" accept=".txt">
-                <span asp-validation-for="File"></span>
+                <span asp-validation-for="File" style="color: red"></span>
             </dd>
         </dl>
         <input asp-page-handler="Upload" class="btn btn-primary" type="submit" value="Upload" />
