@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Logs\NewFolder\**" />
+    <Content Remove="Logs\NewFolder\**" />
+    <EmbeddedResource Remove="Logs\NewFolder\**" />
+    <None Remove="Logs\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Controllers\MessageControler.cs" />
   </ItemGroup>
 
@@ -36,12 +43,12 @@
     <PackageReference Include="MockQueryable.Moq" Version="7.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Logs\" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<InternalsVisibleTo Include="NoteaTests" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Logs\" />
 	</ItemGroup>
 
 </Project>
