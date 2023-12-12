@@ -15,12 +15,14 @@
     {
         <table>
             <tr>
+                <td><p>Update username:</p></td>
+                <td><p>Update email:</p></td>
+            </tr>
+            <tr>
                 <td>
-                    <p>Update username:</p>
                     @Html.TextBox("Username", (string)ViewData["Username"], new {Class = "form-control"})
                 </td>
                 <td>
-                    <p>Update email:</p>
                     @Html.TextBox("Email", (string)ViewData["Email"], new {Class = "form-control"})
                 </td>
                 <td>

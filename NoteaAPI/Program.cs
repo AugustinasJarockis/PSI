@@ -6,6 +6,7 @@ using NoteaAPI.Database;
 using Microsoft.EntityFrameworkCore;
 using NoteaAPI.Services.FolderService;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -26,6 +27,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 });
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -37,6 +40,9 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+
 
 app.Run();
 
