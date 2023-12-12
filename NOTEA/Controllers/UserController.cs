@@ -46,7 +46,14 @@ namespace NOTEA.Controllers
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
-                    TempData["ErrorMessage"] = "Invalid username or email";
+                    if(await response.Content.ReadAsStringAsync() == "Invalid Password") 
+                    {
+                        TempData["ErrorMessage"] = "Password must be at least 8 symbols long and contain at least one uppercase, lowercase letter and digit";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Invalid username or email";
+                    }
                 }
                 else
                 {

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿namespace NoteaAPI.Interceptor;
 
-[AttributeUsage(AttributeTargets.Method)]
-public class PasswordValidationAttribute : Attribute { }
+[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+public sealed class PasswordValidationAttribute : Attribute { }

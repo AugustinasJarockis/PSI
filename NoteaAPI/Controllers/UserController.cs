@@ -4,6 +4,9 @@ using NoteaAPI.Repositories.UserRepositories;
 using NoteaAPI.Models.OnlineUserListModels;
 using NoteaAPI.Extentions;
 using NoteaAPI.Exceptions;
+using Castle.DynamicProxy;
+using NOTEA.Controllers;
+using NoteaAPI.Interceptor;
 
 namespace NoteaAPI.Controllers
 {
@@ -13,6 +16,7 @@ namespace NoteaAPI.Controllers
     {
         private readonly IUserRepository<UserModel> _userRepository;
         private readonly IOnlineUserList _onlineUserList;
+
         public UserController(IUserRepository<UserModel> userRepository, IOnlineUserList onlineUserList)
         {
             _userRepository = userRepository;
@@ -20,26 +24,38 @@ namespace NoteaAPI.Controllers
         }
         [HttpPost]
         [Route("signin")]
-        [PasswordValidation]
         public virtual async Task<IActionResult> SignInAsync([FromBody] SignInUserModel user)
         {
             if (user.Username.IsValidName() && user.Email.IsValidEmail())
             {
+                var generator = new ProxyGenerator();
+                var interceptor = new PasswordValidationInterceptor();
+
+                var service = generator.CreateClassProxy<Validator>(interceptor);
+
                 try
                 {
-                    if (user.Password == user.PasswordCheck)
+                    service.ValidatePassword(user.Password);
+                    try
                     {
-                        await _userRepository.SaveUserAsync(user);
-                        return Ok();
+                        if (user.Password == user.PasswordCheck)
+                        {
+                            await _userRepository.SaveUserAsync(user);
+                            return Ok();
+                        }
+                        else
+                        {
+                            return Unauthorized();
+                        }
                     }
-                    else
+                    catch (UsernameTakenException)
                     {
-                        return Unauthorized();
+                        return Conflict();
                     }
                 }
-                catch (UsernameTakenException)
+                catch (Exception ex)
                 {
-                    return Conflict();
+                    return BadRequest(ex.Message);
                 }
             }
             else if (!user.Email.IsValidEmail())
