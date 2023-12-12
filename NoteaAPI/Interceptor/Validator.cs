@@ -5,9 +5,6 @@ namespace NoteaAPI.Interceptor
     public class Validator
     {
         [PasswordValidation]
-        public virtual void ValidatePassword (string password)
-        {
-            Console.WriteLine("i do do shit");
-        }
+        public virtual void ValidatePassword (string password) { }
     }
 }
