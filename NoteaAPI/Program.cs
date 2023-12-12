@@ -5,6 +5,7 @@ using NoteaAPI.Models.OnlineUserListModels;
 using NoteaAPI.Database;
 using Microsoft.EntityFrameworkCore;
 using NoteaAPI.Services.FolderService;
+using Castle.DynamicProxy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,9 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 });
+
+builder.Services.AddScoped<PasswordValidationInterceptor>();
+builder.Services.AddScoped<IInterceptor>(provider => provider.GetRequiredService<PasswordValidationInterceptor>());
 
 var app = builder.Build();
 

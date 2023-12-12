@@ -20,9 +20,10 @@ namespace NoteaAPI.Controllers
         }
         [HttpPost]
         [Route("signin")]
-        public async Task<IActionResult> SignInAsync([FromBody] SignInUserModel user)
+        [PasswordValidation]
+        public virtual async Task<IActionResult> SignInAsync([FromBody] SignInUserModel user)
         {
-            if (user.Username.IsValidName() && user.Password.IsValidName() && user.PasswordCheck.IsValidName() && user.Email.IsValidEmail())
+            if (user.Username.IsValidName() && user.Email.IsValidEmail())
             {
                 try
                 {
