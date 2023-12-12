@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using NoteaAPI.Controllers;
 using NoteaAPI.Database;
@@ -21,16 +22,23 @@ namespace NoteaApiUnitTest
     {
         private readonly Mock<IUserRepository<UserModel>> userRepositoryMock = new Mock<IUserRepository<UserModel>>();
         private readonly Mock<IOnlineUserList> onlineUserListMock = new Mock<IOnlineUserList>();
-
+        Mock<ILogsService> logsServiceMock = new Mock<ILogsService>();
         [Fact]
         public async Task SignInAsync_ValidUser_ReturnsOk()
         {
-            var controller = new UserController(userRepositoryMock.Object, onlineUserListMock.Object);
-            var validUser = new SignInUserModel { Username = "ValidUser", Password = "Password", PasswordCheck = "Password", Email = "user@example.com" };
+            var options = new DbContextOptionsBuilder<DatabaseContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
 
-            var result = await controller.SignInAsync(validUser);
+            using (var databaseContext = new DatabaseContext(options))
+            {
+                var userRep = new UserRepository<UserModel>(logsServiceMock.Object, databaseContext);
+                var controller = new UserController(userRep, onlineUserListMock.Object);
+                var validUser = new SignInUserModel { Username = "ValidUser", Password = "Abc123123", PasswordCheck = "Abc123123", Email = "user@example.com" };
+                var result = await controller.SignInAsync(validUser);
 
-            Assert.IsType<OkResult>(result);
+                Assert.IsType<OkResult>(result);
+            }
         }
         [Fact]
         public void UpdateUser_InvalidEmail_ReturnsBadRequest()

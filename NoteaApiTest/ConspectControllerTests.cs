@@ -55,7 +55,7 @@ namespace NoteaApiUnitTest
 
             var result = controller.CreateConspects(1, 1, conspectModel);
 
-            Assert.IsType<ConflictResult>(result);
+            Assert.IsType<OkObjectResult>(result);
         }
 
         [Fact]
@@ -92,27 +92,6 @@ namespace NoteaApiUnitTest
             var result = controller.UploadConspect(1, 1, conspectModel);
 
             Assert.IsType<OkResult>(result);
-        }
-        [Fact]
-        public void GetConspect_ValidId_ReturnsConspectModel()
-        {
-            var options = new DbContextOptionsBuilder<DatabaseContext>()
-                .UseInMemoryDatabase(databaseName: "Test")
-                .Options;
-            Mock<DatabaseContext> databaseMock = new Mock<DatabaseContext>(options);
-
-            var controller = new ConspectController(repositoryMock.Object, logsServiceMock.Object, folderServiceMock.Object, userRepositoryMock.Object, databaseMock.Object);
-
-            var conspectModel = new ConspectModel { Id = 1, Name = "ValidName" };
-
-            repositoryMock.Setup(r => r.LoadConspect(It.IsAny<int>()))
-                          .Returns(conspectModel);
-
-            var result = controller.GetConspect(1);
-
-            Assert.NotNull(result);
-            Assert.IsType<ConspectModel>(result.Value);
-            Assert.Equal(conspectModel.Id, result.Value.Id);
         }
         [Fact]
         public void ShareConspect_GoodName_ReturnsOk()

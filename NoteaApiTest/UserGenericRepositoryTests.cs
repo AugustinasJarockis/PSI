@@ -67,11 +67,11 @@ namespace NoteaApiTest
                 var logsServiceMock = new Mock<ILogsService>();
                 var userRepository = new UserRepository<UserModel>(logsServiceMock.Object, context);
 
-                await userRepository.SaveUserAsync(new UserModel { Username = "newUser", Password = "password", Email = "test@example.com" });
+                await userRepository.SaveUserAsync(new UserModel { Username = "newUser", Password = "Abc123123", Email = "test@example.com" });
 
                 Assert.Equal(1, context.Users.Count());
                 Assert.Equal("newUser", context.Users.Single().Username);
-                Assert.Equal("password", context.Users.Single().Password);
+                Assert.Equal("Abc123123", context.Users.Single().Password);
                 Assert.Equal("test@example.com", context.Users.Single().Email);
             }
         }

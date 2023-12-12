@@ -1,13 +1,18 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using NoteaAPI.Database;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using NoteaAPI.Database;
 using NoteaAPI.Models.UserModels;
 
 namespace NoteaApiIntegrationTest
 {
-    public class CustomWebApplicationFactory<T> : WebApplicationFactory<T> where T : class
+    public class CustomWebApplicationFactory2<T> : WebApplicationFactory<T> where T : class
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -36,13 +41,12 @@ namespace NoteaApiIntegrationTest
                 dbContext.Database.EnsureCreated();
             });
         }
-
         private void SeedTestData(DatabaseContext dbContext)
         {
             var users = new List<UserModel>
             {
-                new UserModel { Id = 1, Username = "user1", Password = "Abc123123", Email = "user1@example.com" },
-                new UserModel { Id = 2, Username = "user2", Password = "Abc123123", Email = "user2@example.com" },
+                new UserModel { Id = 55, Username = "user1", Password = "Abc123123", Email = "user1@example.com" },
+                new UserModel { Id = 66, Username = "user2", Password = "Abc123123", Email = "user2@example.com" },
             };
 
             dbContext.Users.AddRange(users);
