@@ -79,20 +79,7 @@ namespace NoteaAPI.Utilities.ListManipulation
             }
             return null;
         }
-        public void UpdateFilter(string searchBy, string searchValue)
-        {
-            if (searchBy.IsNullOrEmpty())
-            {
-                _filterExists = false;
-                this.searchBy = "name";
-                this.searchValue = searchValue;
-                return;
-            }
-            this.searchBy = searchBy;
-            this.searchValue = searchValue;
-            _filterExists = true;
-        }
-        private Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> GenerateSort(SortCollumn? collumn)
+        public Func<IEnumerable<ConspectModel>, IEnumerable<ConspectModel>> GenerateSort(SortCollumn? collumn)
         {
             if (collumn == null)
                 return null;
@@ -141,30 +128,6 @@ namespace NoteaAPI.Utilities.ListManipulation
                     break;
             }
             return orderStatement;
-        }
-        public void UpdateSort(SortCollumn collumn)
-        {
-            currentSortCollumn = collumn;
-
-            collumnOrderValues[(int)collumn]++;
-            if ((int)collumnOrderValues[(int)collumn] == 3)
-                collumnOrderValues[(int)collumn] = SortPhase.None;
-
-            collumnOrderValues[((int)collumn + 1) % 3] = SortPhase.None;
-            collumnOrderValues[((int)collumn + 2) % 3] = SortPhase.None;
-        }
-        public void ClearFilter()
-        {
-            _filterExists = false;
-            searchBy = "name";
-            searchValue = null;
-        }
-        public void ClearSort()
-        {
-            collumnOrderValues[0] = SortPhase.None;
-            collumnOrderValues[1] = SortPhase.None;
-            collumnOrderValues[2] = SortPhase.None;
-            currentSortCollumn = null;
         }
     }
 }

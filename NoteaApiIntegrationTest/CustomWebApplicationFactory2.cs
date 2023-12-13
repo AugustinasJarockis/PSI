@@ -45,7 +45,7 @@ namespace NoteaApiIntegrationTest
         {
             var users = new List<UserModel>
             {
-                new UserModel { Id = 55, Username = "user1", Password = "Abc123123", Email = "user1@example.com" },
+                new UserModel { Id = 55, Username = "Useriukas", Password = "Abc123123", Email = "user1@example.com" },
                 new UserModel { Id = 66, Username = "user2", Password = "Abc123123", Email = "user2@example.com" },
             };
 
