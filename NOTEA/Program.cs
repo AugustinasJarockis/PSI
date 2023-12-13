@@ -41,7 +41,6 @@ app.Use(async (context, next) =>
     var userLogService = context.RequestServices.GetRequiredService<IUserLogService>();
     int user_id = context.Session.GetInt32("Id") ?? default;
     userLogService.SaveLogInfo($"Request: {context.Request.Path}", user_id);
-    Console.WriteLine(context.Session.GetString("User"));
     await next.Invoke();
 
     userLogService.SaveLogInfo($"Response: {context.Response.StatusCode}", user_id);
